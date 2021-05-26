@@ -346,6 +346,10 @@ namespace ende {
         }
 
 
+        constexpr inline T& operator*() const {
+            return unwrap();
+        }
+
 
         constexpr inline T& unwrap() const {
             if (isOk())

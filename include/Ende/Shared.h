@@ -6,7 +6,7 @@
 #define ENDE_SHARED_H
 
 #include <Ende/platform.h>
-#include <Ende/util/hash.h>
+//#include <Ende/util/hash.h>
 #include <utility>
 #include <cassert>
 
@@ -179,14 +179,14 @@ namespace ende {
 
 
 
-    template <typename T>
-    struct util::Hash<Shared<T>> {
-        u64 operator()(const Shared<T>& value) {
-            if (!value)
-                return 0;
-            return Hash<T>()(*value.get());
-        }
-    };
+//    template <typename T>
+//    struct util::Hash<Shared<T>> {
+//        u64 operator()(const Shared<T>& value) {
+//            if (!value)
+//                return 0;
+//            return Hash<T>()(*value.get());
+//        }
+//    };
 
 
 }

@@ -281,9 +281,20 @@ namespace ende {
             // incase a single increase is not enough
             while (_size + (last - first) >= _capacity)
                 reserve(_capacity * 2);
-            std::copy(pos, _data + _size, pos + (last - first));
+//            std::copy(pos, _data + _size, pos + (last - first));
+            std::copy(pos, pos + (last - first), pos + (last - first));
             std::copy(first, last, pos);
             _size += (last - first);
+            return pos;
+        }
+
+        iterator insert(iterator pos, Span<T> span) {
+            while (_size + span.size() >= _capacity)
+                reserve(_capacity * 2);
+//            std::copy(pos, _data + _size, pos + span.size());
+            std::copy(pos, pos + span.size(), pos + span.size());
+            std::copy(span.begin(), span.end(), pos);
+            _size += span.size();
             return pos;
         }
 

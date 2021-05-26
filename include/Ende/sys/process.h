@@ -2,8 +2,8 @@
 // Created by cstro29 on 26/5/21.
 //
 
-#ifndef ENDE_PROCESS_H
-#define ENDE_PROCESS_H
+#ifndef ENDE_SYS_PROCESS_H
+#define ENDE_SYS_PROCESS_H
 
 #include <Ende/platform.h>
 #include <Ende/sys/FileDesc.h>
@@ -34,4 +34,4 @@ namespace ende::sys {
 
 }
 
-#endif //ENDE_PROCESS_H
+#endif //ENDE_SYS_PROCESS_H
