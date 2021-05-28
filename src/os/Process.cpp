@@ -34,10 +34,12 @@ ende::os::Process& ende::os::Process::operator=(Process &&process) noexcept {
 
 ende::os::Process & ende::os::Process::arg(const std::string &arg) {
     _args.push(arg);
+    return *this;
 }
 
 ende::os::Process & ende::os::Process::args(Span<std::string> args) {
     _args.insert(_args.begin(), args);
+    return *this;
 }
 
 i32 ende::os::Process::id() const {
@@ -86,6 +88,6 @@ ende::sys::Pipe ende::os::Process::stderr() const {
 }
 
 void ende::os::Process::printArgs() const {
-    for (auto& arg : args)
+    for (auto& arg : _args)
         std::cout << arg << ' ';
 }

@@ -8,6 +8,7 @@
 #include <Ende/platform.h>
 #include <Ende/sys/memory.h>
 #include <Ende/Optional.h>
+#include <Ende/Span.h>
 //#include <Ende/util/traits.h>
 #include <cassert>
 #include <stdexcept>
@@ -116,6 +117,7 @@ namespace ende {
             std::swap(_capacity, vector._capacity);
             std::swap(_size, vector._size);
             std::swap(_data, vector._data);
+            return *this;
         }
 
 
