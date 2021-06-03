@@ -6,7 +6,7 @@
 #define ENDE_POINTER_H
 
 #include <Ende/platform.h>
-#include <Ende/util/hash.h>
+//#include <Ende/util/hash.h>
 #include <cassert>
 
 namespace ende {

@@ -102,42 +102,42 @@ namespace ende::time {
 
     };
 
-    inline ende::time::Duration operator""_nano(unsigned long long s) {
-        return ende::time::Duration(0, s);
-    }
+}
 
-    inline ende::time::Duration operator""_micro(unsigned long long s) {
-        return ende::time::Duration(0, s * 1e3);
-    }
+inline ende::time::Duration operator""_nano(unsigned long long s) {
+    return ende::time::Duration(0, s);
+}
 
-    inline ende::time::Duration operator""_milli(unsigned long long s) {
-        return ende::time::Duration(0, s * 1e6);
-    }
+inline ende::time::Duration operator""_micro(unsigned long long s) {
+    return ende::time::Duration(0, s * 1e3);
+}
 
-    inline ende::time::Duration operator""_sec(unsigned long long s) {
-        return ende::time::Duration(s, 0);
-    }
+inline ende::time::Duration operator""_milli(unsigned long long s) {
+    return ende::time::Duration(0, s * 1e6);
+}
 
-    inline ende::time::Duration operator""_min(unsigned long long s) {
-        return ende::time::Duration(s * 60, 0);
-    }
+inline ende::time::Duration operator""_sec(unsigned long long s) {
+    return ende::time::Duration(s, 0);
+}
 
-    inline ende::time::Duration operator""_hour(unsigned long long s) {
-        return ende::time::Duration(s * 60 * 60, 0);
-    }
+inline ende::time::Duration operator""_min(unsigned long long s) {
+    return ende::time::Duration(s * 60, 0);
+}
 
-    inline ende::time::Duration operator""_day(unsigned long long s) {
-        return ende::time::Duration(s * 60 * 60 * 24, 0);
-    }
+inline ende::time::Duration operator""_hour(unsigned long long s) {
+    return ende::time::Duration(s * 60 * 60, 0);
+}
 
-    inline ende::time::Duration operator""_month(unsigned long long s) {
-        return ende::time::Duration(s * 60 * 60 * 24 * 30, 0);
-    }
+inline ende::time::Duration operator""_day(unsigned long long s) {
+    return ende::time::Duration(s * 60 * 60 * 24, 0);
+}
 
-    inline ende::time::Duration operator""_year(unsigned long long s) {
-        return ende::time::Duration(s * 60 * 60 * 24 * 365, 0);
-    }
+inline ende::time::Duration operator""_month(unsigned long long s) {
+    return ende::time::Duration(s * 60 * 60 * 24 * 30, 0);
+}
 
+inline ende::time::Duration operator""_year(unsigned long long s) {
+    return ende::time::Duration(s * 60 * 60 * 24 * 365, 0);
 }
 
 #endif //ENDE_TIME_H
