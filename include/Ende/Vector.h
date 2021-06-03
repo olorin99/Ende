@@ -110,6 +110,7 @@ namespace ende {
             _size = vector._size;
             for (u64 i = 0; i < _size; i++)
                 new (_data + i) value_type(vector._data[i]);
+            return *this;
         };
 
         // move assignment
@@ -127,6 +128,7 @@ namespace ende {
 
             for (u32 i = 0; i < data.second; i++)
                 push(data.first[i]);
+            return *this;
         }
 
 
