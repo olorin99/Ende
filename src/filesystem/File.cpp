@@ -110,7 +110,7 @@ bool ende::fs::File::seek(u64 position) {
 
 bool ende::fs::File::seekPos(i64 position) {
     if (!_data->handle) return false;
-    bool res = fseek(_data.handle, position, SEEK_CUR) == 0;
+    bool res = fseek(_data->handle, position, SEEK_CUR) == 0;
     _data->pos += position;
     return res;
 }
@@ -148,7 +148,7 @@ u64 ende::fs::File::write(Span<const char> buffer) {
 }
 
 ende::fs::Path ende::fs::File::path() const {
-    return _data->path
+    return _data->path;
 }
 
 ende::fs::File::operator bool() const {

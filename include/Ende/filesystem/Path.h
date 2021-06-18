@@ -144,4 +144,8 @@ namespace ende::fs {
 
 }
 
+inline ende::fs::Path operator""_path(const char* str, std::size_t) {
+    return ende::fs::Path(str);
+}
+
 #endif //ENDE_PATH_H
