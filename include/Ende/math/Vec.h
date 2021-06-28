@@ -6,6 +6,7 @@
 #define ANINO_VEC_H
 
 #include <Ende/platform.h>
+#include <cassert>
 #include <cmath>
 #include <array>
 
@@ -17,9 +18,13 @@ namespace ende::math {
 
         constexpr inline Vec() = default;
 
-        constexpr inline Vec(const std::initializer_list<T>& list)
-            : _data(list)
-        {}
+        constexpr inline Vec(std::initializer_list<T>&& list)
+//            : _data(std::forward<std::initializer_list<T>>(list))
+        {
+            u8 i = 0;
+            for (auto& l : list)
+                _data[i++] = l;
+        }
 
         constexpr inline Vec(const std::array<T, N>& array)
             : _data(array)

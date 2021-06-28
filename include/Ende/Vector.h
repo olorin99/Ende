@@ -77,8 +77,6 @@ namespace ende {
         ~Vector() {
             clear();
             ::free(_data);
-//            if (!_data)
-//                ::free(_data);
         }
 
 
