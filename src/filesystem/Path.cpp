@@ -38,7 +38,13 @@ std::string ende::fs::Path::operator*() const {
     return _path;
 }
 
-ende::fs::Path ende::fs::Path::operator/=(const Path &rhs) {
+ende::fs::Path ende::fs::Path::operator/(const Path &rhs) {
+    Path tmp = *this;
+    tmp /= rhs;
+    return tmp;
+}
+
+ende::fs::Path& ende::fs::Path::operator/=(const Path &rhs) {
     _path.reserve(_path.size() + rhs._path.size() + 1);
     _path += PATH_DELIM + rhs._path;
     split();

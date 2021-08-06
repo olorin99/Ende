@@ -34,7 +34,9 @@ namespace ende::fs {
 
         std::string operator*() const;
 
-        Path operator/=(const Path& rhs);
+        Path operator/(const Path& rhs);
+
+        Path& operator/=(const Path& rhs);
 
         bool operator==(const Path& rhs) const;
 
