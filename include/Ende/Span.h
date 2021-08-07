@@ -128,11 +128,11 @@ namespace ende {
 
         template <u32 Offset, u32 Count>
         constexpr Span<T> subspan() const noexcept {
-            return Span(data() + Offset, Count);
+            return {data() + Offset, Count};
         }
 
         constexpr Span<T> subspan(u32 offset, u32 count) const noexcept {
-            return Span(data() + offset, count);
+            return {data() + offset, count};
         }
 
 
@@ -261,11 +261,11 @@ namespace ende {
 
         template <u32 Offset, u32 Count>
         constexpr Span<const char> subspan() const noexcept {
-            return Span(data() + Offset, Count);
+            return {data() + Offset, Count};
         }
 
         constexpr Span<const char> subspan(u32 offset, u32 count) const noexcept {
-            return Span(data() + offset, count);
+            return {data() + offset, count};
         }
 
 
@@ -318,7 +318,7 @@ namespace ende {
         template <u32 N, typename T>
         constexpr Span(std::array<T, N>& array) noexcept
                 : _data(array.data()),
-                  _size(N)
+                  _size(N * sizeof(T))
         {}
 
         template <typename Container>
@@ -357,11 +357,11 @@ namespace ende {
         }
 
         constexpr void* operator[](i32 index) noexcept {
-            return static_cast<void*>((static_cast<char*>(_data) + index));
+            return static_cast<void*>(static_cast<char*>(_data) + index);
         }
 
         constexpr const void* operator[](i32 index) const noexcept {
-            return static_cast<void*>((static_cast<char*>(_data) + index));
+            return static_cast<void*>(static_cast<char*>(_data) + index);
         }
 
         constexpr void* front() noexcept {
@@ -373,11 +373,11 @@ namespace ende {
         }
 
         constexpr void* back() noexcept {
-            return static_cast<void*>((static_cast<char*>(_data) + _size - 1));
+            return static_cast<void*>(static_cast<char*>(_data) + _size - 1);
         }
 
         constexpr const void* back() const noexcept {
-            return static_cast<void*>((static_cast<char*>(_data) + _size - 1));
+            return static_cast<void*>(static_cast<char*>(_data) + _size - 1);
         }
 
         constexpr void* begin() noexcept {
@@ -389,7 +389,7 @@ namespace ende {
         }
 
         constexpr void* end() noexcept {
-            return static_cast<void*>((static_cast<char*>(_data) + _size));
+            return static_cast<void*>(static_cast<char*>(_data) + _size);
         }
 
         constexpr const void* end() const noexcept {
@@ -398,11 +398,11 @@ namespace ende {
 
         template <u32 Offset, u32 Count>
         constexpr Span<void> subspan() const noexcept {
-            return Span(data() + Offset, Count);
+            return {static_cast<void*>(static_cast<char*>(_data) + Offset), Count};
         }
 
         constexpr Span<void> subspan(u32 offset, u32 count) const noexcept {
-            return Span(static_cast<char*>(_data) + offset, count);
+            return {static_cast<void*>(static_cast<char*>(_data) + offset), count};
         }
 
 
@@ -454,7 +454,7 @@ namespace ende {
         template <u32 N, typename T>
         constexpr Span(std::array<T, N>& array) noexcept
                 : _data(array.data()),
-                  _size(N)
+                  _size(N * sizeof(T))
         {}
 
         template <typename Container>
@@ -493,11 +493,11 @@ namespace ende {
         }
 
         constexpr const void* operator[](i32 index) noexcept {
-            return static_cast<const void*>((static_cast<const char*>(_data) + index));
+            return static_cast<const void*>(static_cast<const char*>(_data) + index);
         }
 
         constexpr const void* operator[](i32 index) const noexcept {
-            return static_cast<const void*>((static_cast<const char*>(_data) + index));
+            return static_cast<const void*>(static_cast<const char*>(_data) + index);
         }
 
         constexpr const void* front() noexcept {
@@ -509,11 +509,11 @@ namespace ende {
         }
 
         constexpr const void* back() noexcept {
-            return static_cast<const void*>((static_cast<const char*>(_data) + _size - 1));
+            return static_cast<const void*>(static_cast<const char*>(_data) + _size - 1);
         }
 
         constexpr const void* back() const noexcept {
-            return static_cast<const void*>((static_cast<const char*>(_data) + _size - 1));
+            return static_cast<const void*>(static_cast<const char*>(_data) + _size - 1);
         }
 
         constexpr const void* begin() noexcept {
@@ -525,20 +525,20 @@ namespace ende {
         }
 
         constexpr const void* end() noexcept {
-            return static_cast<const void*>((static_cast<const char*>(_data) + _size));
+            return static_cast<const void*>(static_cast<const char*>(_data) + _size);
         }
 
         constexpr const void* end() const noexcept {
-            return static_cast<const void*>((static_cast<const char*>(_data) + _size));
+            return static_cast<const void*>(static_cast<const char*>(_data) + _size);
         }
 
         template <u32 Offset, u32 Count>
         constexpr Span<const void> subspan() const noexcept {
-            return Span(static_cast<const char*>(_data) + Offset, Count);
+            return {static_cast<const void*>(static_cast<const char*>(_data) + Offset, Count};
         }
 
         constexpr Span<const void> subspan(u32 offset, u32 count) const noexcept {
-            return Span(static_cast<const char*>(_data) + offset, count);
+            return {static_cast<const void*>(static_cast<const char*>(_data) + offset), count};
         }
 
 
