@@ -534,7 +534,7 @@ namespace ende {
 
         template <u32 Offset, u32 Count>
         constexpr Span<const void> subspan() const noexcept {
-            return {static_cast<const void*>(static_cast<const char*>(_data) + Offset, Count};
+            return {static_cast<const void*>(static_cast<const char*>(_data) + Offset), Count};
         }
 
         constexpr Span<const void> subspan(u32 offset, u32 count) const noexcept {
