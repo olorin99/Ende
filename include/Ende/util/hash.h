@@ -30,7 +30,7 @@ namespace ende::util {
     struct MurmurHash {
         u32 operator()(const T& key) const noexcept {
             static_assert((sizeof(key) & 3u) == 0);
-            return murmur3(&key, sizeof(key) / 4, 0);
+            return murmur3((const u32*)&key, sizeof(key) / 4, 0);
         }
     };
 
