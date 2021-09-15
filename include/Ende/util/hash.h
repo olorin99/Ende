@@ -35,11 +35,11 @@ namespace ende::util {
     };
 
     inline constexpr u32 hash32(const char* const str, const u32 seed = 0x811c9dc5) noexcept {
-        return (str[0] == '\0') ? value : hash32(&str[1], (value ^ static_cast<u32>(str[1])) * 0x1000193);
+        return (str[0] == '\0') ? seed : hash32(&str[1], (seed ^ static_cast<u32>(str[1])) * 0x1000193);
     }
 
     inline constexpr u32 hash64(const char* const str, const u64 seed = 0xcbf29ce484222325) noexcept {
-        return (str[0] == '\0') ? value : hash64(&str[1], (value ^ static_cast<u32>(str[1])) * 0x100000001b3);
+        return (str[0] == '\0') ? seed : hash64(&str[1], (seed ^ static_cast<u32>(str[1])) * 0x100000001b3);
     }
 
 }
