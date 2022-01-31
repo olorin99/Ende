@@ -16,7 +16,7 @@ namespace ende::util {
             h ^= k;
             h = (h << 13u) | (k >> 19u);
             h = (h * 5u) + 0xe6546b64u;
-        } while (i--);
+        } while (--i);
         h ^= count;
         h ^= h >> 16u;
         h *= 0x86ebca6bu;
