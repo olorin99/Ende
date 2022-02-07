@@ -201,7 +201,7 @@ namespace ende::math {
     }
 
     template <typename T>
-    constexpr inline Mat<4, T> perspective(T fov, T aspect, T near, T far) {
+    constexpr inline Mat<4, T> perspective(T fov, T aspect, T near, T far, bool vulkan = true) {
         const f32 range = near - far;
         const f32 tanHalfFov = std::tan(fov / 2.f);
 
@@ -225,6 +225,9 @@ namespace ende::math {
         result[3][1] = 0.f;
         result[3][2] = T(2) * far * near / range;
         result[3][3] = 0.f;
+
+        if (vulkan)
+            result[1][1] *= -1;
 
         return result;
     }
