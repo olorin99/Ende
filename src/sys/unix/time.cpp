@@ -10,15 +10,16 @@ const u32 NANO_PER_SEC = 1e9;
 //static_cast<i64>(sec + (nano / NANO_PER_SEC)), static_cast<i32>(nano % NANO_PER_SEC)
 
 ende::sys::TimeSpec ende::sys::TimeSpec::operator+(const TimeSpec &rhs) const {
-    i64 nanoseconds = (nano + rhs.nano) % NANO_PER_SEC;
+    //TODO: I think this math is correct check later
+    i64 nanoseconds = nano + rhs.nano;
     i64 seconds = sec + rhs.sec + (nanoseconds / NANO_PER_SEC);
-    return {seconds, static_cast<i32>(nanoseconds)};
+    return {seconds, static_cast<i32>(nanoseconds % NANO_PER_SEC)};
 }
 
 ende::sys::TimeSpec ende::sys::TimeSpec::operator-(const TimeSpec &rhs) const {
-    i64 nanoseconds = (nano - rhs.nano) % NANO_PER_SEC;
+    i64 nanoseconds = nano - rhs.nano;
     i64 seconds = sec - rhs.sec - (nanoseconds / NANO_PER_SEC);
-    return {seconds, static_cast<i32>(nanoseconds)};
+    return {seconds, static_cast<i32>(nanoseconds % NANO_PER_SEC)};
 }
 
 ende::sys::TimeSpec &ende::sys::TimeSpec::operator=(const TimeSpec &rhs) {

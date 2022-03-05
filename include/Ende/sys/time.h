@@ -19,16 +19,16 @@ namespace ende::sys {
 
         template <typename T>
         TimeSpec operator*(T rhs) const {
-            i64 seconds = sec * rhs;
             i64 nanoseconds = nano * rhs;
-            if (nanoseconds >= 1000000000) {
-                nanoseconds -= 1000000000;
-                ++seconds;
-            } else if (nanoseconds < 0) {
-                nanoseconds = 1000000000 - nanoseconds;
-                --seconds;
-            }
-            return { sec * rhs, nano * rhs };
+            i64 seconds = sec * rhs.sec + (nanoseconds / 1000000000);
+            return { seconds, static_cast<i32>(nanoseconds % 1000000000) };
+        }
+
+        template <typename T>
+        TimeSpec operator/(T rhs) const {
+            i64 nanoseconds = nano / rhs;
+            i64 seconds = sec / rhs.sec + (nanoseconds / 1000000000);
+            return { seconds, static_cast<i32>(nanoseconds % 1000000000) };
         }
 
         TimeSpec& operator=(const TimeSpec& rhs);
