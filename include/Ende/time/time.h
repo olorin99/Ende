@@ -36,9 +36,12 @@ namespace ende::time {
 
         Duration operator-(const Duration& rhs) const;
 
-        template <typename T>
-        Duration operator*(T rhs) const {
+        Duration operator*(i32 rhs) const {
             return { _time * rhs };
+        }
+
+        Duration operator/(i32 rhs) const {
+            return { _time / rhs };
         }
 
         Duration& operator+= (const Duration& rhs);

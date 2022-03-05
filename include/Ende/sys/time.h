@@ -17,17 +17,15 @@ namespace ende::sys {
 
         TimeSpec operator-(const TimeSpec& rhs) const;
 
-        template <typename T>
-        TimeSpec operator*(T rhs) const {
+        TimeSpec operator*(i32 rhs) const {
             i64 nanoseconds = nano * rhs;
-            i64 seconds = sec * rhs.sec + (nanoseconds / 1000000000);
+            i64 seconds = sec * sec + (nanoseconds / 1000000000);
             return { seconds, static_cast<i32>(nanoseconds % 1000000000) };
         }
 
-        template <typename T>
-        TimeSpec operator/(T rhs) const {
+        TimeSpec operator/(i32 rhs) const {
             i64 nanoseconds = nano / rhs;
-            i64 seconds = sec / rhs.sec + (nanoseconds / 1000000000);
+            i64 seconds = sec / rhs + (nanoseconds / 1000000000);
             return { seconds, static_cast<i32>(nanoseconds % 1000000000) };
         }
 
