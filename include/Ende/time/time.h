@@ -21,13 +21,13 @@ namespace ende::time {
         Duration& operator=(const Duration& rhs);
 
 
-        u64 seconds() const;
+        i64 seconds() const;
 
-        u64 milliseconds() const;
+        i64 milliseconds() const;
 
-        u64 microseconds() const;
+        i64 microseconds() const;
 
-        u64 nanoseconds() const;
+        i64 nanoseconds() const;
 
         sys::TimeSpec spec() const;
 

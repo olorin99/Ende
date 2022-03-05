@@ -20,19 +20,19 @@ ende::time::Duration &ende::time::Duration::operator=(const Duration &rhs) {
     return *this;
 }
 
-u64 ende::time::Duration::seconds() const {
+i64 ende::time::Duration::seconds() const {
     return _time.sec;
 }
 
-u64 ende::time::Duration::milliseconds() const {
+i64 ende::time::Duration::milliseconds() const {
     return _time.sec * 1e3 + _time.nano / 1e6;
 }
 
-u64 ende::time::Duration::microseconds() const {
+i64 ende::time::Duration::microseconds() const {
     return _time.sec * 1e6 + _time.nano / 1e3;
 }
 
-u64 ende::time::Duration::nanoseconds() const {
+i64 ende::time::Duration::nanoseconds() const {
     return _time.sec * 1e9 + _time.nano;
 }
 
