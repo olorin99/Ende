@@ -5,12 +5,26 @@
 #include "Ende/sys/time.h"
 #include <ctime>
 
+const u32 NANO_PER_SEC = 1e9;
+
+//static_cast<i64>(sec + (nano / NANO_PER_SEC)), static_cast<i32>(nano % NANO_PER_SEC)
+
 ende::sys::TimeSpec ende::sys::TimeSpec::operator+(const TimeSpec &rhs) const {
-    return {sec + rhs.sec, nano + rhs.nano};
+    i64 nanoseconds = (nano + rhs.nano) % NANO_PER_SEC;
+    i64 seconds = sec + rhs.sec + (nanoseconds / NANO_PER_SEC);
+    return {seconds, static_cast<i32>(nanoseconds)};
 }
 
 ende::sys::TimeSpec ende::sys::TimeSpec::operator-(const TimeSpec &rhs) const {
-    return {sec - rhs.sec, nano - rhs.nano};
+    i64 nanoseconds = (nano - rhs.nano) % NANO_PER_SEC;
+    i64 seconds = sec - rhs.sec - (nanoseconds / NANO_PER_SEC);
+    return {seconds, static_cast<i32>(nanoseconds)};
+}
+
+ende::sys::TimeSpec &ende::sys::TimeSpec::operator=(const TimeSpec &rhs) {
+    sec = rhs.sec;
+    nano = rhs.nano;
+    return *this;
 }
 
 ende::sys::TimeSpec ende::sys::now(ClockMode mode) {

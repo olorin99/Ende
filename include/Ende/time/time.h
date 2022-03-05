@@ -18,6 +18,8 @@ namespace ende::time {
 
         Duration(const ende::sys::TimeSpec& time);
 
+        Duration& operator=(const Duration& rhs);
+
 
         u64 seconds() const;
 
@@ -33,6 +35,15 @@ namespace ende::time {
         Duration operator+(const Duration& rhs) const;
 
         Duration operator-(const Duration& rhs) const;
+
+        template <typename T>
+        Duration operator*(T rhs) const {
+            return { _time * rhs };
+        }
+
+        Duration& operator+= (const Duration& rhs);
+
+        Duration& operator-= (const Duration& rhs);
 
         bool operator==(const Duration& rhs) const;
 

@@ -15,6 +15,11 @@ ende::time::Duration::Duration(const ende::sys::TimeSpec &time)
     : _time(time)
 {}
 
+ende::time::Duration &ende::time::Duration::operator=(const Duration &rhs) {
+    _time = rhs._time;
+    return *this;
+}
+
 u64 ende::time::Duration::seconds() const {
     return _time.sec;
 }
@@ -41,6 +46,16 @@ ende::time::Duration ende::time::Duration::operator+(const Duration &rhs) const 
 
 ende::time::Duration ende::time::Duration::operator-(const Duration &rhs) const {
     return _time - rhs._time;
+}
+
+ende::time::Duration& ende::time::Duration::operator+=(const Duration &rhs) {
+    _time = _time + rhs._time;
+    return *this;
+}
+
+ende::time::Duration &ende::time::Duration::operator-=(const Duration &rhs) {
+    _time = _time - rhs._time;
+    return *this;
 }
 
 bool ende::time::Duration::operator==(const Duration &rhs) const {
