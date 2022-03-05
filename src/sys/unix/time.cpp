@@ -17,9 +17,13 @@ ende::sys::TimeSpec ende::sys::TimeSpec::operator+(const TimeSpec &rhs) const {
 }
 
 ende::sys::TimeSpec ende::sys::TimeSpec::operator-(const TimeSpec &rhs) const {
+    i64 seconds = sec - rhs.sec;
     i64 nanoseconds = nano - rhs.nano;
-    i64 seconds = sec - rhs.sec - (nanoseconds / NANO_PER_SEC);
-    return {seconds, static_cast<i32>(nanoseconds % NANO_PER_SEC)};
+    if (nanoseconds < 0) {
+        --seconds;
+        nanoseconds += NANO_PER_SEC;
+    }
+    return {seconds, static_cast<i32>(nanoseconds)};
 }
 
 ende::sys::TimeSpec &ende::sys::TimeSpec::operator=(const TimeSpec &rhs) {
