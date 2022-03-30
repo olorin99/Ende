@@ -42,7 +42,7 @@ namespace ende::sys {
 
         std::string read() const;
 
-        i32 write(Span<char> buffer) const;
+        i32 write(Span<const char> buffer) const;
 
 
         bool dup(const FileDesc& fd) const;

@@ -1,6 +1,3 @@
-//
-// Created by cstro29 on 19/5/21.
-//
 
 #ifndef ENDE_PROFILEMANAGER_H
 #define ENDE_PROFILEMANAGER_H
@@ -9,7 +6,7 @@
 #include <Ende/Singleton.h>
 #include <Ende/Vector.h>
 #include <Ende/profile/profile.h>
-#include <Ende/sys/FileDesc.h>
+#include <Ende/filesystem/File.h>
 
 namespace ende::profile {
 
@@ -22,7 +19,7 @@ namespace ende::profile {
 
         static void submit(ProfileData&& data);
 
-        static bool dump(sys::FileDesc& fd);
+        static bool dump(fs::File& file);
 
     private:
 

@@ -1,6 +1,3 @@
-//
-// Created by cstro29 on 3/6/21.
-//
 
 #ifndef ENDE_FILE_H
 #define ENDE_FILE_H

@@ -1,6 +1,3 @@
-//
-// Created by cstro29 on 3/6/21.
-//
 
 #include <Ende/sys/filesystem.h>
 #include "Ende/filesystem/File.h"

@@ -1,19 +1,16 @@
-//
-// Created by cstro29 on 19/5/21.
-//
 
 #ifndef ENDE_PROFILE_H
 #define ENDE_PROFILE_H
 
-#include <Ende/sys/time.h>
+#include <Ende/time/time.h>
 
 namespace ende::profile {
 
     struct ProfileData {
-        const char* func;
+        const char* label;
         i32 line;
         const char* file;
-        sys::TimeSpec time;
+        time::Duration time;
     };
 
     void submit(ProfileData&& data);
@@ -21,27 +18,30 @@ namespace ende::profile {
     class Profile {
     public:
 
-        explicit Profile(const char* func, i32 line, const char* file)
-            : _func(func),
+        explicit Profile(const char* label, i32 line, const char* file)
+            : _label(label),
             _line(line),
             _file(file),
-            _start(sys::now(sys::ClockMode::MONOTONIC))
+            _start(time::Instant::now())
         {}
 
         ~Profile() {
-            submit({_func, _line, _file, sys::now(sys::ClockMode::MONOTONIC) - _start});
+            submit({_label, _line, _file, _start.elapsed()});
         }
 
     private:
 
-        const char* _func;
+        const char* _label;
         i32 _line;
         const char* _file;
-        sys::TimeSpec _start;
+        time::Instant _start;
 
     };
 
 
 }
+
+#define PROFILE ende::profile::Profile profile##__LINE__(PRETTY_FUNC, __LINE__, __FILE__);
+#define PROFILE_NAMED(x) ende::profile::Profile profile##__LINE__((x), __LINE__, __FILE__);
 
 #endif //ENDE_PROFILE_H

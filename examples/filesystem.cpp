@@ -1,15 +1,18 @@
-//
-// Created by cstro29 on 3/6/21.
-//
 
 #include <Ende/filesystem/Path.h>
 #include <iostream>
+
+#include <Ende/profile/profile.h>
+#include <Ende/sys/system.h>
 
 int main() {
 
     ende::fs::Path path("/home/cstro29/Documents/Projects/Ende/include/Ende/filesystem/Path.h");
 
-
+    {
+        PROFILE_NAMED("test");
+        ende::sys::sleep({5});
+    }
 
     std::cout << *path << '\n';
 

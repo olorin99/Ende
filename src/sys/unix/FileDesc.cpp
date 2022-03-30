@@ -65,7 +65,7 @@ std::string ende::sys::FileDesc::read() const {
     return buffer;
 }
 
-i32 ende::sys::FileDesc::write(ende::Span<char> buffer) const {
+i32 ende::sys::FileDesc::write(ende::Span<const char> buffer) const {
     return static_cast<i32>(::write(_handle, buffer.data(), buffer.size()));
 }
 
