@@ -35,6 +35,7 @@ bool ende::profile::ProfileManager::dump(fs::File& file) {
     for (auto& data : instance()._data) {
         if (strcmp(data.label, "FRAME_BEGIN") == 0) {
             inFrame = true;
+            currentFrame = data.line;
             continue;
         } else if (strcmp(data.label, "FRAME_END") == 0) {
             inFrame = false;
