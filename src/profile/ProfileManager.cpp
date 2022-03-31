@@ -60,17 +60,17 @@ bool ende::profile::ProfileManager::dump(fs::File& file) {
     for (auto& [frameID, frame] : mappedData) {
         auto frameStr = std::to_string(frameID);
         file.write(frameStr);
-        file.write(":\n");
+        file.write("@\n");
         for (auto& mapped : frame) {
             file.write("\t");
             auto& data = mapped.second;
             file.write({data.label, static_cast<u32>(strlen(data.label))});
-            file.write(":");
+            file.write("@");
             file.write({data.file, static_cast<u32>(strlen(data.file))});
-            file.write(":");
+            file.write("@");
             auto line = std::to_string(data.line);
             file.write(line);
-            file.write(":");
+            file.write("@");
 
             for (auto& time : data.times) {
                 auto sec = std::to_string((time.nanoseconds()));
