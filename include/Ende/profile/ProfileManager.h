@@ -21,6 +21,10 @@ namespace ende::profile {
 
         static bool dump(fs::File& file);
 
+        static void beginFrame(u32 id);
+
+        static void endFrame(u32 id);
+
     private:
 
         Vector<ProfileData> _data;

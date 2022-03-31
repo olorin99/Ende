@@ -8,7 +8,7 @@ namespace ende::profile {
 
     struct ProfileData {
         const char* label;
-        i32 line;
+        u32 line;
         const char* file;
         time::Duration time;
     };
@@ -18,7 +18,7 @@ namespace ende::profile {
     class Profile {
     public:
 
-        explicit Profile(const char* label, i32 line, const char* file)
+        explicit Profile(const char* label, u32 line, const char* file)
             : _label(label),
             _line(line),
             _file(file),
@@ -32,7 +32,7 @@ namespace ende::profile {
     private:
 
         const char* _label;
-        i32 _line;
+        u32 _line;
         const char* _file;
         time::Instant _start;
 
