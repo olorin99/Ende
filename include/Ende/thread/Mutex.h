@@ -12,16 +12,16 @@ namespace ende::thread {
     class MutexLock;
 
     template <typename T>
-    class Mutex {
+    class Mutex { //TODO: make so actually works
     public:
 
         Mutex(const T& t)
-            : _mutex(new std::mutex)
+            : _mutex(new std::mutex),
             _data(t)
         {}
 
         Mutex(T&& t)
-            : _mutex(new std::mutex)
+            : _mutex(new std::mutex),
             _data(std::forward<T>(t))
         {}
 
@@ -41,9 +41,9 @@ namespace ende::thread {
         }
 
 
-        Result<MutexLock<T>> lock() {
+        MutexLock<T> lock() {
             _mutex->lock();
-            return Ok(std::move(MutexLock<T>(this)));
+            return std::move(MutexLock<T>(this));
         }
 
         Result<MutexLock<T>> tryLock() {

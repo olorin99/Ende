@@ -88,7 +88,6 @@ namespace ende {
         {
             for (u64 i = 0; i < _size; i++)
                 new (_data + i) T(vector._data[i]);
-//                _data[i] = vector._data[i];
         }
 
         // move constructor
@@ -130,24 +129,27 @@ namespace ende {
         }
 
 
-        void push(const value_type& value) {
+        reference push(const value_type& value) {
             if (_size >= _capacity)
                 reserve(_capacity * 2);
             new (_data + _size++) value_type(value);
+            return back();
         }
 
-        void push(value_type&& value) {
+        reference push(value_type&& value) {
             if (_size >= _capacity)
                 reserve(_capacity * 2);
             new (_data + _size++) value_type(std::forward<value_type>(value));
+            return back();
         }
 
 
         template <typename... Args>
-        void emplace(Args&&... args) {
+        reference emplace(Args&&... args) {
             if (_size >= _capacity)
                 reserve(_capacity * 2);
             new (_data + _size++) value_type(std::forward<Args>(args)...);
+            return back();
         }
 
 
@@ -156,6 +158,14 @@ namespace ende {
             if (empty())
                 return none{none::init_tag{}};
             return Some(std::move(_data[--_size]));
+        }
+
+        Optional<value_type> popFront() {
+            if (empty())
+                return none{none::init_tag{}};
+            auto tmp = Some(std::move(_data[0]));
+            erase(begin());
+            return std::move(tmp);
         }
 
         void clear() {
@@ -301,12 +311,16 @@ namespace ende {
         }
 
         iterator erase(iterator pos) {
+            i64 dist = pos - _data;
+            if (dist < 0)
+                return pos; //error out
             if (pos == end() - 1) {
                 pop();
                 return pos;
             }
             pos->~T();
-            std::copy(pos + 1, _data + _size, pos);
+            std::move(pos + 1, _data + (_size - dist), pos);
+//            std::copy(pos + 1, _data + _size, pos);
             _size--;
             return pos;
         }

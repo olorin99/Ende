@@ -66,7 +66,6 @@ namespace ende {
                     : _value(std::forward<Args>(args)...),
                       _valid(true) {}
 
-
             union {
                 Dummy _dummy;
                 T _value;
@@ -111,9 +110,10 @@ namespace ende {
 //            : _storage(rhs._storage)
 //        {}
 //
-//        constexpr Optional(Optional&& rhs) noexcept
-//            : _storage(std::forward<Optional>(rhs))
-//        {}
+        constexpr Optional(Optional&& rhs) noexcept {
+            std::swap(_storage._value, rhs._storage._value);
+            std::swap(_storage._valid, rhs._storage._valid);
+        }
 
 
         constexpr Optional &operator=(Optional &&rhs) noexcept {
@@ -130,9 +130,20 @@ namespace ende {
             return _storage._valid;
         }
 
+        T& operator*() {
+            assert(valid());
+            return _storage._value;
+        }
+
         constexpr T &operator*() const {
             assert(valid());
             return _storage._value;
+        }
+
+        T* operator->() {
+            static_assert(!std::is_reference<T>::value);
+            assert(valid());
+            return &_storage._valid;
         }
 
         constexpr T *operator->() const {

@@ -185,7 +185,7 @@ namespace ende {
         {}
 
         template <typename Container>
-        constexpr Span(Container& container)
+        constexpr Span(const Container& container)
                 : _data(std::data(container)),
                   _size(std::size(container))
         {}
