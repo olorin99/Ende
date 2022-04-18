@@ -14,11 +14,17 @@ namespace ende::thread {
     class ThreadPool {
     public:
 
-        ThreadPool(u8 threadCount = 1);
+        ThreadPool(u8 threadCount = 1, bool start = true);
 
         ~ThreadPool();
 
         u64 addJob(std::function<void(u64)> task);
+
+        bool wait();
+
+        void start() { _running = true; }
+
+        void stop() { _running = false; }
 
         u32 workerCount() const { return _workers.size(); }
 
@@ -34,6 +40,7 @@ namespace ende::thread {
         };
 
         std::atomic<bool> _stop;
+        std::atomic<bool> _running;
         std::atomic<u64> _currentJobId;
         ende::Vector<std::thread> _workers;
 
@@ -42,6 +49,7 @@ namespace ende::thread {
         std::atomic<u64> _processed;
         std::mutex _jobMutex;
         std::condition_variable _jobReady;
+        std::condition_variable _finished;
 
     };
 

@@ -3,8 +3,9 @@
 
 #include <iostream>
 
-ende::thread::ThreadPool::ThreadPool(u8 threadCount)
-    : _stop(false),
+ende::thread::ThreadPool::ThreadPool(u8 threadCount, bool start)
+    : _running(start),
+    _stop(false),
     _currentJobId(1),
     _jobCount(0),
     _processed(0),
@@ -17,16 +18,23 @@ ende::thread::ThreadPool::ThreadPool(u8 threadCount)
                 Job job;
                 {
                     std::unique_lock<std::mutex> lock(_jobMutex);
-                    _jobReady.wait(lock, [this]() { return _stop || !_jobs.empty(); });
-                    if (!_jobs.empty()) {
+                    _jobReady.wait(lock, [this]() { return _stop || (!_jobs.empty() && _running); });
+                    if (!_jobs.empty() && _running) {
                         job = _jobs.front();
                         _jobs.erase(_jobs.begin());
+
+
+                        lock.unlock();
+                        job.task(job.id);
+                        job = {};
+                        _processed++;
+                        _jobCount--;
+
+                        lock.lock();
+                        _finished.notify_one();
                     } else if (_stop)
                         break;
                 }
-                job.task(job.id);
-                _processed++;
-                _jobCount--;
             }
         }));
     }
@@ -52,4 +60,10 @@ u64 ende::thread::ThreadPool::addJob(std::function<void(u64)> task) {
     _jobReady.notify_one();
     _jobCount++;
     return _currentJobId++;
+}
+
+bool ende::thread::ThreadPool::wait() {
+    std::unique_lock<std::mutex> lock(_jobMutex);
+    _finished.wait(lock, [this]() { return _jobs.empty(); });
+    return true;
 }
