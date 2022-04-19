@@ -1,8 +1,10 @@
 
+#include <Ende/log/log.h>
 #include <Ende/filesystem/Path.h>
-#include <iostream>
 
+#include <iostream>
 #include <Ende/profile/profile.h>
+
 #include <Ende/sys/system.h>
 
 #include <Ende/io.h>
@@ -17,6 +19,8 @@ int main() {
     }
 
     ende::stdout().write(*path);
+
+    ende::log::info("this is some info");
 
 //    char buffer[50];
 //    u32 length = ende::stdin().read(buffer);

@@ -313,7 +313,7 @@ namespace ende {
         iterator erase(iterator pos) {
             i64 dist = pos - _data;
             if (dist < 0)
-                return pos; //error out
+                return pos; //TODO: error out
             if (pos == end() - 1) {
                 pop();
                 return pos;
