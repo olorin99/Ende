@@ -49,11 +49,11 @@ namespace ende::math {
 
         constexpr inline Mat operator*(const Mat& rhs) const {
             Mat result;
-            for (u8 i = 0; i < N; i++) {
-                for (u8 j = 0; j < N; j++) {
+            for (u8 i = 0; i < N; i++) { //for each row
+                for (u8 j = 0; j < N; j++) { //for each column
                     result[i][j] = T(0);
                     for (u8 k = 0; k < N; k++)
-                        result[i][j] += _data[k][j] * rhs[i][k];
+                        result[i][j] += _data[k][j] * rhs[i][k]; //sum of j column and i row
                 }
             }
             return result;
