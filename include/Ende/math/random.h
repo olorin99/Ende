@@ -45,9 +45,9 @@ namespace ende::math {
 
         void state(const state_type& state);
 
-        static result_type min();
+        constexpr static result_type min();
 
-        static result_type max();
+        constexpr static result_type max();
 
     private:
 

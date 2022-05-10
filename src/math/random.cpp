@@ -52,11 +52,11 @@ void ende::math::xorshift::state(const state_type &state) {
     _state = state;
 }
 
-ende::math::xorshift::result_type ende::math::xorshift::min() {
+constexpr ende::math::xorshift::result_type ende::math::xorshift::min() {
     return std::numeric_limits<result_type>::min();
 }
 
-ende::math::xorshift::result_type ende::math::xorshift::max() {
+constexpr ende::math::xorshift::result_type ende::math::xorshift::max() {
     return std::numeric_limits<result_type>::max();
 }
 
