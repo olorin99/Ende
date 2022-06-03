@@ -35,7 +35,6 @@ target_include_directories(Ende
 add_subdirectory(examples)
 add_subdirectory(third_party)
 
-
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 find_package(spdlog REQUIRED)
