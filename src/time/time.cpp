@@ -25,15 +25,15 @@ i64 ende::time::Duration::seconds() const {
 }
 
 i64 ende::time::Duration::milliseconds() const {
-    return _time.sec * 1e3 + _time.nano / 1e6;
+    return _time.sec * 1000 + _time.nano / 1e6;
 }
 
 i64 ende::time::Duration::microseconds() const {
-    return _time.sec * 1e6 + _time.nano / 1e3;
+    return _time.sec * 1000000 + _time.nano / 1e3;
 }
 
 i64 ende::time::Duration::nanoseconds() const {
-    return _time.sec * 1e9 + _time.nano;
+    return _time.sec * 1000000000 + _time.nano;
 }
 
 ende::sys::TimeSpec ende::time::Duration::spec() const {
