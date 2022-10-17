@@ -112,9 +112,10 @@ namespace ende::math {
 
 
         inline Vec3f rotate(const Vec3f& rhs) const {
-            Quaternion conj = conjugate();
-            Quaternion w = Quaternion(*this * rhs) * conj;
-            return Vec3f({w.x(), w.y(), w.z()});
+            Vec3f qv({x(), y(), z()});
+            Vec3f uv = qv.cross(rhs);
+            Vec3f uuv = qv.cross(uv);
+            return rhs + ((uv * w()) + uuv) * 2.f;
         }
 
         constexpr inline Quaternion conjugate() const {
@@ -126,27 +127,19 @@ namespace ende::math {
         }
 
         inline Mat4f toMat() const {
-            Mat4f result;
+            Mat4f result = identity<4, f32>();
 
-            result[0][0] = 1.f - (2.f * y() * y()) - (2.f * z() * z());
-            result[0][1] = (2.f * x() * y()) + (2.f * z() * w());
-            result[0][2] = (2.f * x() * z()) - (2.f * y() * w());
-            result[0][3] = 0;
+            result[0][0] = 1.f - 2.f * (y() * y() + z() * z());
+            result[0][1] = 2.f * (x() * y() + w() * z());
+            result[0][2] = 2.f * (x() * z() - w() * y());
 
-            result[1][0] = (2.f * x() * y()) - (2.f * z() * w());
-            result[1][1] = 1.f - (2.f * x() * x()) - (2.f * z() * z());
-            result[1][2] = (2.f * y() * z()) + (2.f * x() * w());
-            result[1][3] = 0;
+            result[1][0] = 2.f * (x() * y() - w() * z());
+            result[1][1] = 1.f - 2.f * (x() * x() + z() * z());
+            result[1][2] = 2.f * (y() * z() + w() * x());
 
-            result[2][0] = (2.f * x() * z()) + (2.f * y() * w());
-            result[2][1] = (2.f * y() * z()) - (2.f * x() * w());
-            result[2][2] = 1.f - (2.f * x() * x()) - (2.f * y() * y());
-            result[2][3] = 0;
-
-            result[3][0] = 0;
-            result[3][1] = 0;
-            result[3][2] = 0;
-            result[3][3] = 1;
+            result[2][0] = 2.f * (x() * z() + w() * y());
+            result[2][1] = 2.f * (y() * z() - w() * x());
+            result[2][2] = 1.f - 2.f * (x() * x() + y() * y());
 
             return result;
         }
@@ -217,10 +210,10 @@ namespace ende::math {
         }
 
         constexpr inline Quaternion operator*(const Quaternion& rhs) const {
-            const f32 _w = (w() * rhs.w()) - (x() * rhs.x()) - (y() * rhs.y()) - (z() * rhs.z());
-            const f32 _x = (x() * rhs.w()) + (w() * rhs.x()) + (y() * rhs.z()) - (z() * rhs.y());
-            const f32 _y = (y() * rhs.w()) + (w() * rhs.y()) + (z() * rhs.x()) - (x() * rhs.z());
-            const f32 _z = (z() * rhs.w()) + (w() * rhs.z()) + (x() * rhs.y()) - (y() * rhs.x());
+            const f32 _w = w() * rhs.w() - x() * rhs.x() - y() * rhs.y() - z() * rhs.z();
+            const f32 _x = w() * rhs.x() + x() * rhs.w() + y() * rhs.z() - z() * rhs.y();
+            const f32 _y = w() * rhs.y() + y() * rhs.w() + z() * rhs.x() - x() * rhs.z();
+            const f32 _z = w() * rhs.z() + z() * rhs.w() + x() * rhs.y() - y() * rhs.x();
             return Quaternion(_x, _y, _z, _w);
         }
 

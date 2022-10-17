@@ -38,10 +38,11 @@ namespace ende::math {
         template <u8 O>
         constexpr inline Vec<O, T> transform(const Vec<O, T>& rhs) const {
             Vec<O, T> result;
-            for (u8 i = 0; i < O; i++) {
-                result[i] = T(0);
-                for (u8 j = 0; j < O; j++)
-                    result[i] += _data[j][i] * rhs[i];
+            for (u8 row = 0; row < O; row++) {
+                result[row] = T(0);
+                for (u8 col = 0; col < O; col++) {
+                    result[row] += _data[col][row] * rhs[col];
+                }
             }
             return result;
         }
