@@ -173,6 +173,13 @@ namespace ende::math {
             return result;
         }
 
+        constexpr inline Vec operator*(const Vec& rhs) const {
+            Vec result;
+            for (u8 i = 0; i < N; i++)
+                result._data[i] = _data[i] * rhs[i];
+            return result;
+        }
+
         constexpr inline Vec operator/(const T& rhs) const {
             Vec result;
             for (u8 i = 0; i < N; i++)

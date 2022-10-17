@@ -9,6 +9,7 @@
 #include <type_traits>
 #include <utility>
 #include <cassert>
+#include <cstring>
 #include <stdexcept>
 
 namespace ende {
@@ -111,14 +112,25 @@ namespace ende {
 //        {}
 //
         constexpr Optional(Optional&& rhs) noexcept {
-            std::swap(_storage._value, rhs._storage._value);
+            if (rhs._storage._valid)
+                std::swap(_storage._value, rhs._storage._value);
+            else
+                memcpy(&_storage._value, &rhs._storage._value, sizeof(_storage._value));
+
             std::swap(_storage._valid, rhs._storage._valid);
         }
 
 
         constexpr Optional &operator=(Optional &&rhs) noexcept {
-            std::swap(_storage._value, rhs._storage._value);
+            //memcpy(&_storage._value, &rhs._storage._value, sizeof(_storage._value));
+            //std::swap(_storage._value, rhs._storage._value);
+
+            if (rhs._storage._valid)
+                std::swap(_storage._value, rhs._storage._value);
+            else
+                memcpy(&_storage._value, &rhs._storage._value, sizeof(_storage._value));
             std::swap(_storage._valid, rhs._storage._valid);
+            return *this;
         }
 
 
