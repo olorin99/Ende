@@ -126,6 +126,18 @@ namespace ende::math {
             return unit().conjugate();
         }
 
+        constexpr inline Quaternion invertX() const {
+            return {x(), -y(), -z(), w()};
+        }
+
+        constexpr inline Quaternion invertY() const {
+            return {-x(), y(), -z(), w()};
+        }
+
+        constexpr inline Quaternion invertZ() const {
+            return {-x(), -y(), z(), w()};
+        }
+
         inline Mat4f toMat() const {
             Mat4f result = identity<4, f32>();
 
