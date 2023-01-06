@@ -2,92 +2,71 @@
 #include "Ende/profile/ProfileManager.h"
 #include <cstring>
 #include <map>
+#include <Ende/thread/thread.h>
 
 void ende::profile::submit(ProfileData &&data) {
     ProfileManager::submit(std::forward<ProfileData>(data));
 }
 
-ende::profile::ProfileManager::ProfileManager() {}
+ende::profile::ProfileManager::ProfileManager()
+    : _activeQueue(0),
+    _stop(false)
+{
+    _queue[0].reserve(1000);
+    _queue[1].reserve(1000);
+    _data.reserve(1000);
+    _offloadThread = std::thread([&]() {
+        while (true) {
+            std::unique_lock<std::mutex> lock(_queueMutex);
+            _switch.wait(lock, [&]() { return _stop || true; });
+
+            u32 queue = _activeQueue;
+            _activeQueue = (_activeQueue + 1) % 2; // switch queue
+
+            _data.insert(_data.end(), _queue[queue].begin(), _queue[queue].end());
+            _queue[queue].clear();
+
+            if (_stop)
+                break;
+        }
+    });
+}
 
 ende::profile::ProfileManager::~ProfileManager() {
+    _stop = true;
+    _switch.notify_all();
+
     fs::File file;
     if (file.open("profile/profile.txt"_path, fs::out | fs::binary))
         dump(file);
+
+    _offloadThread.join();
 }
 
 void ende::profile::ProfileManager::submit(ProfileData &&data) {
-    instance()._data.push(std::forward<ProfileData>(data));
+    Vector<ProfileData>& queue = instance()._queue[instance()._activeQueue];
+    queue.push(std::forward<ProfileData>(data));
+    if (queue.size() > 900)
+        instance()._switch.notify_all();
 }
 
 struct DumpData {
     const char* label;
     u32 line;
     const char* file;
-    ende::Vector<ende::time::Duration> times;
+    ende::Vector<std::pair<ende::time::Instant, ende::time::Instant>> times;
 };
 
 bool ende::profile::ProfileManager::dump(fs::File& file) {
 
-    bool inFrame = false;
-    u32 currentFrame = 0;
-
-    std::map<u32, std::map<const char*, DumpData>> mappedData;
-    for (auto& data : instance()._data) {
-        if (strcmp(data.label, "FRAME_BEGIN") == 0) {
-            inFrame = true;
-            currentFrame = data.line;
-            continue;
-        } else if (strcmp(data.label, "FRAME_END") == 0) {
-            inFrame = false;
-            continue;
-        }
-
-        auto frame = mappedData.find(inFrame ? currentFrame : 0);
-        if (frame == mappedData.end()) {
-            auto inserted = mappedData.insert(std::make_pair(inFrame ? currentFrame : 0, std::map<const char*, DumpData>()));
-            frame = mappedData.find(inFrame ? currentFrame : 0);
-        }
-
-        auto it = frame->second.find(data.label);
-        if (it != frame->second.end())
-            it->second.times.push(data.time);
-        else {
-            auto inserted = frame->second.insert(std::make_pair(data.label, DumpData{data.label, data.line, data.file, Vector<time::Duration>()}));
-            inserted.first->second.times.push(data.time);
-        }
-    }
-
-    for (auto& [frameID, frame] : mappedData) {
-        auto frameStr = std::to_string(frameID);
-        file.write(frameStr);
-        file.write("@\n");
-        for (auto& mapped : frame) {
-            file.write("\t");
-            auto& data = mapped.second;
-            file.write({data.label, static_cast<u32>(strlen(data.label))});
-            file.write("@");
-            file.write({data.file, static_cast<u32>(strlen(data.file))});
-            file.write("@");
-            auto line = std::to_string(data.line);
-            file.write(line);
-            file.write("@");
-
-            for (auto& time : data.times) {
-                auto sec = std::to_string((time.nanoseconds()));
-                file.write(sec);
-                file.write(",");
-            }
-            file.write("\n");
-        }
+    for (auto& point : instance()._data) {
+        file.write({ point.label, static_cast<u32>(strlen(point.label)) });
+        file.write("@");
+        file.write(std::to_string(point.start.nanoseconds()));
+        file.write("@");
+        file.write(std::to_string(point.end.nanoseconds()));
+        file.write("\n");
     }
 
     return true;
-}
-
-void ende::profile::ProfileManager::beginFrame(u32 id) {
-    instance()._data.push({"FRAME_BEGIN", id, "FRAME_BEGIN", 0});
-}
-
-void ende::profile::ProfileManager::endFrame(u32 id) {
-    instance()._data.push({"FRAME_END", id, "FRAME_END", 0});
 }

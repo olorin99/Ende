@@ -92,6 +92,10 @@ ende::time::Duration ende::time::Instant::elapsed() const {
     return now().durationSince(*this);
 }
 
+u64 ende::time::Instant::nanoseconds() const {
+    return _time.sec * 1000000000 + _time.nano;
+}
+
 ende::time::Instant::Instant(const sys::TimeSpec &time)
     : _time(time)
 {}

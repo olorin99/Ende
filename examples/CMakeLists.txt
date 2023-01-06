@@ -10,3 +10,6 @@ target_link_libraries(filesystem Ende)
 
 add_executable(threading threading.cpp)
 target_link_libraries(threading Ende)
+
+add_executable(profile_test profile_test.cpp)
+target_link_libraries(profile_test Ende)

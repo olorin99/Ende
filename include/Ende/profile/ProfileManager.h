@@ -7,6 +7,8 @@
 #include <Ende/Vector.h>
 #include <Ende/profile/profile.h>
 #include <Ende/filesystem/File.h>
+#include <thread>
+#include <condition_variable>
 
 namespace ende::profile {
 
@@ -21,12 +23,15 @@ namespace ende::profile {
 
         static bool dump(fs::File& file);
 
-        static void beginFrame(u32 id);
-
-        static void endFrame(u32 id);
-
     private:
 
+        std::atomic<bool> _stop;
+        std::condition_variable _switch;
+        std::mutex _queueMutex;
+        std::thread _offloadThread;
+
+        u32 _activeQueue;
+        Vector<ProfileData> _queue[2];
         Vector<ProfileData> _data;
 
     };

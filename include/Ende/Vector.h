@@ -7,7 +7,7 @@
 
 #include <Ende/platform.h>
 #include <Ende/sys/memory.h>
-#include <Ende/Optional.h>
+#include <optional>
 #include <Ende/Span.h>
 //#include <Ende/util/traits.h>
 #include <cassert>
@@ -154,16 +154,16 @@ namespace ende {
 
 
 
-        Optional<value_type> pop() {
+        std::optional<value_type> pop() {
             if (empty())
-                return none{none::init_tag{}};
-            return Some(std::move(_data[--_size]));
+                return {};
+            return std::move(_data[--_size]);
         }
 
-        Optional<value_type> popFront() {
+        std::optional<value_type> popFront() {
             if (empty())
-                return none{none::init_tag{}};
-            auto tmp = Some(std::move(_data[0]));
+                return {};
+            auto tmp = std::move(_data[0]);
             erase(begin());
             return std::move(tmp);
         }
@@ -258,20 +258,20 @@ namespace ende {
 
 
 
-        Optional<iterator> find(const T& t) {
+        std::optional<iterator> find(const T& t) {
             for (auto it = begin(); it != end(); ++it) {
                 if (*it == t)
                     return Some(it);
             }
-            return None;
+            return {};
         }
 
-        Optional<const_iterator> find(const T& t) const {
+        std::optional<const_iterator> find(const T& t) const {
             for (auto it = begin(); it != end(); ++it) {
                 if (*it == t)
                     return Some(it);
             }
-            return None;
+            return {};
         }
 
 

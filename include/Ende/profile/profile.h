@@ -10,7 +10,8 @@ namespace ende::profile {
         const char* label;
         u32 line;
         const char* file;
-        time::Duration time;
+        time::Instant start;
+        time::Instant end;
     };
 
     void submit(ProfileData&& data);
@@ -26,7 +27,7 @@ namespace ende::profile {
         {}
 
         ~Profile() {
-            submit({_label, _line, _file, _start.elapsed()});
+            submit({_label, _line, _file, _start, time::Instant::now()});
         }
 
     private:
@@ -41,7 +42,12 @@ namespace ende::profile {
 
 }
 
+#ifdef ENDE_PROFILE
 #define PROFILE ende::profile::Profile profile##__LINE__(PRETTY_FUNC, __LINE__, __FILE__);
 #define PROFILE_NAMED(x) ende::profile::Profile profile##__LINE__((x), __LINE__, __FILE__);
+#else
+#define PROFILE
+#define PROFILE_NAMED(x)
+#endif
 
 #endif //ENDE_PROFILE_H

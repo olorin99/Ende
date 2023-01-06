@@ -73,6 +73,8 @@ namespace ende::time {
 
         Duration elapsed() const;
 
+        u64 nanoseconds() const;
+
     private:
         Instant( const sys::TimeSpec& time);
 
