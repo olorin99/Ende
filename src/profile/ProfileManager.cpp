@@ -80,7 +80,7 @@ bool ende::profile::ProfileManager::dump(fs::File& file) {
 
 void ende::profile::ProfileManager::frame() {
     instance()._frames[instance()._currentFrame++] = instance()._data;
-//    instance()._data.clear();
+    instance()._data.clear();
 //    if (instance()._usedFrames < 60)
 //        instance()._usedFrames = instance()._currentFrame;
     instance()._currentFrame = instance()._currentFrame % 60;
