@@ -23,16 +23,29 @@ namespace ende::profile {
 
         static bool dump(fs::File& file);
 
+        static void frame();
+
+        static u32 getMaxFrames() { return 60; }
+
+        static u32 getCurrentFrame() { return instance()._currentFrame; }
+
+        static ende::Span<ProfileData> getFrameData(u32 frame) { return instance()._frames[frame]; }
+
     private:
 
-        std::atomic<bool> _stop;
-        std::condition_variable _switch;
-        std::mutex _queueMutex;
-        std::thread _offloadThread;
-
-        u32 _activeQueue;
-        Vector<ProfileData> _queue[2];
+//        std::atomic<bool> _stop;
+//        std::condition_variable _switch;
+//        std::mutex _queueMutex;
+//        std::thread _offloadThread;
+//
+//        u32 _activeQueue;
+//        Vector<ProfileData> _queue[2];
         Vector<ProfileData> _data;
+
+
+        u32 _currentFrame;
+        u32 _usedFrames;
+        Vector<ProfileData> _frames[60];
 
     };
 
