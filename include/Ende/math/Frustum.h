@@ -26,7 +26,7 @@ namespace ende::math {
 
     private:
 
-        std::array<std::pair<ende::math::Vec3f, f32>, 6> _planes;
+        std::array<Vec4f, 6> _planes;
 
     };
 
