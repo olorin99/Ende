@@ -313,18 +313,20 @@ namespace ende::math {
         result[0][3] = T(0);
 
         result[1][0] = T(0);
-        result[1][1] = T(2) / height;
+        result[1][1] = -T(2) / height;
         result[1][2] = T(0);
         result[1][3] = T(0);
 
         result[2][0] = T(0);
         result[2][1] = T(0);
-        result[2][2] = -T(1);
+//        result[2][2] = -T(1);
+        result[2][2] = T(1) / (far - near);
         result[2][3] = T(0);
 
         result[3][0] = -(right + left) / width;
         result[3][1] = -(top + bottom) / height;
-        result[3][2] = T(0);
+//        result[3][2] = T(0);
+        result[3][2] = near / (near - far);
         result[3][3] = T(1);
 
         return result;
