@@ -4,6 +4,7 @@
 
 #include "Ende/time/time.h"
 #include <ctime>
+#include <cmath>
 
 const u32 NANO_PER_SEC = 1e9;
 
@@ -18,6 +19,22 @@ ende::time::Duration::Duration(const ende::sys::TimeSpec &time)
 ende::time::Duration &ende::time::Duration::operator=(const Duration &rhs) {
     _time = rhs._time;
     return *this;
+}
+
+ende::time::Duration ende::time::Duration::fromSeconds(f64 seconds) {
+    return { static_cast<u64>(std::floor(seconds)), static_cast<u32>(seconds - std::floor(seconds) * 1000000000) };
+}
+
+ende::time::Duration ende::time::Duration::fromMilliseconds(f64 milli) {
+    return { 0, static_cast<u32>(milli * 1000000) };
+}
+
+ende::time::Duration ende::time::Duration::fromMicroseconds(u64 micro) {
+    return { 0, static_cast<u32>(micro) * 1000 };
+}
+
+ende::time::Duration ende::time::Duration::fromNanoseconds(u32 nano) {
+    return { 0, nano };
 }
 
 i64 ende::time::Duration::seconds() const {

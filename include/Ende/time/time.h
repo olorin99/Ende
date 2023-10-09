@@ -20,6 +20,14 @@ namespace ende::time {
 
         Duration& operator=(const Duration& rhs);
 
+        static Duration fromSeconds(f64 seconds);
+
+        static Duration fromMilliseconds(f64 milli);
+
+        static Duration fromMicroseconds(u64 micro);
+
+        static Duration fromNanoseconds(u32 nano);
+
 
         i64 seconds() const;
 
