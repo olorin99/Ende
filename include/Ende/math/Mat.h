@@ -313,7 +313,7 @@ namespace ende::math {
         result[0][3] = T(0);
 
         result[1][0] = T(0);
-        result[1][1] = T(2) / height;
+        result[1][1] = -T(2) / height;
         result[1][2] = T(0);
         result[1][3] = T(0);
 
