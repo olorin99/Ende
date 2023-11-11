@@ -1,6 +1,5 @@
 
 #include <Ende/log/log.h>
-#include <Ende/filesystem/Path.h>
 
 #include <iostream>
 #include <Ende/profile/profile.h>
@@ -13,14 +12,14 @@
 
 int main() {
 
-    ende::fs::Path path("/home/cstro29/Documents/Projects/Ende/include/Ende/filesystem/Path.h");
+    std::filesystem::path path("/home/cstro29/Documents/Projects/Ende/include/Ende/filesystem/Path.h");
 
     {
         PROFILE_NAMED("test");
         ende::sys::sleep({5});
     }
 
-    ende::stdout().write(*path);
+    ende::stdout().write(path.string());
 
     ende::log::info("this is some info");
 
@@ -31,7 +30,7 @@ int main() {
 
     //ende::stdout().write(buffer);
 
-    std::cout << *path << '\n';
+    std::cout << path << '\n';
 
     for (auto str : path)
         std::cout << str << ' ';

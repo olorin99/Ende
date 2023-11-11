@@ -41,7 +41,7 @@ ende::profile::ProfileManager::~ProfileManager() {
     frame();
 
     fs::File file;
-    if (file.open("profile/profile.txt"_path, fs::out | fs::binary))
+    if (file.open("profile/profile.txt", fs::out | fs::binary))
         dump(file);
 
 //    _offloadThread.join();

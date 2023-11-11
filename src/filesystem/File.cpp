@@ -7,7 +7,7 @@ ende::fs::File::File()
 {}
 
 ende::fs::File::File(FILE *handle, u8 mode)
-    : _data(FileData{handle, 0, mode, Path(""), false})
+    : _data(FileData{handle, 0, mode, std::filesystem::path(""), false})
 {}
 
 ende::fs::File::~File() {
@@ -36,8 +36,8 @@ FILE * ende::fs::File::handle() const {
     return _data->handle;
 }
 
-bool ende::fs::File::open(const Path &path, u8 mode) {
-    if (!path.isFile())
+bool ende::fs::File::open(const std::filesystem::path &path, u8 mode) {
+    if (!sys::stat(path).unwrap_or({}).fileType.file())
         return false;
 
     if (_data->mode)
@@ -55,7 +55,7 @@ bool ende::fs::File::open(const Path &path, u8 mode) {
     if ((mode & (in | out)) == (in | out))
         md += "+";
 
-    FILE* handle = fopen((*path).c_str(), md.c_str());
+    FILE* handle = fopen(path.c_str(), md.c_str());
     if (!handle)
         return false;
 
@@ -91,7 +91,7 @@ bool ende::fs::File::isOpen() const {
 
 u64 ende::fs::File::size() const {
     if (!_data->handle) return 0;
-    return ende::sys::stat(*_data->path).unwrap_or({}).size;
+    return ende::sys::stat(_data->path).unwrap_or({}).size;
 }
 
 u64 ende::fs::File::pos() const {
@@ -112,7 +112,7 @@ bool ende::fs::File::seekPos(i64 position) {
     return res;
 }
 
-u64 ende::fs::File::read(Span<char> buffer) {
+u64 ende::fs::File::read(std::span<char> buffer) {
     if (!_data->handle || !isMode(in)) return 0;
     return fread(buffer.data(), sizeof(char), buffer.size(), _data->handle);
 }
@@ -139,12 +139,12 @@ std::string ende::fs::File::readLn() {
     return buffer;
 }
 
-u64 ende::fs::File::write(Span<const char> buffer) {
+u64 ende::fs::File::write(std::span<const char> buffer) {
     if (!_data->handle || (!isMode(out) && !isMode(append))) return 0;
     return fwrite(buffer.data(), sizeof(char), buffer.size(), _data->handle);
 }
 
-ende::fs::Path ende::fs::File::path() const {
+std::filesystem::path ende::fs::File::path() const {
     return _data->path;
 }
 

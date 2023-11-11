@@ -3,7 +3,8 @@
 #define ENDE_FILE_H
 
 #include <Ende/platform.h>
-#include <Ende/filesystem/Path.h>
+#include <filesystem>
+#include <span>
 #include <Ende/Shared.h>
 #include <cstdio>
 
@@ -38,7 +39,7 @@ namespace ende::fs {
 
         FILE* handle() const;
 
-        bool open(const Path& path, u8 mode = in | text);
+        bool open(const std::filesystem::path& path, u8 mode = in | text);
 
         bool close();
 
@@ -58,15 +59,15 @@ namespace ende::fs {
         bool seekPos(i64 position);
 
 
-        u64 read(Span<char> buffer);
+        u64 read(std::span<char> buffer);
 
         std::string read();
 
         std::string readLn();
 
-        u64 write(Span<const char> buffer);
+        u64 write(std::span<const char> buffer);
 
-        Path path() const;
+        std::filesystem::path path() const;
 
         explicit operator bool() const;
 
@@ -76,7 +77,7 @@ namespace ende::fs {
             FILE* handle;
             u64 pos;
             u8 mode;
-            Path path;
+            std::filesystem::path path;
             bool shouldClose = true;
         };
         Shared<FileData> _data;
