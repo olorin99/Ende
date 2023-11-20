@@ -61,6 +61,8 @@ namespace ende::fs {
 
         u64 read(std::span<char> buffer);
 
+        u64 read(std::span<u8> buffer);
+
         std::string read();
 
         std::string readLn();

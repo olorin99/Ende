@@ -117,6 +117,11 @@ u64 ende::fs::File::read(std::span<char> buffer) {
     return fread(buffer.data(), sizeof(char), buffer.size(), _data->handle);
 }
 
+u64 ende::fs::File::read(std::span<u8> buffer) {
+    if (!_data->handle || !isMode(in)) return 0;
+    return fread(buffer.data(), sizeof(u8), buffer.size(), _data->handle);
+}
+
 std::string ende::fs::File::read() {
     u64 fileSize = size();
     if (fileSize == 0) return "";
