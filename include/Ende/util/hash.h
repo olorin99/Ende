@@ -5,6 +5,10 @@
 
 namespace ende::util {
 
+    constexpr inline u32 combineHash(u32 first, u32 second) {
+        return first ^= second + 0x9e3779b9 + (first<<6) + (first>>2);
+    }
+
     inline u32 murmur3(const u32* key, u32 count, u32 seed) noexcept {
         u32 h = seed;
         u32 i = count;
