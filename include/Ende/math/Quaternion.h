@@ -38,6 +38,21 @@ namespace ende::math {
             _data[3] = cosHalfAngle;
         }
 
+        // from https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+        constexpr inline Quaternion(f32 roll, f32 pitch, f32 yaw) {
+            const f32 cr = std::cos(roll * 0.5);
+            const f32 sr = std::sin(roll * 0.5);
+            const f32 cp = std::cos(pitch * 0.5);
+            const f32 sp = std::sin(pitch * 0.5);
+            const f32 cy = std::cos(yaw * 0.5);
+            const f32 sy = std::sin(yaw * 0.5);
+
+            _data[0] = sr * cp * cy - cr * sp * sy;
+            _data[1] = cr * sp * cy + sr * cp * sy;
+            _data[2] = cr * cp * sy + sr * sp * cy;
+            _data[3] = cr * cp * cy + sr * sp * sy;
+        }
+
 
         inline Quaternion(const Mat4f& rot)
                 : _data{0, 0, 0, 0}
@@ -154,6 +169,70 @@ namespace ende::math {
             result[2][2] = 1.f - 2.f * (x() * x() + y() * y());
 
             return result;
+        }
+
+        constexpr inline Vec3f toEuler() const {
+//            return { roll(), pitch(), yaw() };
+            const f32 unit = x() * x() + y() * y() + z() * z() + w() * w();
+            const f32 test = x() * w() - y() * z();
+            if (test > 0.4995f * unit) {
+                return { PI / 2 , 2 * std::atan2(y(), x()), 0 };
+            } else if (test < -0.499f * unit) {
+                return { -PI / 2, -2 * std::atan2(y(), x()), 0 };
+            }
+
+            const f32 sinr_cosp = 2 * (w() * x() + y() * z());
+            const f32 cosr_cosp = 1 - 2 * (x() * x() + y() * y());
+            const f32 roll = std::atan2(sinr_cosp, cosr_cosp);
+
+            const f32 sinp = std::sqrt(1 + 2 * (w() * y() - x() * z()));
+            const f32 cosp = std::sqrt(1 - 2 * (w() * y() - x() * z()));
+            const f32 pitch = 2 * std::atan2(sinp, cosp) - PI / 2;
+
+            const f32 siny_cosp = 2 * (w() * z() + x() * y());
+            const f32 cosy_cosp = 1 - 2 * (y() * y() + z() * z());
+            const f32 yaw = std::atan2(siny_cosp, cosy_cosp);
+
+            return { roll, pitch, yaw };
+        }
+
+        constexpr inline f32 roll() const {
+            const f32 _y = 2.f * (x() * y() + w() * z());
+            const f32 _x = w() * w() + x() * x() - y() * y() - z() * z();
+
+//            const f32 _y = 2 * (w() * x() + y() * z());
+//            const f32 _x = 1 - 2 * (x() * x() + y() * y());
+
+            if (_x == 0 && _y == 0)
+                return 0;
+
+            return std::atan2(_y, _x);
+        }
+
+        constexpr inline f32 pitch() const {
+            const f32 _y = 2.f * (y() * z() + w() * x());
+            const f32 _x = w() * w() - x() * x() - y() * y() + z() * z();
+
+//            const f32 _y = std::sqrt(1 + 2 * (w() * y() - x() * z()));
+//            const f32 _x = std::sqrt(1 - 2 * (w() * y() - x() * z()));
+
+            if (_x == 0 && _y == 0)
+                return 0;
+
+//            return 2 * std::atan2(_y, _x) - PI / 2;
+            return std::atan2(_y, _x);
+        }
+
+        constexpr inline f32 yaw() const {
+//            const f32 _y = 2 * (w() * z() + x() * y());
+//            const f32 _x = 1 - 2 * (y() * y() + z() * z());
+//
+//            if (_x == 0 || _y == 0)
+//                return 0;
+//
+//            return std::atan2(_y, _x);
+//            return std::asin(std::clamp(-2.f * (x() * z() - w() * y()), -1.f, 1.f));
+            return std::asin(std::max(std::min(-2.f * (x() * z() - w() * y()), 1.f), -1.f));
         }
 
 

@@ -37,6 +37,15 @@ namespace ende::math {
             }
         }
 
+        constexpr inline Mat(const std::array<T, N * N>& array) {
+            for (u8 i = 0; i < N; i++) {
+                for (u8 j = 0; j < N; j++) {
+                    u32 index = i * j + j;
+                    _data[i][j] = array[index];
+                }
+            }
+        }
+
         constexpr inline Mat inverse() const {
             T Coef00 = _data[2][2] * _data[3][3] - _data[3][2] * _data[2][3];
             T Coef02 = _data[1][2] * _data[3][3] - _data[3][2] * _data[1][3];
