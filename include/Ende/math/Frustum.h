@@ -22,6 +22,8 @@ namespace ende::math {
 
         bool intersect(const ende::math::Vec3f& point, f32 radius) const;
 
+        const std::array<Vec4f, 6>& planes() const { return _planes; }
+
         //TODO: add AABB checking
 
     private:
