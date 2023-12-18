@@ -9,6 +9,10 @@ namespace ende::util {
         return first ^= second + 0x9e3779b9 + (first<<6) + (first>>2);
     }
 
+    constexpr inline u64 combineHash(u64 first, u64 second) {
+        return first ^= second + 0x9e3779b97f4a7c15 + (first<<12) + (first>>4);
+    }
+
     inline u32 murmur3(const u32* key, u32 count, u32 seed) noexcept {
         u32 h = seed;
         u32 i = count;
