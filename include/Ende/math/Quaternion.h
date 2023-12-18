@@ -127,10 +127,8 @@ namespace ende::math {
 
 
         inline Vec3f rotate(const Vec3f& rhs) const {
-            Vec3f qv({x(), y(), z()});
-            Vec3f uv = qv.cross(rhs);
-            Vec3f uuv = qv.cross(uv);
-            return rhs + ((uv * w()) + uuv) * 2.f;
+            auto w = *this * rhs * conjugate();
+            return { w.x(), w.y(), w.z() };
         }
 
         constexpr inline Quaternion conjugate() const {
