@@ -1,7 +1,3 @@
-//
-// Created by cstro29 on 19/5/21.
-//
-
 #include "Ende/sys/time.h"
 #include <ctime>
 
@@ -32,7 +28,7 @@ ende::sys::TimeSpec &ende::sys::TimeSpec::operator=(const TimeSpec &rhs) {
     return *this;
 }
 
-ende::sys::TimeSpec ende::sys::now(ClockMode mode) {
+auto ende::sys::now(ClockMode mode) -> TimeSpec {
     clockid_t m = 0;
     switch (mode) {
         case ClockMode::REALTIME:

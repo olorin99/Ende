@@ -1,7 +1,3 @@
-//
-// Created by cstro29 on 19/5/21.
-//
-
 #include "Ende/sys/filesystem.h"
 
 #include <unistd.h>
@@ -10,85 +6,85 @@
 #include <climits>
 #include <dirent.h>
 
-bool ende::sys::mkdir(const std::string &path) {
+auto ende::sys::mkdir(const std::string &path) -> bool {
     return ::mkdir(path.c_str(), S_IRWXU) == 0;
 }
 
-bool ende::sys::rmdir(const std::string &path) {
+auto ende::sys::rmdir(const std::string &path) -> bool {
     return ::rmdir(path.c_str()) == 0;
 }
 
-bool ende::sys::isdir(const std::string &path) {
+auto ende::sys::isdir(const std::string &path) -> bool {
     struct stat info;
     ::stat(path.c_str(), &info);
     return S_ISDIR(info.st_mode);
 }
 
-bool ende::sys::chdir(const std::string &path) {
+auto ende::sys::chdir(const std::string &path) -> bool {
     return ::chdir(path.c_str()) == 0;
 }
 
-bool ende::sys::remove(const std::string &path) {
+auto ende::sys::remove(const std::string &path) -> bool {
     return ::remove(path.c_str()) == 0;
 }
 
-bool ende::sys::exists(const std::string &path) {
+auto ende::sys::exists(const std::string &path) -> bool {
     return ::access(path.c_str(), F_OK) != -1;
 }
 
-std::string ende::sys::cwd() {
+auto ende::sys::cwd() -> std::string {
     constexpr u32 bufsize = 4096;
     char buf[bufsize];
     std::memset(buf, 0, bufsize);
     return ::getcwd(buf, bufsize - 1);
 }
 
-std::string ende::sys::exePath() {
+auto ende::sys::exePath() -> std::string {
     char buf[PATH_MAX];
     ssize_t count = ::readlink("/proc/self/exe", buf, PATH_MAX);
     return std::string(buf, count > 0 ? count : 0);
 }
 
 
-bool ende::sys::Permisions::read() const {
+auto ende::sys::Permisions::read() const -> bool {
     return *this & Perm::OWNER_READ;
 }
 
-bool ende::sys::Permisions::write() const {
+auto ende::sys::Permisions::write() const -> bool {
     return *this & Perm::OWNER_WRITE;
 }
 
-bool ende::sys::Permisions::execute() const {
+auto ende::sys::Permisions::execute() const -> bool {
     return *this & Perm::OWNER_EXEC;
 }
 
-u32 ende::sys::Permisions::mode() const {
+auto ende::sys::Permisions::mode() const -> u32 {
     return perm;
 }
 
-bool ende::sys::Permisions::operator&(const Perm &rhs) const {
+auto ende::sys::Permisions::operator&(const Perm &rhs) const -> bool {
     return (perm & static_cast<u32>(rhs)) == static_cast<u32>(rhs);
 }
 
 
-bool ende::sys::FileType::dir() const {
+auto ende::sys::FileType::dir() const -> bool {
     return S_ISDIR(mode);
 }
 
-bool ende::sys::FileType::file() const {
+auto ende::sys::FileType::file() const -> bool {
     return S_ISREG(mode);
 }
 
-bool ende::sys::FileType::symlink() const {
+auto ende::sys::FileType::symlink() const -> bool {
     return S_ISLNK(mode);
 }
 
 
-ende::Optional<ende::sys::Stat> ende::sys::stat(const std::string &path) {
+auto ende::sys::stat(const std::string &path) -> std::optional<ende::sys::Stat> {
     struct stat info;
     i32 ret = ::stat(path.c_str(), &info);
     if (ret == -1)
-        return None;
+        return {};
 
     Stat retInfo{};
     retInfo.name = path;
@@ -97,33 +93,33 @@ ende::Optional<ende::sys::Stat> ende::sys::stat(const std::string &path) {
     retInfo.permissions.perm = info.st_mode;
     retInfo.modified = {static_cast<i64>(info.st_mtim.tv_sec), static_cast<i32>(info.st_mtim.tv_nsec)};
     retInfo.accessed = {static_cast<i64>(info.st_atim.tv_sec), static_cast<i32>(info.st_atim.tv_nsec)};
-    return Some(retInfo);
+    return retInfo;
 }
 
 
 
-ende::Optional<ende::sys::Dir> ende::sys::openDir(const std::string &path) {
+auto ende::sys::openDir(const std::string &path) -> std::optional<ende::sys::Dir> {
     void* handle = static_cast<void*>(::opendir(path.c_str()));
-    if (!handle) return None;
+    if (!handle) return {};
 
     Dir dirInfo{};
     dirInfo.path = path;
     dirInfo.handle = handle;
-    return Some(dirInfo);
+    return dirInfo;
 }
 
-ende::Optional<ende::sys::DirEntry> ende::sys::readDir(Dir &dir) {
+auto ende::sys::readDir(Dir &dir) -> std::optional<ende::sys::DirEntry> {
     if (!dir.handle)
-        return None;
+        return {};
     struct dirent* entry = ::readdir(static_cast<DIR*>(dir.handle));
     if (!entry)
-        return None;
+        return {};
 
     DirEntry dirEntry{};
     dirEntry.name = entry->d_name;
-    return Some(dirEntry);
+    return dirEntry;
 }
 
-bool ende::sys::closeDir(Dir &dir) {
+auto ende::sys::closeDir(Dir &dir) -> bool {
     return ::closedir(static_cast<DIR*>(dir.handle)) == 0;
 }

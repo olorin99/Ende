@@ -1,7 +1,3 @@
-//
-// Created by cstro29 on 26/5/21.
-//
-
 #ifndef ENDE_SIGNAL_H
 #define ENDE_SIGNAL_H
 

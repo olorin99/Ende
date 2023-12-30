@@ -1,7 +1,3 @@
-//
-// Created by cstro29 on 17/01/19.
-//
-
 #ifndef ENDE_PLATFORM_H
 #define ENDE_PLATFORM_H
 

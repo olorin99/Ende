@@ -7,7 +7,7 @@
 #include <wait.h>
 #include <cstring>
 
-ende::Result<ende::sys::ProcessInfo> ende::sys::spawn(const std::string &cmd, const Vector<std::string> &args, Pipes &pipes) {
+auto ende::sys::spawn(const std::string &cmd, const std::vector<std::string> &args, Pipes &pipes) -> std::expected<ende::sys::ProcessInfo, int> {
     i32 pid = ::fork();
     switch (pid) {
         case 0:
@@ -16,7 +16,7 @@ ende::Result<ende::sys::ProcessInfo> ende::sys::spawn(const std::string &cmd, co
             close(pipes.stdin.output);
             close(pipes.stdout.output);
             close(pipes.stderr.output);
-            return Ok(ProcessInfo{pid});
+            return ProcessInfo{pid};
     }
     pipes.stdin.output.dup(FileDesc::stdin());
     pipes.stdout.output.dup(FileDesc::stdout());
@@ -28,10 +28,10 @@ ende::Result<ende::sys::ProcessInfo> ende::sys::spawn(const std::string &cmd, co
     for (auto& arg : args)
         execArgs[argCount++] = strdup(arg.c_str());
     execvp(cmd.c_str(), execArgs);
-    return Err();
+    return std::unexpected(-1);
 }
 
-bool ende::sys::wait(ProcessInfo &info, u32 flags) {
+auto ende::sys::wait(ProcessInfo &info, u32 flags) -> bool {
     i32 procStat;
     pid_t ret = ::waitpid(info.id, &procStat, flags);
     bool finished = (ret && (WIFEXITED(procStat) || WIFSIGNALED(procStat)));
@@ -40,6 +40,6 @@ bool ende::sys::wait(ProcessInfo &info, u32 flags) {
     return finished;
 }
 
-bool ende::sys::kill(ProcessInfo &info, i32 signal) {
+auto ende::sys::kill(ProcessInfo &info, i32 signal) -> bool {
     return ::kill(info.id, signal) == 0;
 }

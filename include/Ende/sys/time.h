@@ -1,7 +1,3 @@
-//
-// Created by cstro29 on 19/5/21.
-//
-
 #ifndef ENDE_SYS_TIME_H
 #define ENDE_SYS_TIME_H
 
@@ -38,7 +34,7 @@ namespace ende::sys {
         MONOTONIC = 2
     };
 
-    TimeSpec now(ClockMode mode = ClockMode::REALTIME);
+    auto now(ClockMode mode = ClockMode::REALTIME) -> TimeSpec;
 
 }
 

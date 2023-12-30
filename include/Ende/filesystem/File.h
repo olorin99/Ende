@@ -1,12 +1,11 @@
-
 #ifndef ENDE_FILE_H
 #define ENDE_FILE_H
 
 #include <Ende/platform.h>
 #include <filesystem>
 #include <span>
-#include <Ende/Shared.h>
 #include <cstdio>
+#include <expected>
 
 namespace ende::fs {
 
@@ -22,67 +21,47 @@ namespace ende::fs {
     class File {
     public:
 
-        File();
-
+        File() = default;
         File(FILE* handle, u8 mode);
-
         ~File();
+        File(File&& rhs) noexcept;
+        File& operator=(File&& rhs) noexcept;
 
-        File(const File& file);
+        static auto open(const std::filesystem::path& path, u8 mode = in | text) -> std::expected<File, i32>;
 
-        File(File&& file) noexcept;
+        auto close() -> bool;
 
-        File& operator=(const File& file);
+        auto isMode(u8 mode) const -> bool;
 
-        File& operator=(File&& file) noexcept;
+        auto isOpen() const -> bool;
 
+        auto size() const -> u64;
 
-        FILE* handle() const;
+        auto pos() const -> u64;
 
-        bool open(const std::filesystem::path& path, u8 mode = in | text);
+        auto seek(u64 position) -> bool;
 
-        bool close();
+        auto seekPos(i64 position) -> bool;
 
-        bool detach();
+        auto read(std::span<char> buffer) -> u64;
 
+        auto read(std::span<u8> buffer) -> u64;
+        auto read() -> std::string;
+        auto readLn() -> std::string;
+        auto write(std::span<const char> buffer) -> u64;
 
-        bool isMode(u8 mode) const;
+        auto handle() const -> FILE*;
 
-        bool isOpen() const;
-
-        u64 size() const;
-
-        u64 pos() const;
-
-        bool seek(u64 position);
-
-        bool seekPos(i64 position);
-
-
-        u64 read(std::span<char> buffer);
-
-        u64 read(std::span<u8> buffer);
-
-        std::string read();
-
-        std::string readLn();
-
-        u64 write(std::span<const char> buffer);
-
-        std::filesystem::path path() const;
+        auto path() const -> std::filesystem::path;
 
         explicit operator bool() const;
 
     private:
 
-        struct FileData {
-            FILE* handle;
-            u64 pos;
-            u8 mode;
-            std::filesystem::path path;
-            bool shouldClose = true;
-        };
-        Shared<FileData> _data;
+        FILE* _handle = nullptr;
+        u64 _pos = 0;
+        u8 _mode = none;
+        std::filesystem::path _path;
 
     };
 

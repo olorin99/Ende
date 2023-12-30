@@ -1,41 +1,23 @@
-//
-// Created by cstro29 on 21/6/21.
-//
-
-#include "Ende/time/StopWatch.h"
-
-ende::time::StopWatch::StopWatch()
-        : _running(false),
-          _started(0),
-          _passed(0)
-{}
-
+#include <Ende/time/StopWatch.h>
 
 void ende::time::StopWatch::start() {
     if (!_running) {
         _running = true;
-        _started = Instant::now();
+        _started = std::chrono::high_resolution_clock::now();
     }
 }
 
 void ende::time::StopWatch::stop() {
     if (_running) {
         _running = false;
-        _passed = _passed + _started.elapsed();
+        _passed = std::chrono::high_resolution_clock::now() - _started;
     }
 }
 
-
-
-ende::time::Duration ende::time::StopWatch::reset() {
+auto ende::time::StopWatch::reset() -> std::chrono::high_resolution_clock::duration {
     stop();
     start();
-    Duration passed = _passed;
-    _passed = 0;
+    auto passed = _passed;
+    _passed = {};
     return passed;
-}
-
-
-bool ende::time::StopWatch::running() const {
-    return _running;
 }

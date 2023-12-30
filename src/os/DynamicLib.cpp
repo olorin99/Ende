@@ -1,22 +1,7 @@
-//
-// Created by cstro29 on 26/5/21.
-//
-
 #include "Ende/os/DynamicLib.h"
 
-ende::os::DynamicLib::DynamicLib()
-    : _address(nullptr),
-    _error(""),
-    _path(""),
-    _flags(0)
-{}
-
-ende::os::DynamicLib::DynamicLib(const std::string &path, i32 flags) {
-    open(path, flags);
-}
-
-ende::os::DynamicLib::DynamicLib(const DynamicLib &lib) {
-    open(lib._path, lib._flags);
+ende::os::DynamicLib::~DynamicLib() {
+    close();
 }
 
 ende::os::DynamicLib::DynamicLib(DynamicLib &&lib) noexcept {
@@ -34,24 +19,18 @@ ende::os::DynamicLib & ende::os::DynamicLib::operator=(DynamicLib &&lib) noexcep
     return *this;
 }
 
-
-bool ende::os::DynamicLib::open(const std::string &path, i32 flags) {
-    if (_address)
-        close();
-    _address = sys::dl::open(path, flags);
-    if (!_address) {
-        _error = sys::dl::error();
-        return false;
+auto ende::os::DynamicLib::open(const std::string &path, i32 flags) -> std::expected<DynamicLib, std::string> {
+    DynamicLib lib = {};
+    lib._address = sys::dl::open(path, flags);
+    if (!lib._address) {
+        lib._error = sys::dl::error();
+        return std::unexpected(lib._error);
     }
-    return true;
+    return lib;
 }
 
-bool ende::os::DynamicLib::close() {
+auto ende::os::DynamicLib::close() -> bool {
     if (!_address)
         return false;
     return sys::dl::close(_address);
-}
-
-std::string ende::os::DynamicLib::error() const {
-    return _error;
 }

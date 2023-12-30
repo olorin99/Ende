@@ -1,13 +1,9 @@
-//
-// Created by cstro29 on 26/5/21.
-//
-
 #ifndef ENDE_PIPE_H
 #define ENDE_PIPE_H
 
 #include <Ende/platform.h>
 #include <Ende/sys/FileDesc.h>
-#include <Ende/Optional.h>
+#include <optional>
 
 namespace ende::sys {
 
@@ -16,7 +12,7 @@ namespace ende::sys {
         FileDesc output;
     };
 
-    Optional<Pipe> pipe();
+    auto pipe() -> std::optional<Pipe>;
 
 }
 

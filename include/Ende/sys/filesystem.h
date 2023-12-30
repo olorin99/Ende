@@ -1,33 +1,28 @@
-//
-// Created by cstro29 on 19/5/21.
-//
-
 #ifndef ENDE_FILESYSTEM_H
 #define ENDE_FILESYSTEM_H
 
 #include <Ende/platform.h>
 #include <Ende/sys/time.h>
-#include <Ende/Optional.h>
+#include <optional>
 #include <string>
 
 namespace ende::sys {
 
-    bool mkdir(const std::string& path);
+    auto mkdir(const std::string& path) -> bool;
 
-    bool rmdir(const std::string& path);
+    auto rmdir(const std::string& path) -> bool;
 
-    bool isdir(const std::string& path);
+    auto isdir(const std::string& path) -> bool;
 
-    bool chdir(const std::string& path);
+    auto chdir(const std::string& path) -> bool;
 
-    bool remove(const std::string& path);
+    auto remove(const std::string& path) -> bool;
 
-    bool exists(const std::string& path);
+    auto exists(const std::string& path) -> bool;
 
-    std::string cwd();
+    auto cwd() -> std::string;
 
-    std::string exePath();
-
+    auto exePath() -> std::string;
 
     enum class Perm {
         none = 0,
@@ -51,31 +46,31 @@ namespace ende::sys {
 
     struct Permisions {
 
-        bool read() const;
+        auto read() const -> bool;
 
-        bool write() const;
+        auto write() const -> bool;
 
-        bool execute() const;
+        auto execute() const -> bool;
 
-        u32 mode() const;
+        auto mode() const -> u32;
 
         bool operator&(const Perm& rhs) const;
 
     private:
-        friend Optional<struct Stat> stat(const std::string& path);
+        friend auto stat(const std::string& path) -> std::optional<struct Stat>;
         u32 perm = 0;
     };
 
     struct FileType {
 
-        bool dir() const;
+        auto dir() const -> bool;
 
-        bool file() const;
+        auto file() const -> bool;
 
-        bool symlink() const;
+        auto symlink() const -> bool;
 
     private:
-        friend Optional<struct Stat> stat(const std::string& path);
+        friend auto stat(const std::string& path) -> std::optional<struct Stat>;
         u32 mode = 0;
     };
 
@@ -88,7 +83,7 @@ namespace ende::sys {
         TimeSpec accessed;
     };
 
-    Optional<Stat> stat(const std::string& path);
+    auto stat(const std::string& path) -> std::optional<struct Stat>;
 
 
     struct Dir {
@@ -97,15 +92,15 @@ namespace ende::sys {
         void* data = nullptr;
     };
 
-    Optional<Dir> openDir(const std::string& path);
+     auto openDir(const std::string& path) -> std::optional<Dir>;
 
     struct DirEntry {
         std::string name = "";
     };
 
-    Optional<DirEntry> readDir(Dir& dir);
+    auto readDir(Dir& dir) -> std::optional<DirEntry>;
 
-    bool closeDir(Dir& dir);
+    auto closeDir(Dir& dir) -> bool;
 
 }
 

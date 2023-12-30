@@ -1,7 +1,3 @@
-//
-// Created by cstro29 on 19/5/21.
-//
-
 #include "Ende/sys/FileDesc.h"
 #include <fcntl.h>
 #include <unistd.h>
@@ -46,68 +42,68 @@ ende::sys::FileDesc & ende::sys::FileDesc::operator=(FileDesc &&fd) noexcept {
 
 
 
-const ende::sys::FileDesc::Handle & ende::sys::FileDesc::handle() const {
+auto ende::sys::FileDesc::handle() const -> const FileDesc::Handle& {
     return _handle;
 }
 
-bool ende::sys::FileDesc::valid() const {
+auto ende::sys::FileDesc::valid() const -> bool {
     return ::fcntl(_handle, F_GETFD) != -1;
 }
 
 
-i32 ende::sys::FileDesc::read(ende::Span<char> buffer) const {
+auto ende::sys::FileDesc::read(std::span<char> buffer) const -> i32 {
     return static_cast<i32>(::read(_handle, buffer.data(), buffer.size()));
 }
 
-std::string ende::sys::FileDesc::read() const {
+auto ende::sys::FileDesc::read() const -> std::string {
     std::string buffer(size(), '\0');
     read(buffer);
     return buffer;
 }
 
-i32 ende::sys::FileDesc::write(ende::Span<const char> buffer) const {
+auto ende::sys::FileDesc::write(std::span<const char> buffer) const -> i32 {
     return static_cast<i32>(::write(_handle, buffer.data(), buffer.size()));
 }
 
 
-bool ende::sys::FileDesc::dup(const FileDesc &fd) const {
+auto ende::sys::FileDesc::dup(const FileDesc &fd) const -> bool {
     return ::dup2(_handle, fd._handle) != -1;
 }
 
-bool ende::sys::FileDesc::flush() const {
+auto ende::sys::FileDesc::flush() const -> bool {
     return ::fsync(_handle) == 0;
 }
 
-u64 ende::sys::FileDesc::size() const {
+auto ende::sys::FileDesc::size() const -> u64 {
     u64 bytes = 0;
     i32 err = ::ioctl(_handle, FIONREAD, &bytes);
     return err < 0 ? 0 : bytes;
 }
 
 
-const ende::sys::FileDesc& ende::sys::FileDesc::stdin() {
+auto ende::sys::FileDesc::stdin() -> const FileDesc& {
     static const FileDesc fd(STDIN_FILENO);
     return fd;
 }
 
-const ende::sys::FileDesc& ende::sys::FileDesc::stdout() {
+auto ende::sys::FileDesc::stdout() -> const FileDesc& {
     static const FileDesc fd(STDOUT_FILENO);
     return fd;
 }
 
-const ende::sys::FileDesc& ende::sys::FileDesc::stderr() {
+auto ende::sys::FileDesc::stderr() -> const FileDesc& {
     static const FileDesc fd(STDERR_FILENO);
     return fd;
 }
 
 
 
-ende::sys::FileDesc ende::sys::open(const std::string &path, u32 flags, u32 perms) {
+auto ende::sys::open(const std::string &path, u32 flags, u32 perms) -> FileDesc {
     auto fd = ::open(path.c_str(), flags, perms);
     return FileDesc(fd);
 }
 
-bool ende::sys::close(FileDesc &fd) {
+auto ende::sys::close(FileDesc &fd) -> bool {
     bool ret = ::close(fd._handle) == 0;
     fd._handle = -1;
     return ret;

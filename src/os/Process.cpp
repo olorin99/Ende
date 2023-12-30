@@ -1,7 +1,3 @@
-//
-// Created by cstro29 on 26/5/21.
-//
-
 #include <csignal>
 #include "Ende/os/Process.h"
 #include <iostream>
@@ -32,29 +28,30 @@ ende::os::Process& ende::os::Process::operator=(Process &&process) noexcept {
 }
 
 
-ende::os::Process & ende::os::Process::arg(const std::string &arg) {
-    _args.push(arg);
+auto ende::os::Process::arg(const std::string &arg) -> Process& {
+    _args.push_back(arg);
     return *this;
 }
 
-ende::os::Process & ende::os::Process::args(Span<std::string> args) {
-    _args.insert(_args.begin(), args);
+auto ende::os::Process::args(std::span<std::string> args) -> Process& {
+    for (auto& arg : args)
+        _args.push_back(arg);
     return *this;
 }
 
-i32 ende::os::Process::id() const {
+auto ende::os::Process::id() const -> i32 {
     return _info.id;
 }
 
-ende::os::Process & ende::os::Process::fork() {
-    _pipes.stdin = sys::pipe().unwrap();
-    _pipes.stdout = sys::pipe().unwrap();
-    _pipes.stderr = sys::pipe().unwrap();
+auto ende::os::Process::fork() -> Process& {
+    _pipes.stdin = sys::pipe().value();
+    _pipes.stdout = sys::pipe().value();
+    _pipes.stderr = sys::pipe().value();
 
     auto res = sys::spawn(_cmd, _args, _pipes);
 
     if (res) {
-        _info = res.unwrap();
+        _info = res.value();
         _forked = true;
     } else
         _forked = false;
@@ -62,7 +59,7 @@ ende::os::Process & ende::os::Process::fork() {
     return *this;
 }
 
-i32 ende::os::Process::wait() {
+auto ende::os::Process::wait() -> i32 {
     if (!_forked)
         return -1;
     sys::close(_pipes.stdin.input);
@@ -71,19 +68,19 @@ i32 ende::os::Process::wait() {
     return _info.ret;
 }
 
-bool ende::os::Process::kill() {
+auto ende::os::Process::kill() -> bool{
     return sys::kill(_info, SIGKILL);
 }
 
-ende::sys::Pipe ende::os::Process::stdin() const {
+auto ende::os::Process::stdin() const -> ende::sys::Pipe {
     return _pipes.stdin;
 }
 
-ende::sys::Pipe ende::os::Process::stdout() const {
+auto ende::os::Process::stdout() const -> ende::sys::Pipe {
     return _pipes.stdout;
 }
 
-ende::sys::Pipe ende::os::Process::stderr() const {
+auto ende::os::Process::stderr() const -> ende::sys::Pipe {
     return _pipes.stderr;
 }
 

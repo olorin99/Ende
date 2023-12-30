@@ -8,8 +8,8 @@
 #include <Ende/platform.h>
 #include <Ende/sys/FileDesc.h>
 #include <Ende/sys/pipe.h>
-#include <Ende/Result.h>
-#include <Ende/Vector.h>
+#include <vector>
+#include <expected>
 
 namespace ende::sys {
 
@@ -26,11 +26,11 @@ namespace ende::sys {
         Pipe stderr;
     };
 
-    Result<ProcessInfo> spawn(const std::string& cmd, const Vector<std::string>& args, Pipes& pipes);
+    auto spawn(const std::string& cmd, const std::vector<std::string>& args, Pipes& pipes) -> std::expected<ProcessInfo, int>;
 
-    bool wait(ProcessInfo& info, u32 flags);
+    auto wait(ProcessInfo& info, u32 flags) -> bool;
 
-    bool kill(ProcessInfo& info, i32 signal);
+    auto kill(ProcessInfo& info, i32 signal) -> bool;
 
 }
 

@@ -1,12 +1,8 @@
-//
-// Created by cstro29 on 19/5/21.
-//
-
 #ifndef ENDE_FILEDESC_H
 #define ENDE_FILEDESC_H
 
 #include <Ende/platform.h>
-#include <Ende/Span.h>
+#include <span>
 #include <string>
 
 namespace ende::sys {
@@ -33,30 +29,30 @@ namespace ende::sys {
         FileDesc& operator=(FileDesc&& fd) noexcept;
 
 
-        const Handle& handle() const;
+        auto handle() const -> const Handle&;
 
-        bool valid() const;
-
-
-        i32 read(Span<char> buffer) const;
-
-        std::string read() const;
-
-        i32 write(Span<const char> buffer) const;
+        auto valid() const -> bool;
 
 
-        bool dup(const FileDesc& fd) const;
+        auto read(std::span<char> buffer) const -> i32;
 
-        bool flush() const;
+        auto read() const -> std::string;
 
-        u64 size() const;
+        auto write(std::span<const char> buffer) const -> i32;
 
 
-        static const FileDesc& stdin();
+        auto dup(const FileDesc& fd) const -> bool;
 
-        static const FileDesc& stdout();
+        auto flush() const -> bool;
 
-        static const FileDesc& stderr();
+        auto size() const -> u64;
+
+
+        static auto stdin() -> const FileDesc&;
+
+        static auto stdout() -> const FileDesc&;
+
+        static auto stderr() -> const FileDesc&;
 
     private:
         friend bool close(FileDesc& fd);

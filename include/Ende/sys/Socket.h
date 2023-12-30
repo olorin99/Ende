@@ -1,18 +1,15 @@
-//
-// Created by cstro29 on 26/5/21.
-//
-
 #ifndef ENDE_SOCKET_H
 #define ENDE_SOCKET_H
 
 #include <Ende/platform.h>
-#include <Ende/Span.h>
-#include <Ende/Shared.h>
+#include <span>
 #include <string>
+#include <memory>
 
 #ifdef ENDE_UNIX
 #include <netdb.h>
 #include <sys/socket.h>
+
 #endif
 
 namespace ende::sys {
@@ -20,7 +17,7 @@ namespace ende::sys {
     typedef sockaddr Address;
     typedef addrinfo AddressInfo;
 
-    AddressInfo getAddressInfo(const std::string& node, const std::string& service);
+    auto getAddressInfo(const std::string& node, const std::string& service) -> AddressInfo;
 
     class Socket {
     public:
@@ -31,46 +28,40 @@ namespace ende::sys {
 
         ~Socket();
 
-        Socket(const Socket& sock);
-
         Socket(Socket&& sock) noexcept;
 
-        bool open(const AddressInfo& info);
+        auto open(const AddressInfo& info) -> bool;
 
-        bool close();
+        auto close() -> bool;
 
-        bool bind(const Address& address, u32 length);
+        auto bind(const Address& address, u32 length) -> bool;
 
-        bool connect();
+        auto connect() -> bool;
 
-        bool listen(u32 backlog);
+        auto listen(u32 backlog) -> bool;
 
-        Socket accept();
+        auto accept() -> Socket;
 
+        auto send(std::span<const char> buffer) -> i32;
 
-        i32 send(Span<const char> buffer);
+        auto receive(std::span<char> buffer) -> i32;
 
-        i32 receive(Span<char> buffer);
+        auto valid() const -> bool;
 
+        auto handle() const -> i32;
 
-        bool detach();
-
-        bool valid() const;
-
-        i32 handle() const;
-
-        Address* address() const;
+        auto address() const -> Address*;
 
     private:
 
-        Shared<i32> _socket;
+        i32 _socket;
         AddressInfo _info;
 
     };
 
-    bool getPeerName(const Socket& socket, Address& address);
+    auto getPeerName(const Socket& socket, Address& address) -> bool;
 
-    std::string getHostName();
+    auto getHostName() -> std::string;
 
 }
 

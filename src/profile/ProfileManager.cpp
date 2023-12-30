@@ -48,7 +48,7 @@ ende::profile::ProfileManager::~ProfileManager() {
 }
 
 void ende::profile::ProfileManager::submit(ProfileData &&data) {
-    instance()._data.push(std::move(data));
+    instance()._data.push_back(std::move(data));
 //    Vector<ProfileData>& queue = instance()._queue[instance()._activeQueue];
 //    queue.push(std::forward<ProfileData>(data));
 //    if (queue.size() > 900)
@@ -59,7 +59,7 @@ struct DumpData {
     const char* label;
     u32 line;
     const char* file;
-    ende::Vector<std::pair<ende::time::Instant, ende::time::Instant>> times;
+    std::vector<std::pair<ende::time::Instant, ende::time::Instant>> times;
 };
 
 bool ende::profile::ProfileManager::dump(fs::File& file) {

@@ -1,9 +1,5 @@
-//
-// Created by cstro29 on 3/6/21.
-//
-
-#ifndef ANINO_THREAD_H
-#define ANINO_THREAD_H
+#ifndef ENDE_THREAD_H
+#define ENDE_THREAD_H
 
 #include <Ende/time/time.h>
 
@@ -13,4 +9,4 @@ namespace ende::thread {
 
 }
 
-#endif //ANINO_THREAD_H
+#endif //ENDE_THREAD_H

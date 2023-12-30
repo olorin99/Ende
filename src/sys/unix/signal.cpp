@@ -3,10 +3,10 @@
 //
 
 #include "Ende/sys/signal.h"
-#include <Ende/Vector.h>
+#include <vector>
 #include <csignal>
 
-ende::Vector<struct sigaction> oldHandlers;
+std::vector<struct sigaction> oldHandlers;
 
 void ende::sys::setSignal(i32 sig, void (*handler)(i32)) {
     if (!handler) return;

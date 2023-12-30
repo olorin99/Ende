@@ -1,7 +1,3 @@
-//
-// Created by cstro29 on 20/5/21.
-//
-
 #ifndef ENDE_TRAITS_H
 #define ENDE_TRAITS_H
 

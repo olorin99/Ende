@@ -1,7 +1,3 @@
-//
-// Created by cstro29 on 26/5/21.
-//
-
 #ifndef ENDE_DL_H
 #define ENDE_DL_H
 
@@ -10,13 +6,13 @@
 
 namespace ende::sys::dl {
 
-    void* open(const std::string& path, i32 flags);
+    auto open(const std::string& path, i32 flags) -> void*;
 
-    void* symbol(void* handle, const std::string& name);
+    auto symbol(void* handle, const std::string& name) -> void*;
 
-    bool close(void* handle);
+    auto close(void* handle) -> bool;
 
-    std::string error();
+    auto error() -> std::string;
 
 }
 

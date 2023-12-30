@@ -1,6 +1,5 @@
 #include "Ende/io.h"
 
-
 ende::fs::File &ende::stdin() {
     static fs::File file(::stdin, fs::in);
     return file;

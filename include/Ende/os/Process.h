@@ -1,15 +1,11 @@
-//
-// Created by cstro29 on 26/5/21.
-//
-
 #ifndef ENDE_PROCESS_H
 #define ENDE_PROCESS_H
 
 #include <Ende/platform.h>
 #include <Ende/sys/process.h>
 #include <Ende/sys/pipe.h>
-#include <Ende/Vector.h>
-#include <Ende/Span.h>
+#include <vector>
+#include <span>
 
 namespace ende::os {
 
@@ -29,24 +25,23 @@ namespace ende::os {
         Process& operator=(Process&& process) noexcept;
 
 
-        Process& arg(const std::string& arg);
+        auto arg(const std::string& arg) -> Process&;
 
-        Process& args(Span<std::string> args);
+        auto args(std::span<std::string> args) -> Process&;
 
-        i32 id() const;
+        auto id() const -> i32;
 
-        Process& fork();
+        auto fork() -> Process&;
 
-        i32 wait();
+        auto wait() -> i32;
 
-        bool kill();
+        auto kill() -> bool;
 
+        auto stdin() const -> sys::Pipe;
 
-        sys::Pipe stdin() const;
+        auto stdout() const -> sys::Pipe;
 
-        sys::Pipe stdout() const;
-
-        sys::Pipe stderr() const;
+        auto stderr() const -> sys::Pipe;
 
         void printArgs() const;
 
@@ -56,7 +51,7 @@ namespace ende::os {
         sys::ProcessInfo _info;
         bool _forked;
         std::string _cmd;
-        Vector<std::string> _args;
+        std::vector<std::string> _args;
 
     };
 

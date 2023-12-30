@@ -5,7 +5,7 @@
 #include <atomic>
 #include <mutex>
 #include <condition_variable>
-#include <Ende/Vector.h>
+#include <vector>
 #include <functional>
 #include <Ende/thread/Mutex.h>
 
@@ -18,19 +18,19 @@ namespace ende::thread {
 
         ~ThreadPool();
 
-        u64 addJob(std::function<void(u64)> task);
+        auto addJob(std::function<void(u64)> task) -> u64;
 
-        bool wait();
+        auto wait() -> bool;
 
         void start() { _running = true; }
 
         void stop() { _running = false; }
 
-        u32 workerCount() const { return _workers.size(); }
+        auto workerCount() const -> u32 { return _workers.size(); }
 
-        u32 jobCount() const { return _jobCount; }
+        auto jobCount() const -> u32 { return _jobCount; }
 
-        u32 processedJobs() const { return _processed; }
+        auto processedJobs() const -> u32 { return _processed; }
 
     private:
 
@@ -42,9 +42,9 @@ namespace ende::thread {
         std::atomic<bool> _stop;
         std::atomic<bool> _running;
         std::atomic<u64> _currentJobId;
-        ende::Vector<std::thread> _workers;
+        std::vector<std::thread> _workers;
 
-        ende::Vector<Job> _jobs;
+        std::vector<Job> _jobs;
         std::atomic<u32> _jobCount;
         std::atomic<u64> _processed;
         std::mutex _jobMutex;

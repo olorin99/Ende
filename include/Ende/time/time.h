@@ -1,7 +1,3 @@
-//
-// Created by cstro29 on 19/5/21.
-//
-
 #ifndef ENDE_TIME_H
 #define ENDE_TIME_H
 

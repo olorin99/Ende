@@ -4,7 +4,7 @@
 
 #include <Ende/platform.h>
 #include <Ende/Singleton.h>
-#include <Ende/Vector.h>
+#include <vector>
 #include <Ende/profile/profile.h>
 #include <Ende/filesystem/File.h>
 #include <thread>
@@ -29,7 +29,7 @@ namespace ende::profile {
 
         static u32 getCurrentFrame() { return instance()._currentFrame; }
 
-        static ende::Span<ProfileData> getFrameData(u32 frame) { return instance()._frames[frame]; }
+        static std::span<ProfileData> getFrameData(u32 frame) { return instance()._frames[frame]; }
 
     private:
 
@@ -40,12 +40,12 @@ namespace ende::profile {
 //
 //        u32 _activeQueue;
 //        Vector<ProfileData> _queue[2];
-        Vector<ProfileData> _data;
+        std::vector<ProfileData> _data;
 
 
         u32 _currentFrame;
         u32 _usedFrames;
-        Vector<ProfileData> _frames[60];
+        std::vector<ProfileData> _frames[60];
 
     };
 

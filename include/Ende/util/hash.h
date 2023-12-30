@@ -5,15 +5,15 @@
 
 namespace ende::util {
 
-    constexpr inline u32 combineHash(u32 first, u32 second) {
+    constexpr inline auto combineHash(u32 first, u32 second) -> u32 {
         return first ^= second + 0x9e3779b9 + (first<<6) + (first>>2);
     }
 
-    constexpr inline u64 combineHash(u64 first, u64 second) {
+    constexpr inline auto combineHash(u64 first, u64 second) -> u64 {
         return first ^= second + 0x9e3779b97f4a7c15 + (first<<12) + (first>>4);
     }
 
-    inline u32 murmur3(const u32* key, u32 count, u32 seed) noexcept {
+    inline auto murmur3(const u32* key, u32 count, u32 seed) noexcept -> u32 {
         u32 h = seed;
         u32 i = count;
         do {
@@ -36,17 +36,17 @@ namespace ende::util {
 
     template <typename T>
     struct MurmurHash {
-        u32 operator()(const T& key) const noexcept {
+        auto operator()(const T& key) const noexcept -> u32 {
             static_assert((sizeof(key) & 3u) == 0);
             return murmur3((const u32*)&key, sizeof(key) / 4, 0);
         }
     };
 
-    inline constexpr u32 hash32(const char* const str, const u32 seed = 0x811c9dc5) noexcept {
+    inline constexpr auto hash32(const char* const str, const u32 seed = 0x811c9dc5) noexcept -> u32 {
         return (str[0] == '\0') ? seed : hash32(&str[1], (seed ^ static_cast<u32>(str[1])) * 0x1000193);
     }
 
-    inline constexpr u32 hash64(const char* const str, const u64 seed = 0xcbf29ce484222325) noexcept {
+    inline constexpr auto hash64(const char* const str, const u64 seed = 0xcbf29ce484222325) noexcept -> u32 {
         return (str[0] == '\0') ? seed : hash64(&str[1], (seed ^ static_cast<u32>(str[1])) * 0x100000001b3);
     }
 

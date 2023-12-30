@@ -1,7 +1,3 @@
-//
-// Created by cstro29 on 3/6/21.
-//
-
 #include "Ende/thread/thread.h"
 #include <Ende/sys/system.h>
 

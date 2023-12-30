@@ -1,7 +1,3 @@
-//
-// Created by cstro29 on 19/5/21.
-//
-
 #ifndef ENDE_SYSTEM_H
 #define ENDE_SYSTEM_H
 
@@ -13,7 +9,7 @@ namespace ende::sys {
 
     void sleep(TimeSpec time);
 
-    std::string demangle(const char* name);
+    auto demangle(const char* name) -> std::string;
 
 }
 

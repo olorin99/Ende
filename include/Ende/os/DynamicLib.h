@@ -1,34 +1,30 @@
-//
-// Created by cstro29 on 26/5/21.
-//
-
 #ifndef ENDE_DYNAMICLIB_H
 #define ENDE_DYNAMICLIB_H
 
 #include <Ende/platform.h>
 #include <Ende/sys/dl.h>
+#include <filesystem>
+#include <expected>
 
 namespace ende::os {
 
     class DynamicLib {
     public:
 
-        DynamicLib();
+        DynamicLib() = default;
 
-        DynamicLib(const std::string& path, i32 flags);
-
-        DynamicLib(const DynamicLib& lib);
+        ~DynamicLib();
 
         DynamicLib(DynamicLib&& lib) noexcept;
-
         DynamicLib& operator=(DynamicLib&& lib) noexcept;
 
+        static auto open(const std::string& path, i32 flags) -> std::expected<DynamicLib, std::string>;
 
-        bool open(const std::string& path, i32 flags);
+        auto close() -> bool;
 
-        bool close();
-
-        std::string error() const;
+        auto error() const -> std::string_view {
+            return _error;
+        }
 
         template <typename T>
         T symbol(const std::string& name) {
@@ -42,10 +38,10 @@ namespace ende::os {
 
     private:
 
-        void* _address;
-        std::string _error;
-        std::string _path;
-        i32 _flags;
+        void* _address = nullptr;
+        std::string _error = {};
+        std::filesystem::path _path = {};
+        i32 _flags = 0;
 
     };
 

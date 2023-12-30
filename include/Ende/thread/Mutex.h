@@ -2,8 +2,7 @@
 #define ENDE_MUTEX_H
 
 #include <Ende/platform.h>
-#include <Ende/Pointer.h>
-#include <Ende/Result.h>
+#include <expected>
 #include <mutex>
 
 namespace ende::thread {
@@ -41,15 +40,15 @@ namespace ende::thread {
         }
 
 
-        MutexLock<T> lock() {
+        auto lock() -> MutexLock<T> {
             _mutex->lock();
             return std::move(MutexLock<T>(this));
         }
 
-        Result<MutexLock<T>> tryLock() {
+        auto tryLock() -> std::expected<MutexLock<T>, int> {
             if (_mutex->try_lock())
-                return Ok(std::move(MutexLock<T>(this)));
-            return Err();
+                return std::move(MutexLock<T>(this));
+            return std::unexpected(-1);
         }
 
         void unlock() {
@@ -59,7 +58,7 @@ namespace ende::thread {
     private:
         friend MutexLock<T>;
 
-        Pointer<std::mutex> _mutex;
+        std::unique_ptr<std::mutex> _mutex;
         T _data;
 
     };

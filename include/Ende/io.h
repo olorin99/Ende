@@ -5,11 +5,11 @@
 
 namespace ende {
 
-    fs::File& stdin();
+    auto stdin() -> fs::File&;
 
-    fs::File& stdout();
+    auto stdout() -> fs::File&;
 
-    fs::File& stderr();
+    auto stderr() -> fs::File&;
 
 }
 
