@@ -3,6 +3,7 @@
 #define ENDE_PROFILE_H
 
 #include <Ende/time/time.h>
+#include <chrono>
 
 namespace ende::profile {
 
@@ -10,8 +11,8 @@ namespace ende::profile {
         const char* label;
         u32 line;
         const char* file;
-        time::Instant start;
-        time::Instant end;
+        std::chrono::high_resolution_clock::time_point start;
+        std::chrono::high_resolution_clock::time_point end;
     };
 
     void submit(ProfileData&& data);
@@ -23,11 +24,11 @@ namespace ende::profile {
             : _label(label),
             _line(line),
             _file(file),
-            _start(time::Instant::now())
+            _start(std::chrono::high_resolution_clock::now())
         {}
 
         ~Profile() {
-            submit({_label, _line, _file, _start, time::Instant::now()});
+            submit({_label, _line, _file, _start, std::chrono::high_resolution_clock::now()});
         }
 
     private:
@@ -35,7 +36,7 @@ namespace ende::profile {
         const char* _label;
         u32 _line;
         const char* _file;
-        time::Instant _start;
+        std::chrono::high_resolution_clock::time_point _start;
 
     };
 

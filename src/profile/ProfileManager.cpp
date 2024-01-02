@@ -59,7 +59,7 @@ struct DumpData {
     const char* label;
     u32 line;
     const char* file;
-    std::vector<std::pair<ende::time::Instant, ende::time::Instant>> times;
+    std::vector<std::pair<std::chrono::high_resolution_clock::time_point, std::chrono::high_resolution_clock::time_point>> times;
 };
 
 bool ende::profile::ProfileManager::dump(fs::File& file) {
@@ -68,9 +68,9 @@ bool ende::profile::ProfileManager::dump(fs::File& file) {
         for (auto& point : frame) {
             file.write({ point.label, static_cast<u32>(strlen(point.label)) });
             file.write("@");
-            file.write(std::to_string(point.start.nanoseconds()));
+            file.write(std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::time_point_cast<std::chrono::nanoseconds>(point.start).time_since_epoch()).count()));
             file.write("@");
-            file.write(std::to_string(point.end.nanoseconds()));
+            file.write(std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::time_point_cast<std::chrono::nanoseconds>(point.end).time_since_epoch()).count()));
             file.write("\n");
         }
     }
