@@ -1,7 +1,3 @@
-//
-// Created by cstro29 on 28/5/21.
-//
-
 #include <Ende/sys/notify.h>
 #include <sys/inotify.h>
 

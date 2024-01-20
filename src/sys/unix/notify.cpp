@@ -18,20 +18,23 @@ auto ende::sys::notify::removeWatch(const FileDesc &fd, i32 watch) -> i32 {
 }
 
 auto ende::sys::notify::read(const FileDesc &fd, u32 size) -> std::vector<Event> {
-    std::string buffer = fd.read();
-
     std::vector<Event> events;
-    i32 length = buffer.size();
-    i32 i = 0;
-    while (i < length) {
-        struct inotify_event* event = reinterpret_cast<struct inotify_event*>(&buffer[i]);
-        Event e{};
-        e.watch = event->wd;
-        e.mask = event->mask;
-        if (event->len)
-            e.name = event->name;
-        events.push_back(e);
-        i += EVENT_SIZE + event->len;
+    std::string buffer(size * EVENT_SIZE, '\0');
+
+    i32 count = fd.read(buffer);
+    while (count > 0) {
+        i32 i = 0;
+        while (i < count) {
+            struct inotify_event* event = reinterpret_cast<struct inotify_event*>(&buffer[i]);
+            Event e{};
+            e.watch = event->wd;
+            e.mask = static_cast<Mask>(event->mask);
+            if (event->len)
+                e.name = event->name;
+            events.push_back(e);
+            i += EVENT_SIZE + event->len;
+        }
+        count = fd.read(buffer);
     }
     return events;
 }
