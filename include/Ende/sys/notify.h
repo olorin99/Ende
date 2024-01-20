@@ -9,12 +9,6 @@
 
 namespace ende::sys::notify {
 
-    auto init(i32 flags) -> FileDesc;
-
-    auto addWatch(const FileDesc& fd, const std::string& pathName, u32 mask) -> i32;
-
-    auto removeWatch(const FileDesc& fd, i32 watch) -> i32;
-
     enum class Mask {
         ACCESS = IN_ACCESS,
         ATTRIB = IN_ATTRIB,
@@ -33,6 +27,12 @@ namespace ende::sys::notify {
     constexpr inline auto operator|(const Mask& lhs, const Mask& rhs) -> Mask {
         return static_cast<Mask>(static_cast<std::underlying_type<Mask>::type>(lhs) | static_cast<std::underlying_type<Mask>::type>(rhs));
     }
+
+    auto init(i32 flags) -> FileDesc;
+
+    auto addWatch(const FileDesc& fd, const std::string& pathName, Mask mask) -> i32;
+
+    auto removeWatch(const FileDesc& fd, i32 watch) -> i32;
 
     struct Event {
         i32 watch;

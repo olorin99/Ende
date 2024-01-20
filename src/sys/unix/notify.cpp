@@ -9,8 +9,8 @@ auto ende::sys::notify::init(i32 flags) -> FileDesc {
     return FileDesc(inotify_init1(flags));
 }
 
-auto ende::sys::notify::addWatch(const FileDesc &fd, const std::string &pathName, u32 mask) -> i32 {
-    return inotify_add_watch(fd.handle(), pathName.c_str(), mask);
+auto ende::sys::notify::addWatch(const FileDesc &fd, const std::string &pathName, Mask mask) -> i32 {
+    return inotify_add_watch(fd.handle(), pathName.c_str(), static_cast<u32>(mask));
 }
 
 auto ende::sys::notify::removeWatch(const FileDesc &fd, i32 watch) -> i32 {

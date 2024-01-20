@@ -6,8 +6,8 @@ ende::fs::FileWatcher::FileWatcher() {
     _watcher = sys::notify::init(IN_NONBLOCK);
 }
 
-void ende::fs::FileWatcher::addWatch(const std::filesystem::path &path) {
-    auto watch = sys::notify::addWatch(_watcher, path.string(), IN_ACCESS | IN_MODIFY);
+void ende::fs::FileWatcher::addWatch(const std::filesystem::path &path, sys::notify::Mask mask) {
+    auto watch = sys::notify::addWatch(_watcher, path.string(), mask);
     _watches.push_back(std::make_pair(path, watch));
 }
 

@@ -14,7 +14,7 @@ namespace ende::fs {
 
         FileWatcher();
 
-        void addWatch(const std::filesystem::path& path);
+        void addWatch(const std::filesystem::path& path, sys::notify::Mask mask = sys::notify::Mask::MODIFY);
 
         void removeWatch(const std::filesystem::path& path);
 
