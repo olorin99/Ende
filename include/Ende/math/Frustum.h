@@ -13,6 +13,8 @@ namespace ende::math {
     class Frustum {
     public:
 
+        Frustum() = default;
+
         Frustum(const ende::math::Mat4f& matrix);
 
         void update(const ende::math::Mat4f& matrix);
@@ -28,7 +30,7 @@ namespace ende::math {
 
     private:
 
-        std::array<Vec4f, 6> _planes;
+        std::array<Vec4f, 6> _planes = {};
 
     };
 
