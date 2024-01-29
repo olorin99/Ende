@@ -256,11 +256,11 @@ namespace ende::math {
 
 
         inline Vec3f front() const {
-            return rotate(Vec3f({0, 0, 1}));
+            return rotate(Vec3f({0, 0, -1}));
         }
 
         inline Vec3f back() const {
-            return rotate(Vec3f({0, 0, -1}));
+            return rotate(Vec3f({0, 0, 1}));
         }
 
         inline Vec3f up() const {
@@ -272,11 +272,11 @@ namespace ende::math {
         }
 
         inline Vec3f left() const {
-            return rotate(Vec3f({-1, 0, 0}));
+            return rotate(Vec3f({1, 0, 0}));
         }
 
         inline Vec3f right() const {
-            return rotate(Vec3f({1, 0, 0}));
+            return rotate(Vec3f({-1, 0, 0}));
         }
 
 
