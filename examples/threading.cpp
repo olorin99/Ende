@@ -9,14 +9,14 @@
 
 int main() {
 
-    ende::thread::ThreadPool pool(4, false);
+    ende::thread::ThreadPool pool(4, true);
 
     for (u32 i = 0; i < 100; i++) {
-        pool.addJob([](u64 id) {
-            auto upper = (5_sec).nanoseconds();
-            auto waitTime = ende::time::Duration{0, (u32)ende::math::rand((i64)0, upper)};
-            ende::thread::sleep(waitTime);
-            std::cout << "This is job number: " << id << "\nwaited for: " << waitTime.milliseconds() << "ms\n";
+        pool.addJob([]() {
+            auto waitTime = ende::math::rand(0, 1);
+            sleep(waitTime);
+            std::cout << "This is job number: " << 1 << "\nwaited for: " << waitTime << "ms\n";
+            return true;
         });
     }
 
@@ -24,8 +24,20 @@ int main() {
     std::cout << "workers: " << pool.workerCount() << '\n';
     std::cout << "processed: " << pool.processedJobs() << '\n';
     std::cout << "jobs: " << pool.jobCount() << '\n';
-//    pool.start();
+    pool.start();
     pool.wait();
+
+    std::vector<std::future<u32>> futures = {};
+    for (u32 i = 0; i < 100; i++) {
+        futures.push_back(pool.addJob([] (u32 index, u32 rand) -> u32 {
+            return index * rand;
+        }, i, std::rand()));
+    }
+
+    for (auto& future : futures) {
+        future.wait();
+        std::cout << "num: " << future.get() << '\n';
+    }
 
     return 0;
 }

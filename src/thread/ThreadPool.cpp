@@ -20,7 +20,7 @@ ende::thread::ThreadPool::ThreadPool(u8 threadCount, bool start)
                     std::unique_lock<std::mutex> lock(_jobMutex);
                     _jobReady.wait(lock, [this]() { return _stop || (!_jobs.empty() && _running); });
                     if (!_jobs.empty() && _running) {
-                        job = _jobs.front();
+                        job = std::move(_jobs.front());
                         _jobs.erase(_jobs.begin());
 
 
@@ -52,14 +52,6 @@ ende::thread::ThreadPool::~ThreadPool() {
     }
 
     std::cout << "processed jobs: " << _processed << "\n";
-}
-
-auto ende::thread::ThreadPool::addJob(std::function<void(u64)> task) -> u64 {
-    std::unique_lock<std::mutex> lock(_jobMutex);
-    _jobs.push_back({_currentJobId, std::move(task)});
-    _jobReady.notify_one();
-    _jobCount++;
-    return _currentJobId++;
 }
 
 auto ende::thread::ThreadPool::wait() -> bool {
