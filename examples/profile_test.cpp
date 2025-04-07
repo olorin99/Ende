@@ -23,7 +23,7 @@ int main() {
         auto f = ende::profile::ProfileManager::getFrameData(frame);
         printf("%d\n", frame);
         for (auto& data : f) {
-            printf("%d, %s: %d\n", frame, data.label, data.end.nanoseconds() - data.start.nanoseconds());
+            printf("%d, %s: %ld\n", frame, data.label, std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::time_point_cast<std::chrono::nanoseconds>(data.end).time_since_epoch()).count() - std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::time_point_cast<std::chrono::nanoseconds>(data.start).time_since_epoch()).count());
         }
     }
 
