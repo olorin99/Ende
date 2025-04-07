@@ -3,6 +3,8 @@ project(Ende)
 
 set(CMAKE_CXX_STANDARD 23)
 
+option(ENDE_BUILD_EXAMPLES "enable examples" ON)
+
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
 
 function(filter_items items regex)
@@ -35,7 +37,9 @@ target_include_directories(Ende
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         third_party)
 
-add_subdirectory(examples)
+if (${ENDE_BUILD_EXAMPLES})
+    add_subdirectory(examples)
+endif ()
 add_subdirectory(third_party)
 
 #option(ENDE_BUILD_TESTS "ENDE_BUILD_TESTS" ON)

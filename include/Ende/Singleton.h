@@ -7,7 +7,7 @@ namespace ende {
     class Singleton {
     protected:
 
-        explicit Singleton<T>() = default;
+        explicit Singleton() = default;
 
         static T& instance() {
             static T inst;
