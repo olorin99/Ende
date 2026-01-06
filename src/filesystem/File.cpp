@@ -6,7 +6,7 @@ ende::fs::File::~File() {
     close();
 }
 
-ende::fs::File::File(FILE* handle, u8 mode)
+ende::fs::File::File(FILE* handle, const u8 mode)
     : _handle(handle),
     _mode(mode)
 {}
@@ -28,8 +28,8 @@ ende::fs::File & ende::fs::File::operator=(File &&rhs) noexcept {
 
 
 
-auto ende::fs::File::open(const std::filesystem::path &path, u8 mode) -> std::expected<File, i32> {
-    if (!sys::stat(path).value_or(sys::Stat{}).fileType.file())
+auto ende::fs::File::open(const std::filesystem::path &path, const u8 mode) -> std::expected<File, i32> {
+    if (const auto stat = sys::stat(path); stat && !stat->fileType.file())
         return std::unexpected(-1);
 
     File file = {};
@@ -60,12 +60,12 @@ auto ende::fs::File::open(const std::filesystem::path &path, u8 mode) -> std::ex
 auto ende::fs::File::close() -> bool {
     if (!_handle) return true;
     _mode = 0;
-    bool ret = fclose(_handle) == 0;
+    const bool ret = fclose(_handle) == 0;
     if (ret) _handle = nullptr;
     return ret;
 }
 
-auto ende::fs::File::isMode(u8 mode) const -> bool {
+auto ende::fs::File::isMode(const u8 mode) const -> bool {
     return (_mode & mode) == mode;
 }
 
@@ -82,32 +82,32 @@ auto ende::fs::File::pos() const -> u64 {
     return _pos;
 }
 
-auto ende::fs::File::seek(u64 position) -> bool {
+auto ende::fs::File::seek(const u64 position) -> bool {
     if (!_handle) return false;
-    bool res = fseek(_handle, position, SEEK_SET) == 0;
+    const bool res = fseek(_handle, position, SEEK_SET) == 0;
     _pos = position;
     return res;
 }
 
-auto ende::fs::File::seekPos(i64 position) -> bool {
+auto ende::fs::File::seekPos(const i64 position) -> bool {
     if (!_handle) return false;
-    bool res = fseek(_handle, position, SEEK_CUR) == 0;
+    const bool res = fseek(_handle, position, SEEK_CUR) == 0;
     _pos += position;
     return res;
 }
 
-auto ende::fs::File::read(std::span<char> buffer) -> u64 {
+auto ende::fs::File::read(std::span<char> buffer) const -> u64 {
     if (!_handle || !isMode(in)) return 0;
     return fread(buffer.data(), sizeof(char), buffer.size(), _handle);
 }
 
-auto ende::fs::File::read(std::span<u8> buffer) -> u64 {
+auto ende::fs::File::read(std::span<u8> buffer) const -> u64 {
     if (!_handle || !isMode(in)) return 0;
     return fread(buffer.data(), sizeof(u8), buffer.size(), _handle);
 }
 
-auto ende::fs::File::read() -> std::string {
-    u64 fileSize = size();
+auto ende::fs::File::read() const -> std::string {
+    const u64 fileSize = size();
     if (fileSize == 0) return "";
     std::string buffer(fileSize, '\0');
     read(buffer);
@@ -117,7 +117,7 @@ auto ende::fs::File::read() -> std::string {
 auto ende::fs::File::readLn() -> std::string {
     char* line = nullptr;
     std::size_t size = 0;
-    i32 len = ::getline(&line, &size, _handle);
+    const i32 len = ::getline(&line, &size, _handle);
     if (len == -1) {
         free(line);
         return "";
@@ -128,7 +128,7 @@ auto ende::fs::File::readLn() -> std::string {
     return buffer;
 }
 
-auto ende::fs::File::write(std::span<const char> buffer) -> u64 {
+auto ende::fs::File::write(const std::span<const char> buffer) const -> u64 {
     if (!_handle || (!isMode(out) && !isMode(append))) return 0;
     return fwrite(buffer.data(), sizeof(char), buffer.size(), _handle);
 }

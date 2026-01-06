@@ -43,12 +43,12 @@ namespace ende::fs {
 
         auto seekPos(i64 position) -> bool;
 
-        auto read(std::span<char> buffer) -> u64;
+        auto read(std::span<char> buffer) const -> u64;
 
-        auto read(std::span<u8> buffer) -> u64;
-        auto read() -> std::string;
+        auto read(std::span<u8> buffer) const -> u64;
+        auto read() const -> std::string;
         auto readLn() -> std::string;
-        auto write(std::span<const char> buffer) -> u64;
+        auto write(std::span<const char> buffer) const -> u64;
 
         auto handle() const -> FILE*;
 
