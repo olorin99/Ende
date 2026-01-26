@@ -7,6 +7,11 @@ using namespace ende::graph;
 struct BufferEdge : public Edge {};
 struct ImageEdge : public Edge {};
 
+
+struct RenderVertex : public Vertex<ImageEdge, BufferEdge> {
+    std::string name;
+};
+
 int main() {
 
     BufferEdge edge0;// = { .id = 0 };
@@ -83,18 +88,30 @@ int main() {
 
 
     {
-        auto g = Graph<Vertex<ImageEdge, BufferEdge>>();
+        auto g = Graph<RenderVertex>();
         g.reserveVertices(30);
 
-        auto geometryPass = [&] (bool meshShader) -> Vertex<ImageEdge, BufferEdge>& {
+        auto& top = g.addVertex();
+        top.name = "Top";
+
+        auto geometryPass = [&] (bool meshShader) -> Graph<RenderVertex>::Vertex& {
             auto& clearMeshletInstances = g.addVertex();
+            clearMeshletInstances.name = "ClearMeshletInstances";
             auto& cullMeshes = g.addVertex();
+            cullMeshes.name = "CullMeshes";
             auto& writeCullMeshletsCommand = g.addVertex();
+            writeCullMeshletsCommand.name = "WriteCullMeshletsCommand";
             auto& cullMeshlets = g.addVertex();
+            cullMeshlets.name = "CullMeshlets";
             auto& writeDrawCommand = g.addVertex();
+            writeDrawCommand.name = "WriteDrawCommand";
 
             auto& drawMeshlets = g.addVertex();
+            drawMeshlets.name = "DrawMeshlets";
             auto& writePrimitives = g.addVertex();
+            writePrimitives.name = "WritePrimitives";
+
+            g.addEdge(top, clearMeshletInstances);
 
             g.addEdge(clearMeshletInstances, cullMeshes);
             g.addEdge(cullMeshes, writeCullMeshletsCommand);
@@ -116,6 +133,7 @@ int main() {
         auto& draw1 = geometryPass(true);
 
         auto& compositePass = g.addVertex();
+        compositePass.name = "CompositePass";
         g.addEdge(draw0, compositePass);
         g.addEdge(draw1, compositePass);
 
@@ -123,12 +141,18 @@ int main() {
         // auto root = g.addEdge();
         // drawMeshlets.outputs = { root };
 
-        auto sorted = TRY_MAIN(g.sort(compositePass));
+        auto sortedBottomUp = TRY_MAIN(g.sort(compositePass));
+        auto sortedTopDown = TRY_MAIN(g.sort(top, true));
 
-        for (const auto& vertex : sorted) {
-            printf("%d, ", vertex.id);
+        for (const auto& vertex : sortedBottomUp) {
+            printf("%d: %s, ", vertex.id, vertex.name.c_str());
         }
         printf("\n");
+        for (const auto& vertex : sortedTopDown) {
+            printf("%d: %s, ", vertex.id, vertex.name.c_str());
+        }
+        printf("\n");
+
 
     }
 

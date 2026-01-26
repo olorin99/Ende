@@ -1,6 +1,7 @@
 #ifndef ENDE_GRAPH_H
 #define ENDE_GRAPH_H
 
+#include <algorithm>
 #include <expected>
 #include <span>
 #include <Ende/platform.h>
@@ -77,14 +78,21 @@ namespace ende::graph {
 
     };
 
-    template <IsEdge... Args>
-    auto topologicalSort(std::span<Vertex<Args...>> vertices, std::span<typename Vertex<Args...>::Edge> rootEdges, u32 edgeCount) -> std::expected<std::vector<Vertex<Args...>>, Error> {
-        std::vector<std::vector<Vertex<Args...>>> adjacencies = {};
+    template <typename V = Vertex<Edge>>
+    auto topologicalSort(std::span<V> vertices, std::span<typename V::Edge> rootEdges, u32 edgeCount, bool topdown = false) -> std::expected<std::vector<V>, Error> {
+        std::vector<std::vector<V>> adjacencies = {};
         adjacencies.resize(edgeCount);
         for (auto& vertex : vertices) {
-            for (auto& output : vertex.outputs) {
-                auto edgeId = TRY(EdgeHelper<typename Vertex<Args...>::Edge>::getId(output));
-                adjacencies[edgeId].push_back(vertex);
+            if (topdown) {
+                for (auto& input : vertex.inputs) {
+                    auto edgeId = TRY(EdgeHelper<typename V::Edge>::getId(input));
+                    adjacencies[edgeId].push_back(vertex);
+                }
+            } else {
+                for (auto& output : vertex.outputs) {
+                    auto edgeId = TRY(EdgeHelper<typename V::Edge>::getId(output));
+                    adjacencies[edgeId].push_back(vertex);
+                }
             }
         }
 
@@ -93,13 +101,13 @@ namespace ende::graph {
         std::vector<bool> onStack = {};
         onStack.resize(vertices.size());
 
-        std::vector<Vertex<Args...>> topological = {};
+        std::vector<V> topological = {};
 
-        std::function<std::expected<bool, Error>(Vertex<Args...>)> dfs = [&] (Vertex<Args...> vertex) -> std::expected<bool, Error> {
+        std::function<std::expected<bool, Error>(V)> dfs = [&] (V vertex) -> std::expected<bool, Error> {
             visited[vertex.id] = true;
             onStack[vertex.id] = true;
-            for (auto& input : vertex.inputs) {
-                auto edgeId = TRY(EdgeHelper<typename Vertex<Args...>::Edge>::getId(input));
+            for (auto& edge : (topdown ? vertex.outputs : vertex.inputs)) {
+                auto edgeId = TRY(EdgeHelper<typename V::Edge>::getId(edge));
                 for (auto& adjacent : adjacencies[edgeId]) {
                     if (visited[adjacent.id] && onStack[adjacent.id])
                         return false;
@@ -116,24 +124,34 @@ namespace ende::graph {
         };
 
         for (auto& rootEdge : rootEdges) {
-            auto rootId = TRY(EdgeHelper<typename Vertex<Args...>::Edge>::getId(rootEdge));
+            auto rootId = TRY(EdgeHelper<typename V::Edge>::getId(rootEdge));
             for (auto& adjacent : adjacencies[rootId]) {
                 if (!TRY(dfs(adjacent))) return std::unexpected(Error::IS_CYCLICAL);
             }
         }
 
+        if (topdown) {
+            std::ranges::reverse(topological);
+        }
+
         return topological;
     }
 
-    template <IsEdge... Args>
-    auto topologicalSort(std::span<Vertex<Args...>> vertices, typename Vertex<Args...>::Edge rootEdge, u32 edgeCount) -> std::expected<std::vector<Vertex<Args...>>, Error> {
+    template <typename V = Vertex<Edge>>
+    auto topologicalSort(std::span<V> vertices, typename V::Edge rootEdge, u32 edgeCount, bool topdown = false) -> std::expected<std::vector<V>, Error> {
         auto rootEdges = std::span(&rootEdge, 1);
-        return topologicalSort(vertices, rootEdges, edgeCount);
+        return topologicalSort(vertices, rootEdges, edgeCount, topdown);
     }
 
-    template <IsEdge... Args>
-    auto topologicalSort(std::span<Vertex<Args...>> vertices, Vertex<Args...> rootVertex, u32 edgeCount) -> std::expected<std::vector<Vertex<Args...>>, Error> {
-        return topologicalSort(vertices, rootVertex.inputs, edgeCount);
+    template <typename V = Vertex<Edge>>
+    auto topologicalSort(std::span<V> vertices, V rootVertex, u32 edgeCount, bool topdown = false) -> std::expected<std::vector<V>, Error> {
+        auto sorted = TRY(topologicalSort(vertices, topdown ? rootVertex.outputs : rootVertex.inputs, edgeCount, topdown));
+        if (topdown) {
+            sorted.insert(sorted.begin(), rootVertex);
+        } else {
+            sorted.emplace_back(rootVertex);
+        }
+        return sorted;
     }
 
     template <typename V = Vertex<Edge>>
@@ -187,12 +205,12 @@ namespace ende::graph {
 
 
 
-        auto sort(Edge rootEdge) -> std::expected<std::vector<Vertex>, Error> {
-            return topologicalSort(getVertices(), rootEdge, edgeCount());
+        auto sort(Edge rootEdge, bool topdown = false) -> std::expected<std::vector<Vertex>, Error> {
+            return topologicalSort(getVertices(), rootEdge, edgeCount(), topdown);
         }
 
-        auto sort(Vertex rootVertex) -> std::expected<std::vector<Vertex>, Error> {
-            return topologicalSort(getVertices(), rootVertex, edgeCount());
+        auto sort(Vertex rootVertex, bool topdown = false) -> std::expected<std::vector<Vertex>, Error> {
+            return topologicalSort(getVertices(), rootVertex, edgeCount(), topdown);
         }
 
     private:
