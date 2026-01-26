@@ -84,35 +84,46 @@ int main() {
 
     {
         auto g = Graph<Vertex<ImageEdge, BufferEdge>>();
-        g.reserveVertices(10);
+        g.reserveVertices(30);
 
-        auto& clearMeshletInstances = g.addVertex();
-        auto& cullMeshes = g.addVertex();
-        auto& writeCullMeshletsCommand = g.addVertex();
-        auto& cullMeshlets = g.addVertex();
-        auto& writeDrawCommand = g.addVertex();
+        auto geometryPass = [&] (bool meshShader) -> Vertex<ImageEdge, BufferEdge>& {
+            auto& clearMeshletInstances = g.addVertex();
+            auto& cullMeshes = g.addVertex();
+            auto& writeCullMeshletsCommand = g.addVertex();
+            auto& cullMeshlets = g.addVertex();
+            auto& writeDrawCommand = g.addVertex();
 
-        auto& drawMeshlets = g.addVertex();
-        auto& writePrimitives = g.addVertex();
+            auto& drawMeshlets = g.addVertex();
+            auto& writePrimitives = g.addVertex();
 
-        g.addEdge(clearMeshletInstances, cullMeshes);
-        g.addEdge(cullMeshes, writeCullMeshletsCommand);
-        g.addEdge(writeCullMeshletsCommand, cullMeshlets);
-        g.addEdge(cullMeshlets, writeDrawCommand);
-        g.addEdge(clearMeshletInstances, cullMeshlets);
+            g.addEdge(clearMeshletInstances, cullMeshes);
+            g.addEdge(cullMeshes, writeCullMeshletsCommand);
+            g.addEdge(writeCullMeshletsCommand, cullMeshlets);
+            g.addEdge(cullMeshlets, writeDrawCommand);
+            g.addEdge(clearMeshletInstances, cullMeshlets);
 
-        if (true) {
-            g.addEdge(writeDrawCommand, writePrimitives);
-            g.addEdge(writePrimitives, drawMeshlets);
-        } else {
-            g.addEdge(writeDrawCommand, drawMeshlets);
-        }
+            if (!meshShader) {
+                g.addEdge(writeDrawCommand, writePrimitives);
+                g.addEdge(writePrimitives, drawMeshlets);
+            } else {
+                g.addEdge(writeDrawCommand, drawMeshlets);
+            }
+            return drawMeshlets;
+        };
+
+        auto& draw0 = geometryPass(false);
+
+        auto& draw1 = geometryPass(true);
+
+        auto& compositePass = g.addVertex();
+        g.addEdge(draw0, compositePass);
+        g.addEdge(draw1, compositePass);
 
 
         // auto root = g.addEdge();
         // drawMeshlets.outputs = { root };
 
-        auto sorted = TRY_MAIN(g.sort(drawMeshlets));
+        auto sorted = TRY_MAIN(g.sort(compositePass));
 
         for (const auto& vertex : sorted) {
             printf("%d, ", vertex.id);
