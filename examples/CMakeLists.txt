@@ -14,3 +14,6 @@ target_link_libraries(profile_test Ende)
 
 add_executable(math math.cpp)
 target_link_libraries(math Ende)
+
+add_executable(graph graph.cpp)
+target_link_libraries(graph Ende)

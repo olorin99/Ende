@@ -17,6 +17,22 @@ using f32 = float;
 using f64 = double;
 
 
+#define TRY(expr)\
+({\
+auto&& tmp = (expr);\
+if(!tmp.has_value())\
+return std::unexpected(tmp.error());\
+std::move(tmp.value());\
+})
+
+#define TRY_MAIN(expr)\
+({\
+auto&& tmp = (expr);\
+if(!tmp.has_value())\
+return static_cast<i32>(tmp.error());\
+std::move(tmp.value());\
+})
+
 #ifdef __linux__
 
 #define ENDE_LINUX
