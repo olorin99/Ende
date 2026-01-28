@@ -1,5 +1,7 @@
 
 #include <cstdio>
+#include <ranges>
+#include <string>
 #include <Ende/graph/graph.h>
 
 using namespace ende::graph;
@@ -153,6 +155,19 @@ int main() {
         }
         printf("\n");
 
+        auto bottomUpSpan = std::span(sortedBottomUp.data(), sortedBottomUp.size());
+        auto shortestPathDistances = TRY_MAIN(shortestPath(bottomUpSpan, g.edgeCount()));
+        for (const auto& [distance, vertex] : std::views::zip(shortestPathDistances, sortedBottomUp)) {
+            printf("(%d, %d): %s, ", vertex.id, distance, vertex.name.c_str());
+        }
+        printf("\n");
+
+
+        auto longestPathDistances = TRY_MAIN(longestPath(bottomUpSpan, g.edgeCount()));
+        for (const auto& [distance, vertex] : std::views::zip(longestPathDistances, sortedBottomUp)) {
+            printf("(%d, %d): %s, ", vertex.id, distance, vertex.name.c_str());
+        }
+        printf("\n");
 
     }
 

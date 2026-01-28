@@ -8,12 +8,13 @@
 #include <vector>
 #include <variant>
 #include <functional>
-#include <stdexcept>
+#include <numeric>
 
 namespace ende::graph {
 
     struct Edge {
-        u32 id;
+        i32 id = -1;
+        u32 weight = 1;
     };
 
     template <typename T>
@@ -52,6 +53,17 @@ namespace ende::graph {
             return std::unexpected(Error::EDGE_TYPE_DOESNT_MATCH);
         }
 
+        template <typename T, std::size_t I = 0>
+        static auto getWeight(T edge) -> std::expected<u32, Error> {
+            if constexpr (I < std::variant_size_v<Edge>) {
+                if (std::holds_alternative<std::variant_alternative_t<I, T>>(edge)) {
+                    return std::get<I>(edge).weight;
+                }
+                return getId<I + 1>(edge);
+            }
+            return std::unexpected(Error::EDGE_TYPE_DOESNT_MATCH);
+        }
+
         template <std::size_t I = 0>
         static auto setId(Edge edge, u32 id) -> std::expected<Edge, Error> {
             if constexpr (I < std::variant_size_v<Edge>) {
@@ -61,6 +73,19 @@ namespace ende::graph {
                     return e;
                 }
                 return setId<I + 1>(edge, id);
+            }
+            return std::unexpected(Error::EDGE_TYPE_DOESNT_MATCH);
+        }
+
+        template <std::size_t I = 0>
+        static auto setWeight(Edge edge, u32 weight) -> std::expected<Edge, Error> {
+            if constexpr (I < std::variant_size_v<Edge>) {
+                if (std::holds_alternative<std::variant_alternative_t<I, Edge>>(edge)) {
+                    std::variant_alternative_t<I, Edge> e = std::get<I>(edge);
+                    e.weight = weight;
+                    return e;
+                }
+                return setId<I + 1>(edge, weight);
             }
             return std::unexpected(Error::EDGE_TYPE_DOESNT_MATCH);
         }
@@ -79,7 +104,7 @@ namespace ende::graph {
     };
 
     template <typename V = Vertex<Edge>>
-    auto topologicalSort(std::span<V> vertices, std::span<typename V::Edge> rootEdges, u32 edgeCount, bool topdown = false) -> std::expected<std::vector<V>, Error> {
+    auto buildAdjacencies(std::span<V> vertices, u32 edgeCount, bool topdown = false) -> std::expected<std::vector<std::vector<V>>, Error> {
         std::vector<std::vector<V>> adjacencies = {};
         adjacencies.resize(edgeCount);
         for (auto& vertex : vertices) {
@@ -95,6 +120,12 @@ namespace ende::graph {
                 }
             }
         }
+        return adjacencies;
+    }
+
+    template <typename V = Vertex<Edge>>
+    auto topologicalSort(std::span<V> vertices, std::span<typename V::Edge> rootEdges, u32 edgeCount, bool topdown = false) -> std::expected<std::vector<V>, Error> {
+        auto adjacencies = TRY(buildAdjacencies(vertices, edgeCount, topdown));
 
         std::vector<bool> visited = {};
         visited.resize(vertices.size());
@@ -155,6 +186,80 @@ namespace ende::graph {
     }
 
     template <typename V = Vertex<Edge>>
+    auto shortestPath(std::span<V> vertices, u32 edgeCount) -> std::expected<std::vector<u32>, Error> {
+        auto adjacencies = TRY(buildAdjacencies(vertices, edgeCount, true));
+
+        auto maxVertexId = std::ranges::max_element(vertices.begin(), vertices.end(), [&](const auto& a, const auto& b) { return a.id < b.id; });
+
+        std::vector<u32> distances = {};
+        distances.resize(maxVertexId->id + 1);
+        for (auto& distance : distances) {
+            distance = std::numeric_limits<u32>::max();
+        }
+        distances[vertices.front().id] = 0;
+
+        for (auto& vertex : vertices) {
+            auto distance = distances[vertex.id];
+
+            for (auto& edge : vertex.outputs) {
+                auto edgeId = TRY(EdgeHelper<typename V::Edge>::getId(edge));
+                auto weight = TRY(EdgeHelper<typename V::Edge>::getWeight(edge));
+                for (auto& adjacent : adjacencies[edgeId]) {
+
+                    auto& adjacentDistance = distances[adjacent.id];
+                    auto edgeDistance = distance + weight;
+
+                    if (adjacentDistance > edgeDistance) {
+                        adjacentDistance = edgeDistance;
+                    }
+                }
+            }
+        }
+
+        auto newEnd = std::ranges::remove(distances, std::numeric_limits<u32>::max()).begin();
+        distances.erase(newEnd, distances.end());
+
+        return distances;
+    }
+
+    template <typename V = Vertex<Edge>>
+    auto longestPath(std::span<V> vertices, u32 edgeCount) -> std::expected<std::vector<u32>, Error> {
+        auto adjacencies = TRY(buildAdjacencies(vertices, edgeCount, true));
+
+        auto maxVertexId = std::ranges::max_element(vertices.begin(), vertices.end(), [&](const auto& a, const auto& b) { return a.id < b.id; });
+
+        std::vector<u32> distances = {};
+        distances.resize(maxVertexId->id + 1);
+        for (auto& distance : distances) {
+            distance = std::numeric_limits<u32>::min();
+        }
+        distances[vertices.front().id] = 0;
+
+        for (auto& vertex : vertices) {
+            auto distance = distances[vertex.id];
+
+            for (auto& edge : vertex.outputs) {
+                auto edgeId = TRY(EdgeHelper<typename V::Edge>::getId(edge));
+                auto weight = TRY(EdgeHelper<typename V::Edge>::getWeight(edge));
+                for (auto& adjacent : adjacencies[edgeId]) {
+
+                    auto& adjacentDistance = distances[adjacent.id];
+                    auto edgeDistance = distance + weight;
+
+                    if (adjacentDistance < edgeDistance) {
+                        adjacentDistance = edgeDistance;
+                    }
+                }
+            }
+        }
+
+        auto newEnd = std::ranges::remove(distances, std::numeric_limits<u32>::max()).begin();
+        distances.erase(newEnd, distances.end());
+
+        return distances;
+    }
+
+    template <typename V = Vertex<Edge>>
     class Graph {
     public:
 
@@ -170,15 +275,16 @@ namespace ende::graph {
         }
 
         template <IsEdge E = Edge>
-        auto addEdge() -> Edge {
+        auto addEdge(const u32 weight = 1) -> Edge {
             auto edge = EdgeHelper<Edge>::setId(E(), _edgeIndex++);
+            edge = EdgeHelper<Edge>::setWeight(*edge, weight);
             _edges.emplace_back(*edge);
             return _edges.back();
         }
 
         template <IsEdge E = Edge>
-        auto addEdge(Vertex& parent, Vertex& child) -> Edge {
-            auto edge = addEdge<E>();
+        auto addEdge(Vertex& parent, Vertex& child, const u32 weight = 1) -> Edge {
+            auto edge = addEdge<E>(weight);
             parent.outputs.emplace_back(edge);
             child.inputs.emplace_back(edge);
             return edge;
