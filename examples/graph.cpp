@@ -38,6 +38,10 @@ int main() {
     vertex2.outputs = { edge4 };
 
 
+    auto v0o0 = TRY_MAIN(vertex0.output<BufferEdge>(0));
+    auto v1o0 = TRY_MAIN(vertex1.output<Edge>(0));
+
+
     auto vertices = std::to_array({
         vertex0, vertex1, vertex2
     });

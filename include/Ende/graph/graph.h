@@ -23,20 +23,12 @@ namespace ende::graph {
         { std::is_base_of_v<Edge, T> };
     };
 
-    template <IsEdge... Args>
-    struct Vertex {
-        using Edge = std::variant<Args...>;
-
-        u32 id = {};
-        std::vector<Edge> inputs = {};
-        std::vector<Edge> outputs = {};
-    };
-
-
     enum class Error {
         IS_CYCLICAL,
-
+        INVALID_VERTEX,
         EDGE_TYPE_DOESNT_MATCH,
+        INVALID_EDGE,
+        INDEX_OUT_OF_BOUNDS,
     };
 
     template <IsEdge Edge>
@@ -93,7 +85,7 @@ namespace ende::graph {
         template <typename T, std::size_t I = 0>
         static constexpr auto holdsType() -> bool {
             if constexpr (I < std::variant_size_v<Edge>) {
-                if constexpr (std::is_same_v<T, std::variant_alternative_t<0, Edge>>) {
+                if constexpr (std::is_same_v<T, std::variant_alternative_t<I, Edge>>) {
                     return true;
                 }
                 return holdsType<T, I + 1>();
@@ -101,6 +93,37 @@ namespace ende::graph {
             return false;
         }
 
+    };
+
+    template <IsEdge... Args>
+    struct Vertex {
+        using Edge = std::variant<Args...>;
+
+        u32 id = {};
+        std::vector<Edge> inputs = {};
+        std::vector<Edge> outputs = {};
+
+        template <typename T>
+        constexpr auto input(u32 index = 0) -> std::expected<T, Error> {
+            if constexpr (!EdgeHelper<Edge>::template holdsType<T>()) {
+                return std::unexpected(Error::INVALID_EDGE);
+            }
+            if (index >= inputs.size()) {
+                return std::unexpected(Error::INDEX_OUT_OF_BOUNDS);
+            }
+            return std::get<T>(inputs[index]);
+        }
+
+        template <typename T>
+        constexpr auto output(u32 index = 0) -> std::expected<T, Error> {
+            if constexpr (!EdgeHelper<Vertex::Edge>::template holdsType<T>()) {
+                return std::unexpected(Error::INVALID_EDGE);
+            }
+            if (index >= outputs.size()) {
+                return std::unexpected(Error::INDEX_OUT_OF_BOUNDS);
+            }
+            return std::get<T>(outputs[index]);
+        }
     };
 
     template <typename V = Vertex<Edge>>
@@ -216,7 +239,7 @@ namespace ende::graph {
             }
         }
 
-        auto newEnd = std::ranges::remove(distances, std::numeric_limits<u32>::max()).begin();
+        const auto newEnd = std::ranges::remove(distances, std::numeric_limits<u32>::max()).begin();
         distances.erase(newEnd, distances.end());
 
         return distances;
