@@ -298,7 +298,7 @@ namespace ende::graph {
         }
 
         template <IsEdge E = Edge>
-        auto addEdge(const u32 weight = 1) -> Edge {
+        auto addEdge(const u32 weight = 1) -> Edge& {
             auto edge = EdgeHelper<Edge>::setId(E(), _edgeIndex++);
             edge = EdgeHelper<Edge>::setWeight(*edge, weight);
             _edges.emplace_back(*edge);
@@ -306,11 +306,11 @@ namespace ende::graph {
         }
 
         template <IsEdge E = Edge>
-        auto addEdge(Vertex& parent, Vertex& child, const u32 weight = 1) -> Edge {
+        auto addEdge(Vertex& parent, Vertex& child, const u32 weight = 1) -> Edge& {
             auto edge = addEdge<E>(weight);
             parent.outputs.emplace_back(edge);
             child.inputs.emplace_back(edge);
-            return edge;
+            return _edges.back();
         }
 
         auto getVertices() -> std::span<Vertex> {
