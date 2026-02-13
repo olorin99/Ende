@@ -51,7 +51,7 @@ namespace ende::graph {
                 if (std::holds_alternative<std::variant_alternative_t<I, T>>(edge)) {
                     return std::get<I>(edge).weight;
                 }
-                return getId<I + 1>(edge);
+                return getWeight<I + 1>(edge);
             }
             return std::unexpected(Error::EDGE_TYPE_DOESNT_MATCH);
         }
@@ -77,7 +77,7 @@ namespace ende::graph {
                     e.weight = weight;
                     return e;
                 }
-                return setId<I + 1>(edge, weight);
+                return setWeight<I + 1>(edge, weight);
             }
             return std::unexpected(Error::EDGE_TYPE_DOESNT_MATCH);
         }
