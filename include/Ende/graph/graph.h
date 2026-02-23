@@ -24,6 +24,7 @@ namespace ende::graph {
     };
 
     enum class Error {
+        NONE,
         IS_CYCLICAL,
         INVALID_VERTEX,
         EDGE_TYPE_DOESNT_MATCH,
@@ -276,7 +277,7 @@ namespace ende::graph {
             }
         }
 
-        auto newEnd = std::ranges::remove(distances, std::numeric_limits<u32>::max()).begin();
+        const auto newEnd = std::ranges::remove(distances, std::numeric_limits<u32>::max()).begin();
         distances.erase(newEnd, distances.end());
 
         return distances;
@@ -332,6 +333,12 @@ namespace ende::graph {
             _edges.reserve(0);
         }
 
+        void reset() {
+            _vertices.clear();
+            _edges.clear();
+            _vertexIndex = 0;
+            _edgeIndex = 0;
+        }
 
 
         auto sort(Edge rootEdge, bool topdown = false) -> std::expected<std::vector<Vertex>, Error> {
