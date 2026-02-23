@@ -46,7 +46,7 @@ int main() {
         vertex0, vertex1, vertex2
     });
 
-    const auto graphSpan = std::span(vertices.data(), vertices.size());
+    const auto graphSpan = std::span<const Vertex<Edge, BufferEdge>>(vertices.data(), vertices.size());
 
     auto topological = TRY_MAIN(topologicalSort(graphSpan, edge4, 5));
 
@@ -159,7 +159,7 @@ int main() {
         }
         printf("\n");
 
-        auto bottomUpSpan = std::span(sortedBottomUp.data(), sortedBottomUp.size());
+        auto bottomUpSpan = std::span<const RenderVertex>(sortedBottomUp.data(), sortedBottomUp.size());
         auto shortestPathDistances = TRY_MAIN(shortestPath(bottomUpSpan, g.edgeCount()));
         for (const auto& [distance, vertex] : std::views::zip(shortestPathDistances, sortedBottomUp)) {
             printf("(%d, %d): %s, ", vertex.id, distance, vertex.name.c_str());

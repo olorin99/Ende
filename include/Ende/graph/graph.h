@@ -52,7 +52,7 @@ namespace ende::graph {
                 if (std::holds_alternative<std::variant_alternative_t<I, T>>(edge)) {
                     return std::get<I>(edge).weight;
                 }
-                return getWeight<I + 1>(edge);
+                return getWeight<T, I + 1>(edge);
             }
             return std::unexpected(Error::EDGE_TYPE_DOESNT_MATCH);
         }
@@ -128,7 +128,7 @@ namespace ende::graph {
     };
 
     template <typename V = Vertex<Edge>>
-    auto buildAdjacencies(std::span<V> vertices, u32 edgeCount, bool topdown = false) -> std::expected<std::vector<std::vector<V>>, Error> {
+    auto buildAdjacencies(const std::span<const V> vertices, const u32 edgeCount, const bool topdown = false) -> std::expected<std::vector<std::vector<V>>, Error> {
         std::vector<std::vector<V>> adjacencies = {};
         adjacencies.resize(edgeCount);
         for (auto& vertex : vertices) {
@@ -148,7 +148,7 @@ namespace ende::graph {
     }
 
     template <typename V = Vertex<Edge>>
-    auto topologicalSort(std::span<V> vertices, std::span<typename V::Edge> rootEdges, u32 edgeCount, bool topdown = false) -> std::expected<std::vector<V>, Error> {
+    auto topologicalSort(const std::span<const V> vertices, std::span<const typename V::Edge> rootEdges, const u32 edgeCount, const bool topdown = false) -> std::expected<std::vector<V>, Error> {
         auto adjacencies = TRY(buildAdjacencies(vertices, edgeCount, topdown));
 
         std::vector<bool> visited = {};
@@ -193,13 +193,13 @@ namespace ende::graph {
     }
 
     template <typename V = Vertex<Edge>>
-    auto topologicalSort(std::span<V> vertices, typename V::Edge rootEdge, u32 edgeCount, bool topdown = false) -> std::expected<std::vector<V>, Error> {
-        auto rootEdges = std::span(&rootEdge, 1);
+    auto topologicalSort(const std::span<const V> vertices, const typename V::Edge rootEdge, const u32 edgeCount, const bool topdown = false) -> std::expected<std::vector<V>, Error> {
+        const auto rootEdges = std::span(&rootEdge, 1);
         return topologicalSort(vertices, rootEdges, edgeCount, topdown);
     }
 
     template <typename V = Vertex<Edge>>
-    auto topologicalSort(std::span<V> vertices, V rootVertex, u32 edgeCount, bool topdown = false) -> std::expected<std::vector<V>, Error> {
+    auto topologicalSort(const std::span<const V> vertices, const V rootVertex, const u32 edgeCount, const bool topdown = false) -> std::expected<std::vector<V>, Error> {
         auto sorted = TRY(topologicalSort(vertices, topdown ? rootVertex.outputs : rootVertex.inputs, edgeCount, topdown));
         if (topdown) {
             sorted.insert(sorted.begin(), rootVertex);
@@ -210,7 +210,7 @@ namespace ende::graph {
     }
 
     template <typename V = Vertex<Edge>>
-    auto shortestPath(std::span<V> vertices, u32 edgeCount) -> std::expected<std::vector<u32>, Error> {
+    auto shortestPath(std::span<const V> vertices, u32 edgeCount) -> std::expected<std::vector<u32>, Error> {
         auto adjacencies = TRY(buildAdjacencies(vertices, edgeCount, true));
 
         auto maxVertexId = std::ranges::max_element(vertices.begin(), vertices.end(), [&](const auto& a, const auto& b) { return a.id < b.id; });
@@ -247,7 +247,7 @@ namespace ende::graph {
     }
 
     template <typename V = Vertex<Edge>>
-    auto longestPath(std::span<V> vertices, u32 edgeCount) -> std::expected<std::vector<u32>, Error> {
+    auto longestPath(std::span<const V> vertices, u32 edgeCount) -> std::expected<std::vector<u32>, Error> {
         auto adjacencies = TRY(buildAdjacencies(vertices, edgeCount, true));
 
         auto maxVertexId = std::ranges::max_element(vertices.begin(), vertices.end(), [&](const auto& a, const auto& b) { return a.id < b.id; });
@@ -314,11 +314,11 @@ namespace ende::graph {
             return _edges.back();
         }
 
-        auto getVertices() -> std::span<Vertex> {
+        auto getVertices() const -> std::span<const Vertex> {
             return std::span(_vertices.data(), _vertices.size());
         }
 
-        auto getEdges() -> std::span<Edge> {
+        auto getEdges() const -> std::span<const Edge> {
             return std::span(_edges.data(), _edges.size());
         }
 
