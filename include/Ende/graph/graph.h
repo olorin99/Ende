@@ -314,16 +314,24 @@ namespace ende::graph {
             return _edges.back();
         }
 
+        auto getVertices() -> std::span<Vertex> {
+            return std::span(_vertices.data(), _vertices.size());
+        }
+
         auto getVertices() const -> std::span<const Vertex> {
             return std::span(_vertices.data(), _vertices.size());
+        }
+
+        auto getEdges() -> std::span<Edge> {
+            return std::span(_edges.data(), _edges.size());
         }
 
         auto getEdges() const -> std::span<const Edge> {
             return std::span(_edges.data(), _edges.size());
         }
 
-        auto vertexCount() -> u32 { return _vertices.size(); }
-        auto edgeCount() -> u32 { return _edges.size(); }
+        auto vertexCount() const -> u32 { return _vertices.size(); }
+        auto edgeCount() const -> u32 { return _edges.size(); }
 
         void reserveVertices(u32 count) {
             _vertices.reserve(count);
@@ -341,11 +349,11 @@ namespace ende::graph {
         }
 
 
-        auto sort(Edge rootEdge, bool topdown = false) -> std::expected<std::vector<Vertex>, Error> {
+        auto sort(Edge rootEdge, bool topdown = false) const -> std::expected<std::vector<Vertex>, Error> {
             return topologicalSort(getVertices(), rootEdge, edgeCount(), topdown);
         }
 
-        auto sort(Vertex rootVertex, bool topdown = false) -> std::expected<std::vector<Vertex>, Error> {
+        auto sort(Vertex rootVertex, bool topdown = false) const -> std::expected<std::vector<Vertex>, Error> {
             return topologicalSort(getVertices(), rootVertex, edgeCount(), topdown);
         }
 
