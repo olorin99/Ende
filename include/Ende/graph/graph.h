@@ -36,7 +36,7 @@ namespace ende::graph {
     struct EdgeHelper {
 
         template <std::size_t I = 0>
-        static auto getId(Edge edge) -> std::expected<u32, Error> {
+        static auto getId(Edge edge) -> std::expected<i32, Error> {
             if constexpr (I < std::variant_size_v<Edge>) {
                 if (std::holds_alternative<std::variant_alternative_t<I, Edge>>(edge)) {
                     return std::get<I>(edge).id;
@@ -58,7 +58,7 @@ namespace ende::graph {
         }
 
         template <std::size_t I = 0>
-        static auto setId(Edge edge, u32 id) -> std::expected<Edge, Error> {
+        static auto setId(Edge edge, i32 id) -> std::expected<Edge, Error> {
             if constexpr (I < std::variant_size_v<Edge>) {
                 if (std::holds_alternative<std::variant_alternative_t<I, Edge>>(edge)) {
                     std::variant_alternative_t<I, Edge> e = std::get<I>(edge);
