@@ -165,10 +165,10 @@ namespace ende::graph {
                 auto edgeId = TRY(EdgeHelper<typename V::Edge>::getId(edge));
                 for (auto& adjacent : adjacencies[edgeId]) {
                     if (visited[adjacent.id] && onStack[adjacent.id])
-                        return false;
+                        return std::unexpected(Error::IS_CYCLICAL);
                     if (!visited[adjacent.id]) {
                         if (!dfs(adjacent)) {
-                            return false;
+                            return std::unexpected(Error::IS_CYCLICAL);
                         }
                     }
                 }
