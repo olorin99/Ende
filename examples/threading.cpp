@@ -1,5 +1,4 @@
 
-#include <Ende/thread/thread.h>
 #include <Ende/thread/ThreadPool.h>
 
 #include <Ende/profile/profile.h>

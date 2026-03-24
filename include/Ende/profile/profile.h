@@ -2,7 +2,7 @@
 #ifndef ENDE_PROFILE_H
 #define ENDE_PROFILE_H
 
-#include <Ende/time/time.h>
+#include <Ende/platform.h>
 #include <chrono>
 
 namespace ende::profile {

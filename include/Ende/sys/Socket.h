@@ -4,7 +4,6 @@
 #include <Ende/platform.h>
 #include <span>
 #include <string>
-#include <memory>
 
 #ifdef ENDE_UNIX
 #include <netdb.h>

@@ -1,6 +1,6 @@
 
-#include <Ende/sys/filesystem.h>
 #include <Ende/filesystem/File.h>
+#include <filesystem>
 
 ende::fs::File::~File() {
     close();
@@ -29,7 +29,7 @@ ende::fs::File & ende::fs::File::operator=(File &&rhs) noexcept {
 
 
 auto ende::fs::File::open(const std::filesystem::path &path, const u8 mode) -> std::expected<File, i32> {
-    if (const auto stat = sys::stat(path); stat && !stat->fileType.file())
+    if (std::filesystem::is_directory(path))
         return std::unexpected(-1);
 
     File file = {};
@@ -75,7 +75,7 @@ auto ende::fs::File::isOpen() const -> bool {
 
 auto ende::fs::File::size() const -> u64 {
     if (!_handle) return 0;
-    return ende::sys::stat(_path).value_or(sys::Stat{}).size;
+    return std::filesystem::file_size(_path);
 }
 
 auto ende::fs::File::pos() const -> u64 {

@@ -1,8 +1,6 @@
 
-#include "Ende/profile/ProfileManager.h"
+#include <Ende/profile/ProfileManager.h>
 #include <cstring>
-#include <map>
-#include <Ende/thread/thread.h>
 
 void ende::profile::submit(ProfileData &&data) {
     ProfileManager::submit(std::forward<ProfileData>(data));

@@ -1,6 +1,4 @@
-#include "Ende/thread/ThreadPool.h"
-#include <Ende/thread/thread.h>
-
+#include <Ende/thread/ThreadPool.h>
 #include <iostream>
 
 ende::thread::ThreadPool::ThreadPool(u8 threadCount, bool start)

@@ -5,9 +5,10 @@
 
 #include <Ende/io.h>
 
-#include <Ende/time/time.h>
-
 #include <Ende/filesystem/FileWatcher.h>
+#include <thread>
+
+using namespace std::chrono_literals;
 
 int main() {
 
@@ -15,7 +16,7 @@ int main() {
 
     {
         PROFILE_NAMED("test");
-        ende::sys::sleep({5});
+        std::this_thread::sleep_for(400ms);
     }
 
     ende::stdout().write(path.string());
