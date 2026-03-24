@@ -4,17 +4,19 @@
 #include <Ende/profile/profile.h>
 #include <Ende/math/random.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 int main() {
 
     ende::thread::ThreadPool pool(4, true);
 
     for (u32 i = 0; i < 100; i++) {
-        pool.addJob([]() {
-            auto waitTime = ende::math::rand(0, 1);
-            sleep(waitTime);
-            std::cout << "This is job number: " << 1 << "\nwaited for: " << waitTime << "ms\n";
+        pool.addJob([i]() {
+            auto waitTime = ende::math::rand(0, 1000);
+            std::this_thread::sleep_for(std::chrono::milliseconds(waitTime));
+            std::cout << "This is job number: " << i << "\nwaited for: " << waitTime << "ms\n";
             return true;
         });
     }

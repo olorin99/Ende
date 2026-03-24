@@ -1,5 +1,4 @@
 #include <Ende/thread/ThreadPool.h>
-#include <iostream>
 
 ende::thread::ThreadPool::ThreadPool(u8 threadCount, bool start)
     : _running(start),
@@ -48,8 +47,6 @@ ende::thread::ThreadPool::~ThreadPool() {
         if (worker.joinable())
             worker.join();
     }
-
-    std::cout << "processed jobs: " << _processed << "\n";
 }
 
 auto ende::thread::ThreadPool::wait() -> bool {

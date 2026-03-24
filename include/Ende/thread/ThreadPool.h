@@ -9,7 +9,6 @@
 #include <functional>
 #include <Ende/thread/Mutex.h>
 #include <future>
-#include <queue>
 
 namespace ende::thread {
 
