@@ -20,7 +20,9 @@ set(PROJECT_FILES include/Ende/platform.h src/sys/unix/system.cpp include/Ende/s
         src/filesystem/FileWatcher.cpp
         include/Ende/filesystem/FileWatcher.h
         include/Ende/util/colour.h
-        include/Ende/graph/graph.h)
+        include/Ende/graph/graph.h
+        include/Ende/time/Clock.h
+        src/time/Clock.cpp)
 
 if (UNIX)
     filter_items(PROJECT_FILES ".*win.*")
