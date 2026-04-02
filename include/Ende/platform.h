@@ -3,7 +3,13 @@
 
 // define int aliases
 
+#include <concepts>
+#include <cstddef>
 #include <cstdint>
+#include <expected>
+#include <optional>
+#include <type_traits>
+#include <utility>
 
 using i8 = std::int8_t;
 using u8 = std::uint8_t;
@@ -17,21 +23,99 @@ using f32 = float;
 using f64 = double;
 
 
-#define TRY(expr)\
-({\
-auto&& tmp = (expr);\
-if(!tmp.has_value())\
-return std::unexpected(tmp.error());\
-std::move(tmp.value());\
-})
+template <typename T>
+struct is_expected : std::false_type {};
 
-#define TRY_MAIN(expr)\
-({\
-auto&& tmp = (expr);\
-if(!tmp.has_value())\
-return static_cast<i32>(tmp.error());\
-std::move(tmp.value());\
-})
+template <typename E>
+struct is_expected<std::unexpected<E>> : std::true_type {};
+
+template <typename T, typename E>
+struct is_expected<std::expected<T, E>> : std::true_type {};
+
+template <typename T>
+auto _get_error(T&& container) -> decltype(auto) {
+    if constexpr (requires { container.error(); })
+        return std::forward<T>(container).error();
+    else
+        return nullptr;
+}
+
+template <typename F, typename T>
+auto _get_result(F &&fallback, T &&error) -> decltype(auto) {
+    if constexpr (std::invocable<F, T>) {
+        return std::forward<F>(fallback)(std::forward<T>(error));
+    } else {
+        return std::forward<F>(fallback);
+    }
+}
+
+template <typename Storage>
+struct _maybe_failure_proxy {
+    private:
+        using Self = _maybe_failure_proxy;
+
+    public:
+        Storage value;
+
+    template <typename T>
+    operator std::optional<T>([[maybe_unused]] this const Self& _) {
+        return std::nullopt;
+    }
+
+    template <typename T, typename E>
+    operator std::expected<T, E>(this Self&& self) {
+        using value_type = std::decay_t<Storage>;
+
+        if constexpr (std::is_same_v<value_type, std::nullptr_t>) {
+            static_assert(std::default_initializable<E>, "E must be default initializable");
+            return std::unexpected(E{});
+        } else if constexpr (is_expected<value_type>::value)
+            return std::forward<value_type>(self.value);
+        else
+            return std::unexpected<E>(std::forward<value_type>(self.value));
+    }
+
+    operator Storage(this Self&& self) {
+        return self.value;
+    }
+};
+
+template <typename T>
+_maybe_failure_proxy(T&&) -> _maybe_failure_proxy<std::decay_t<T>>;
+
+template <typename T>
+auto _deref_or_void(T&& container) -> decltype(auto) {
+    using value_type = typename std::decay_t<T>::value_type;
+    if constexpr (std::is_void_v<value_type>)
+        return;
+    else
+        return *std::forward<T>(container);
+}
+
+#define GET_maybe_MACRO(_1, _2, NAME, ...) NAME
+#define maybe(...) GET_maybe_MACRO(__VA_ARGS__, maybe_2, maybe_1)(__VA_ARGS__)
+#define maybe_conv(type, expr) maybe(expr, [] (const auto& e) { return static_cast<type>(e); })
+
+#define maybe_1(expr) \
+    ({ \
+        auto&& _result = (expr); \
+        if (!_result) { \
+            return ::_maybe_failure_proxy(::_get_error(_result)); \
+        } \
+        ::_deref_or_void(std::move(_result)); \
+    })
+
+
+#define maybe_2(expr, fallback) \
+    ({ \
+        auto&& _result = (expr); \
+        if (!_result) { \
+            [[maybe_unused]] auto&& _e = ::_get_error(_result); \
+            return ::_maybe_failure_proxy(::_get_result(fallback, _e)); \
+        } \
+        ::_deref_or_void(std::move(_result)); \
+    })
+
 
 #ifdef __linux__
 

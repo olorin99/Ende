@@ -134,12 +134,12 @@ namespace ende::graph {
         for (auto& vertex : vertices) {
             if (topdown) {
                 for (auto& input : vertex.inputs) {
-                    auto edgeId = TRY(EdgeHelper<typename V::Edge>::getId(input));
+                    auto edgeId = maybe(EdgeHelper<typename V::Edge>::getId(input));
                     adjacencies[edgeId].push_back(vertex);
                 }
             } else {
                 for (auto& output : vertex.outputs) {
-                    auto edgeId = TRY(EdgeHelper<typename V::Edge>::getId(output));
+                    auto edgeId = maybe(EdgeHelper<typename V::Edge>::getId(output));
                     adjacencies[edgeId].push_back(vertex);
                 }
             }
@@ -149,7 +149,7 @@ namespace ende::graph {
 
     template <typename V = Vertex<Edge>>
     auto topologicalSort(const std::span<const V> vertices, std::span<const typename V::Edge> rootEdges, const u32 edgeCount, const bool topdown = false) -> std::expected<std::vector<V>, Error> {
-        auto adjacencies = TRY(buildAdjacencies(vertices, edgeCount, topdown));
+        auto adjacencies = maybe(buildAdjacencies(vertices, edgeCount, topdown));
 
         std::vector<bool> visited = {};
         visited.resize(vertices.size());
@@ -162,7 +162,7 @@ namespace ende::graph {
             visited[vertex.id] = true;
             onStack[vertex.id] = true;
             for (auto& edge : (topdown ? vertex.outputs : vertex.inputs)) {
-                auto edgeId = TRY(EdgeHelper<typename V::Edge>::getId(edge));
+                auto edgeId = maybe(EdgeHelper<typename V::Edge>::getId(edge));
                 for (auto& adjacent : adjacencies[edgeId]) {
                     if (visited[adjacent.id] && onStack[adjacent.id])
                         return std::unexpected(Error::IS_CYCLICAL);
@@ -179,9 +179,9 @@ namespace ende::graph {
         };
 
         for (auto& rootEdge : rootEdges) {
-            auto rootId = TRY(EdgeHelper<typename V::Edge>::getId(rootEdge));
+            auto rootId = maybe(EdgeHelper<typename V::Edge>::getId(rootEdge));
             for (auto& adjacent : adjacencies[rootId]) {
-                if (!TRY(dfs(adjacent))) return std::unexpected(Error::IS_CYCLICAL);
+                if (!maybe(dfs(adjacent))) return std::unexpected(Error::IS_CYCLICAL);
             }
         }
 
@@ -200,7 +200,7 @@ namespace ende::graph {
 
     template <typename V = Vertex<Edge>>
     auto topologicalSort(const std::span<const V> vertices, const V rootVertex, const u32 edgeCount, const bool topdown = false) -> std::expected<std::vector<V>, Error> {
-        auto sorted = TRY(topologicalSort(vertices, topdown ? rootVertex.outputs : rootVertex.inputs, edgeCount, topdown));
+        auto sorted = maybe(topologicalSort(vertices, topdown ? rootVertex.outputs : rootVertex.inputs, edgeCount, topdown));
         if (topdown) {
             sorted.insert(sorted.begin(), rootVertex);
         } else {
@@ -211,7 +211,7 @@ namespace ende::graph {
 
     template <typename V = Vertex<Edge>>
     auto shortestPath(std::span<const V> vertices, u32 edgeCount) -> std::expected<std::vector<u32>, Error> {
-        auto adjacencies = TRY(buildAdjacencies(vertices, edgeCount, true));
+        auto adjacencies = maybe(buildAdjacencies(vertices, edgeCount, true));
 
         auto maxVertexId = std::ranges::max_element(vertices.begin(), vertices.end(), [&](const auto& a, const auto& b) { return a.id < b.id; });
 
@@ -226,8 +226,8 @@ namespace ende::graph {
             auto distance = distances[vertex.id];
 
             for (auto& edge : vertex.outputs) {
-                auto edgeId = TRY(EdgeHelper<typename V::Edge>::getId(edge));
-                auto weight = TRY(EdgeHelper<typename V::Edge>::getWeight(edge));
+                auto edgeId = maybe(EdgeHelper<typename V::Edge>::getId(edge));
+                auto weight = maybe(EdgeHelper<typename V::Edge>::getWeight(edge));
                 for (auto& adjacent : adjacencies[edgeId]) {
 
                     auto& adjacentDistance = distances[adjacent.id];
@@ -248,7 +248,7 @@ namespace ende::graph {
 
     template <typename V = Vertex<Edge>>
     auto longestPath(std::span<const V> vertices, u32 edgeCount) -> std::expected<std::vector<u32>, Error> {
-        auto adjacencies = TRY(buildAdjacencies(vertices, edgeCount, true));
+        auto adjacencies = maybe(buildAdjacencies(vertices, edgeCount, true));
 
         auto maxVertexId = std::ranges::max_element(vertices.begin(), vertices.end(), [&](const auto& a, const auto& b) { return a.id < b.id; });
 
@@ -263,8 +263,8 @@ namespace ende::graph {
             auto distance = distances[vertex.id];
 
             for (auto& edge : vertex.outputs) {
-                auto edgeId = TRY(EdgeHelper<typename V::Edge>::getId(edge));
-                auto weight = TRY(EdgeHelper<typename V::Edge>::getWeight(edge));
+                auto edgeId = maybe(EdgeHelper<typename V::Edge>::getId(edge));
+                auto weight = maybe(EdgeHelper<typename V::Edge>::getWeight(edge));
                 for (auto& adjacent : adjacencies[edgeId]) {
 
                     auto& adjacentDistance = distances[adjacent.id];

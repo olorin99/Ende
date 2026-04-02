@@ -14,7 +14,7 @@ struct RenderVertex : public Vertex<ImageEdge, BufferEdge> {
     std::string name;
 };
 
-int main() {
+i32 main() {
 
     BufferEdge edge0;// = { .id = 0 };
     edge0.id = 0;
@@ -38,8 +38,8 @@ int main() {
     vertex2.outputs = { edge4 };
 
 
-    auto v0o0 = TRY_MAIN(vertex0.output<BufferEdge>(0));
-    auto v1o0 = TRY_MAIN(vertex1.output<Edge>(0));
+    auto v0o0 = maybe_conv(i32, vertex0.output<BufferEdge>(0));
+    auto v1o0 = maybe_conv(i32, vertex1.output<Edge>(0));
 
 
     auto vertices = std::to_array({
@@ -48,7 +48,7 @@ int main() {
 
     const auto graphSpan = std::span<const Vertex<Edge, BufferEdge>>(vertices.data(), vertices.size());
 
-    auto topological = TRY_MAIN(topologicalSort(graphSpan, edge4, 5));
+    auto topological = maybe_conv(i32, topologicalSort(graphSpan, edge4, 5));
 
     for (const auto& vertex : topological) {
         printf("%d, ", vertex.id);
@@ -84,7 +84,7 @@ int main() {
     v2.outputs = { e4 };
 
     // auto t = TRY_MAIN(topologicalSort(graph.getVertices(), e4, graph.edgeCount()));
-    auto t = TRY_MAIN(graph.sort(e4));
+    auto t = maybe_conv(i32, graph.sort(e4));
 
     for (const auto& vertex : t) {
         printf("%d, ", vertex.id);
@@ -147,8 +147,8 @@ int main() {
         // auto root = g.addEdge();
         // drawMeshlets.outputs = { root };
 
-        auto sortedBottomUp = TRY_MAIN(g.sort(compositePass));
-        auto sortedTopDown = TRY_MAIN(g.sort(top, true));
+        auto sortedBottomUp = maybe_conv(i32, g.sort(compositePass));
+        auto sortedTopDown = maybe_conv(i32, g.sort(top, true));
 
         for (const auto& vertex : sortedBottomUp) {
             printf("%d: %s, ", vertex.id, vertex.name.c_str());
@@ -160,14 +160,14 @@ int main() {
         printf("\n");
 
         auto bottomUpSpan = std::span<const RenderVertex>(sortedBottomUp.data(), sortedBottomUp.size());
-        auto shortestPathDistances = TRY_MAIN(shortestPath(bottomUpSpan, g.edgeCount()));
+        auto shortestPathDistances = maybe_conv(i32, shortestPath(bottomUpSpan, g.edgeCount()));
         for (const auto& [distance, vertex] : std::views::zip(shortestPathDistances, sortedBottomUp)) {
             printf("(%d, %d): %s, ", vertex.id, distance, vertex.name.c_str());
         }
         printf("\n");
 
 
-        auto longestPathDistances = TRY_MAIN(longestPath(bottomUpSpan, g.edgeCount()));
+        auto longestPathDistances = maybe_conv(i32, longestPath(bottomUpSpan, g.edgeCount()));
         for (const auto& [distance, vertex] : std::views::zip(longestPathDistances, sortedBottomUp)) {
             printf("(%d, %d): %s, ", vertex.id, distance, vertex.name.c_str());
         }
