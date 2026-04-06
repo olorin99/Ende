@@ -57,10 +57,10 @@ namespace ende::math {
         inline Quaternion(const Mat4f& rot)
                 : _data{0, 0, 0, 0}
         {
-            f32 _w = std::sqrt(1 + rot[0][0] + rot[1][1] + rot[2][2]) / 2;
-            f32 _x = (rot[2][1] - rot[1][2]) / (4 * _w);
-            f32 _y = (rot[0][2] - rot[2][0]) / (4 * _w);
-            f32 _z = (rot[1][0] - rot[0][1]) / (4 * _w);
+            f32 _w = std::sqrt(1 + rot(0, 0) + rot(1, 1) + rot(2, 2)) / 2;
+            f32 _x = (rot(2, 1) - rot(1, 2)) / (4 * _w);
+            f32 _y = (rot(0, 2) - rot(2, 0)) / (4 * _w);
+            f32 _z = (rot(1, 0) - rot(0, 1)) / (4 * _w);
             _data[0] = _x;
             _data[1] = _y;
             _data[2] = _z;
@@ -154,17 +154,17 @@ namespace ende::math {
         inline Mat4f toMat() const {
             Mat4f result = identity<4, f32>();
 
-            result[0][0] = 1.f - 2.f * (y() * y() + z() * z());
-            result[0][1] = 2.f * (x() * y() + w() * z());
-            result[0][2] = 2.f * (x() * z() - w() * y());
+            result(0, 0) = 1.f - 2.f * (y() * y() + z() * z());
+            result(0, 1) = 2.f * (x() * y() + w() * z());
+            result(0, 2) = 2.f * (x() * z() - w() * y());
 
-            result[1][0] = 2.f * (x() * y() - w() * z());
-            result[1][1] = 1.f - 2.f * (x() * x() + z() * z());
-            result[1][2] = 2.f * (y() * z() + w() * x());
+            result(1, 0) = 2.f * (x() * y() - w() * z());
+            result(1, 1) = 1.f - 2.f * (x() * x() + z() * z());
+            result(1, 2) = 2.f * (y() * z() + w() * x());
 
-            result[2][0] = 2.f * (x() * z() + w() * y());
-            result[2][1] = 2.f * (y() * z() - w() * x());
-            result[2][2] = 1.f - 2.f * (x() * x() + y() * y());
+            result(2, 0) = 2.f * (x() * z() + w() * y());
+            result(2, 1) = 2.f * (y() * z() - w() * x());
+            result(2, 2) = 1.f - 2.f * (x() * x() + y() * y());
 
             return result;
         }

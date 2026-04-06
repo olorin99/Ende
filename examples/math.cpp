@@ -3,6 +3,7 @@
 #include <random>
 
 #include <Ende/math/Mat.h>
+#include <Ende/math/Quaternion.h>
 
 void genMatrix(const u32 N, f32* data) {
     std::random_device rd;
@@ -135,6 +136,15 @@ int main() {
     const auto transform = lhs.transform(vec);
     compareWithNumpy(4, &transform[0], numpyResultTransformVec.data());
 
+
+    auto q1 = ende::math::Quaternion(0.14, 0.56, 0.692, 0.4);
+    auto q2 = ende::math::Quaternion(0.24, 0.166, 0.156, 1);
+
+    auto productA = q1 * q2;
+    auto productB = q2 * q1;
+
+    printf("q1 * q2: %fi + %fj + %fk + %f\n", productA.x(), productA.y(), productA.z(), productA.w());
+    printf("q2 * q1: %fi + %fj + %fk + %f\n", productB.x(), productB.y(), productB.z(), productB.w());
 
     return 0;
 }
