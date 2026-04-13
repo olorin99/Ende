@@ -57,10 +57,38 @@ namespace ende::math {
         inline Quaternion(const Mat4f& rot)
                 : _data{0, 0, 0, 0}
         {
-            f32 _w = std::sqrt(1 + rot(0, 0) + rot(1, 1) + rot(2, 2)) / 2;
-            f32 _x = (rot(2, 1) - rot(1, 2)) / (4 * _w);
-            f32 _y = (rot(0, 2) - rot(2, 0)) / (4 * _w);
-            f32 _z = (rot(1, 0) - rot(0, 1)) / (4 * _w);
+            f32 _x = 0;
+            f32 _y = 0;
+            f32 _z = 0;
+            f32 _w = 0;
+            const auto trace = rot(0, 0) + rot(1, 1) + rot(2, 2);
+            if (trace > 0) {
+                const auto s = 0.5f / std::sqrt(trace + 1.f);
+                _w = 0.25f / s;
+                _x = (rot(2, 1) - rot(1, 2)) * s;
+                _y = (rot(0, 2) - rot(2, 0)) * s;
+                _z = (rot(1, 0) - rot(0, 1)) * s;
+            } else {
+                if (rot(0, 0) > rot(1, 1) && rot(0, 0) > rot(2, 2)) {
+                    const auto s = 2.f * std::sqrt(1.f + rot(0, 0) - rot(1, 1) - rot(2, 2));
+                    _w = (rot(2, 1) - rot(1, 2)) / s;
+                    _x = 0.25f * s;
+                    _y = (rot(0, 1) + rot(1, 0)) / s;
+                    _z = (rot(0, 2) + rot(2, 0)) / s;
+                } else if (rot(1, 1) > rot(2, 2)) {
+                    const auto s = 2.f * std::sqrt(1.f + rot(1, 1) - rot(0, 0) - rot(2, 2));
+                    _w = (rot(0, 2) - rot(2, 0)) / s;
+                    _x = (rot(0, 1) + rot(1, 0)) / s;
+                    _y = 0.25f * s;
+                    _z = (rot(1, 2) + rot(2, 1)) / s;
+                } else {
+                    const auto s = 2.f * std::sqrt(1.f + rot(2, 2) - rot(0, 0) - rot(1, 1));
+                    _w = (rot(1, 0) - rot(0, 1)) / s;
+                    _x = (rot(0, 2) + rot(2, 0)) / s;
+                    _y = (rot(1, 2) + rot(2, 1)) / s;
+                    _z = 0.25f * s;;
+                }
+            }
             _data[0] = _x;
             _data[1] = _y;
             _data[2] = _z;
