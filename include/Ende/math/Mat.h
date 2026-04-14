@@ -224,17 +224,26 @@ namespace ende::math {
         return result;
     }
 
-    template <u8 N, typename T>
+    template <u8 N, typename T, bool rowMajor = true>
     constexpr inline Mat<N, T> translation(const Vec<N - 1, T>& pos) {
         Mat<N, T> result;
         for (u32 x = 0; x < N; x++) {
             for (u32 y = 0; y < N; y++) {
-                if (x == N - 1 && y != N - 1)
+                if constexpr (rowMajor) {
+                    if (x != N - 1 && y == N - 1)
+                        result(x, y) = pos[x];
+                    else if (x == y)
+                        result(x, y) = T(1);
+                    else
+                        result(x, y) = T(0);
+                } else {
+                    if (x == N - 1 && y != N - 1)
                     result(x, y) = pos[y];
-                else if (x == y)
-                    result(x, y) = T(1);
-                else
-                    result(x, y) = T(0);
+                    else if (x == y)
+                        result(x, y) = T(1);
+                    else
+                        result(x, y) = T(0);
+                }
             }
         }
         result(N - 1, N - 1) = T(1);
