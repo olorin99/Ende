@@ -216,6 +216,24 @@ namespace ende::math {
     typedef Vec<3, i32> Vec3i;
     typedef Vec<4, i32> Vec4i;
 
+    template <u8 N, typename T>
+    auto min(const Vec<N, T>& lhs, const Vec<N, T>& rhs) -> Vec<N, T> {
+        Vec<N, T> result = {};
+        for (auto i = 0; i < N; i++) {
+            result[i] = std::min(lhs[i], rhs[i]);
+        }
+        return result;
+    };
+
+    template <u8 N, typename T>
+    auto max(const Vec<N, T>& lhs, const Vec<N, T>& rhs) -> Vec<N, T> {
+        Vec<N, T> result = {};
+        for (auto i = 0; i < N; i++) {
+            result[i] = std::max(lhs[i], rhs[i]);
+        }
+        return result;
+    };
+
 }
 
 #endif //ANINO_VEC_H

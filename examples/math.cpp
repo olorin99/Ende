@@ -115,6 +115,10 @@ int main() {
     const auto rhs = ende::math::Mat<4, f32, false>(d2);
 
     const auto vec = ende::math::Vec<4, f32>{ 0.5, 100, 12, 4 };
+    const auto vec1 = ende::math::Vec<4, f32>{ 0.7, 90, 42, -1 };
+
+    const auto minVec = ende::math::min(vec, vec1);
+    const auto maxVec = ende::math::max(vec, vec1);
 
     // const auto mult = lhs * rhs;
     const auto mult = rhs * lhs;
