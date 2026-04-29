@@ -18,6 +18,11 @@ namespace ende::math {
 
         constexpr inline Vec() = default;
 
+        constexpr inline Vec(const T& value) {
+            for (auto& i : _data)
+                i = value;
+        }
+
         constexpr inline Vec(std::initializer_list<T>&& list)
 //            : _data(std::forward<std::initializer_list<T>>(list))
         {
@@ -236,24 +241,27 @@ namespace ende::math {
 
 }
 
-template <u8 N, typename T>
-constexpr inline ende::math::Vec<N, T> operator*(const T& lhs, const ende::math::Vec<N, T>& rhs) {
-    return Vec(lhs) * rhs;
+template <u8 N, typename T, typename U>
+constexpr inline ende::math::Vec<N, T> operator*(const U& lhs, const ende::math::Vec<N, T>& rhs) {
+    return ende::math::Vec<N, T>(lhs) * rhs;
 }
 
-template <u8 N, typename T>
-constexpr inline ende::math::Vec<N, T> operator/(const T& lhs, const ende::math::Vec<N, T>& rhs) {
-    return Vec(lhs) / rhs;
+template <u8 N, typename T, typename U>
+constexpr inline ende::math::Vec<N, T> operator/(const U& lhs, const ende::math::Vec<N, T>& rhs) {
+    ende::math::Vec<N, T> result;
+    for (u8 i = 0; i < N; i++)
+        result[i] = lhs / rhs[i];
+    return result;
 }
 
-template <u8 N, typename T>
-constexpr inline ende::math::Vec<N, T> operator+(const T& lhs, const ende::math::Vec<N, T>& rhs) {
-    return Vec(lhs) + rhs;
+template <u8 N, typename T, typename U>
+constexpr inline ende::math::Vec<N, T> operator+(const U& lhs, const ende::math::Vec<N, T>& rhs) {
+    return ende::math::Vec<N, T>(lhs) + rhs;
 }
 
-template <u8 N, typename T>
-constexpr inline ende::math::Vec<N, T> operator-(const T& lhs, const ende::math::Vec<N, T>& rhs) {
-    return Vec(lhs) - rhs;
+template <u8 N, typename T, typename U>
+constexpr inline ende::math::Vec<N, T> operator-(const U& lhs, const ende::math::Vec<N, T>& rhs) {
+    return ende::math::Vec<N, T>(lhs) - rhs;
 }
 
 #endif //ANINO_VEC_H

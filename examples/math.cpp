@@ -120,6 +120,12 @@ int main() {
     const auto minVec = ende::math::min(vec, vec1);
     const auto maxVec = ende::math::max(vec, vec1);
 
+
+    const auto a = 2.0 - vec;
+    const auto b = 2.0 * vec;
+    const auto c = 2.0 + vec;
+    const auto d = 2.0 / vec;
+
     // const auto mult = lhs * rhs;
     const auto mult = rhs * lhs;
 
