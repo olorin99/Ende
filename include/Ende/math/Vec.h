@@ -23,8 +23,10 @@ namespace ende::math {
                 i = value;
         }
 
+        template <typename... Args>
+        inline Vec(Args&&... args) : Vec({static_cast<T>(std::forward<Args>(args))...}) {}
+
         constexpr inline Vec(std::initializer_list<T>&& list)
-//            : _data(std::forward<std::initializer_list<T>>(list))
         {
             u8 i = 0;
             for (auto& l : list)

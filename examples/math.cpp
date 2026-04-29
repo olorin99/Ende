@@ -126,6 +126,8 @@ int main() {
     const auto c = 2.0 + vec;
     const auto d = 2.0 / vec;
 
+    const auto e = ende::math::Vec<4, f32>(0, 1, 2, 3);
+
     // const auto mult = lhs * rhs;
     const auto mult = rhs * lhs;
 
