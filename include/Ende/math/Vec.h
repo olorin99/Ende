@@ -236,4 +236,24 @@ namespace ende::math {
 
 }
 
+template <u8 N, typename T>
+constexpr inline ende::math::Vec<N, T> operator*(const T& lhs, const ende::math::Vec<N, T>& rhs) {
+    return Vec(lhs) * rhs;
+}
+
+template <u8 N, typename T>
+constexpr inline ende::math::Vec<N, T> operator/(const T& lhs, const ende::math::Vec<N, T>& rhs) {
+    return Vec(lhs) / rhs;
+}
+
+template <u8 N, typename T>
+constexpr inline ende::math::Vec<N, T> operator+(const T& lhs, const ende::math::Vec<N, T>& rhs) {
+    return Vec(lhs) + rhs;
+}
+
+template <u8 N, typename T>
+constexpr inline ende::math::Vec<N, T> operator-(const T& lhs, const ende::math::Vec<N, T>& rhs) {
+    return Vec(lhs) - rhs;
+}
+
 #endif //ANINO_VEC_H
