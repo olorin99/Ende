@@ -126,7 +126,12 @@ int main() {
     const auto c = 2.0 + vec;
     const auto d = 2.0 / vec;
 
-    const auto e = ende::math::Vec<4, f32>(0, 1, 2, 3);
+    const auto e = ende::math::Vec<4, f32>(0.f, 1.f, 2.f, 3.f);
+
+    const auto f = ende::math::identity<4, f32>();
+
+    const auto g = vec * f;
+    const auto h = f * vec;
 
     // const auto mult = lhs * rhs;
     const auto mult = rhs * lhs;

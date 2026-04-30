@@ -71,12 +71,12 @@ namespace ende::math {
             return result;
         }
 
-        template <u8 O>
+        template <u32 O>
         constexpr inline Vec<O, T> transform(const Vec<O, T>& rhs) const {
             Vec<O, T> result;
             for (u32 row = 0; row < O; row++) {
                 result[row] = T(0);
-                for (u8 col = 0; col < O; col++) {
+                for (u32 col = 0; col < O; col++) {
                     if constexpr (rowMajor) result[row] += (*this)(col, row) * rhs[col];
                     else result[row] += (*this)(row, col) * rhs[col];
                 }
@@ -154,12 +154,12 @@ namespace ende::math {
             return result;
         }
 
-        constexpr inline T* operator[](u8 index) {
+        constexpr inline T* operator[](u32 index) {
             assert(N >= index);
             return &_data[index];
         }
 
-        constexpr inline const T* operator[](u8 index) const {
+        constexpr inline const T* operator[](u32 index) const {
             assert(N >= index);
             return &_data[index];
         }
@@ -195,7 +195,7 @@ namespace ende::math {
     typedef Mat<4, f32> Mat4f;
     typedef Mat<4, i32> Mat4i;
 
-    template <u8 N, typename T>
+    template <u32 N, typename T>
     constexpr inline Mat<N, T> identity() {
         Mat<N, T> result;
         for (u32 x = 0; x < N; x++) {
@@ -209,7 +209,7 @@ namespace ende::math {
         return result;
     }
 
-    template <u8 N, typename T>
+    template <u32 N, typename T>
     constexpr inline Mat<N, T> scale(const Vec<N - 1, T>& scale) {
         Mat<N, T> result;
         for (u32 x = 0; x < N; x++) {
@@ -224,7 +224,7 @@ namespace ende::math {
         return result;
     }
 
-    template <u8 N, typename T, bool rowMajor = true>
+    template <u32 N, typename T, bool rowMajor = true>
     constexpr inline Mat<N, T> translation(const Vec<N - 1, T>& pos) {
         Mat<N, T> result;
         for (u32 x = 0; x < N; x++) {
@@ -351,6 +351,16 @@ namespace ende::math {
         return result;
     }
 
+}
+
+template <u32 N, typename T, u32 O>
+constexpr inline ende::math::Vec<O, T> operator*(const ende::math::Mat<N, T>& lhs, const ende::math::Vec<O, T>& rhs) {
+    return lhs.transform(rhs);
+}
+
+template <u32 N, typename T, u32 O>
+constexpr inline ende::math::Vec<O, T> operator*(const ende::math::Vec<O, T>& lhs, const ende::math::Mat<N, T>& rhs) {
+    return rhs.transform(lhs);
 }
 
 #endif //ENDE_MAT_H

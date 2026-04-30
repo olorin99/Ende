@@ -9,26 +9,30 @@
 #include <cassert>
 #include <cmath>
 #include <array>
+#include <type_traits>
 
 namespace ende::math {
 
-    template <u8 N, typename T>
+    template <u32 N, typename T> requires (std::is_arithmetic_v<T>)
     class Vec {
     public:
 
         constexpr inline Vec() = default;
 
-        constexpr inline Vec(const T& value) {
+        constexpr inline explicit Vec(const T& value) {
             for (auto& i : _data)
                 i = value;
         }
 
-        template <typename... Args>
-        inline Vec(Args&&... args) : Vec({static_cast<T>(std::forward<Args>(args))...}) {}
+        constexpr inline explicit Vec(const T& x, const T& y) requires (N == 2) : Vec({x, y}) {}
+
+        constexpr inline explicit Vec(const T& x, const T& y, const T& z) requires (N == 3) : Vec({x, y, z}) {}
+
+        constexpr inline explicit Vec(const T& x, const T& y, const T& z, const T& w) requires (N == 4) : Vec({x, y, z, w}) {}
 
         constexpr inline Vec(std::initializer_list<T>&& list)
         {
-            u8 i = 0;
+            u32 i = 0;
             for (auto& l : list)
                 _data[i++] = l;
         }
@@ -58,7 +62,7 @@ namespace ende::math {
 
         constexpr inline T dot(const Vec& rhs) const {
             T result = T(0);
-            for (u8 i = 0; i < N; i++)
+            for (u32 i = 0; i < N; i++)
                 result += _data[i] * rhs._data[i];
             return result;
         }
@@ -137,7 +141,7 @@ namespace ende::math {
             return {_data[0], _data[1], _data[2]};
         }
 
-        constexpr inline Vec<4, T> xyzw() const {
+        constexpr inline Vec<4, T> xyzw() const requires (N >= 4){
             static_assert(N > 2, "xyzw requires 2 elements in vec");
             return {_data[0], _data[1], _data[2], _data[3]};
         }
@@ -147,59 +151,59 @@ namespace ende::math {
 
         constexpr inline Vec operator+(const Vec& rhs) const {
             Vec result;
-            for (u8 i = 0; i < N; i++)
+            for (u32 i = 0; i < N; i++)
                 result._data[i] = _data[i] + rhs._data[i];
             return result;
         }
 
         constexpr inline Vec operator-(const Vec& rhs) const {
             Vec result;
-            for (u8 i = 0; i < N; i++)
+            for (u32 i = 0; i < N; i++)
                 result._data[i] = _data[i] - rhs._data[i];
             return result;
         }
 
         constexpr inline Vec operator+(const T& rhs) const {
             Vec result;
-            for (u8 i = 0; i < N; i++)
+            for (u32 i = 0; i < N; i++)
                 result._data[i] = _data[i] + rhs;
             return result;
         }
 
         constexpr inline Vec operator-(const T& rhs) const {
             Vec result;
-            for (u8 i = 0; i < N; i++)
+            for (u32 i = 0; i < N; i++)
                 result._data[i] = _data[i] - rhs;
             return result;
         }
 
         constexpr inline Vec operator*(const T& rhs) const {
             Vec result;
-            for (u8 i = 0; i < N; i++)
+            for (u32 i = 0; i < N; i++)
                 result._data[i] = _data[i] * rhs;
             return result;
         }
 
         constexpr inline Vec operator*(const Vec& rhs) const {
             Vec result;
-            for (u8 i = 0; i < N; i++)
+            for (u32 i = 0; i < N; i++)
                 result._data[i] = _data[i] * rhs[i];
             return result;
         }
 
         constexpr inline Vec operator/(const T& rhs) const {
             Vec result;
-            for (u8 i = 0; i < N; i++)
+            for (u32 i = 0; i < N; i++)
                 result._data[i] = _data[i] / rhs;
             return result;
         }
 
-        constexpr inline T& operator[](u8 index) {
+        constexpr inline T& operator[](u32 index) {
             assert(N >= index);
             return _data[index];
         }
 
-        constexpr inline const T& operator[](u8 index) const {
+        constexpr inline const T& operator[](u32 index) const {
             assert(N >= index);
             return _data[index];
         }
@@ -223,7 +227,7 @@ namespace ende::math {
     typedef Vec<3, i32> Vec3i;
     typedef Vec<4, i32> Vec4i;
 
-    template <u8 N, typename T>
+    template <u32 N, typename T>
     auto min(const Vec<N, T>& lhs, const Vec<N, T>& rhs) -> Vec<N, T> {
         Vec<N, T> result = {};
         for (auto i = 0; i < N; i++) {
@@ -232,7 +236,7 @@ namespace ende::math {
         return result;
     };
 
-    template <u8 N, typename T>
+    template <u32 N, typename T>
     auto max(const Vec<N, T>& lhs, const Vec<N, T>& rhs) -> Vec<N, T> {
         Vec<N, T> result = {};
         for (auto i = 0; i < N; i++) {
@@ -243,25 +247,25 @@ namespace ende::math {
 
 }
 
-template <u8 N, typename T, typename U>
+template <u32 N, typename T, typename U> requires (std::is_arithmetic_v<U>)
 constexpr inline ende::math::Vec<N, T> operator*(const U& lhs, const ende::math::Vec<N, T>& rhs) {
     return ende::math::Vec<N, T>(lhs) * rhs;
 }
 
-template <u8 N, typename T, typename U>
+template <u32 N, typename T, typename U> requires (std::is_arithmetic_v<U>)
 constexpr inline ende::math::Vec<N, T> operator/(const U& lhs, const ende::math::Vec<N, T>& rhs) {
     ende::math::Vec<N, T> result;
-    for (u8 i = 0; i < N; i++)
+    for (u32 i = 0; i < N; i++)
         result[i] = lhs / rhs[i];
     return result;
 }
 
-template <u8 N, typename T, typename U>
+template <u32 N, typename T, typename U> requires (std::is_arithmetic_v<U>)
 constexpr inline ende::math::Vec<N, T> operator+(const U& lhs, const ende::math::Vec<N, T>& rhs) {
     return ende::math::Vec<N, T>(lhs) + rhs;
 }
 
-template <u8 N, typename T, typename U>
+template <u32 N, typename T, typename U> requires (std::is_arithmetic_v<U>)
 constexpr inline ende::math::Vec<N, T> operator-(const U& lhs, const ende::math::Vec<N, T>& rhs) {
     return ende::math::Vec<N, T>(lhs) - rhs;
 }
