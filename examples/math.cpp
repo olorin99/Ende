@@ -130,7 +130,6 @@ int main() {
 
     const auto f = ende::math::identity<4, f32>();
 
-    const auto g = vec * f;
     const auto h = f * vec;
 
     // const auto mult = lhs * rhs;

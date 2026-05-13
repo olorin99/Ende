@@ -1,0 +1,35 @@
+[
+  {
+    "label": "Ende Build Release",
+    "command": "cmake -G Ninja -DCMAKE_BUILD_TYPE=Release .. && cmake --build . -j8 --target Ende",
+    "cwd": "$ZED_WORKTREE_ROOT/build",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": true,
+    "shell": "system",
+  },
+  {
+    "label": "Ende Build Debug",
+    "command": "cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug .. && cmake --build . -j8 --target Ende",
+    "cwd": "$ZED_WORKTREE_ROOT/build",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": true,
+    "shell": "system",
+  },
+
+  {
+    "label": "Ende Math Build Debug",
+    "command": "cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug .. && cmake --build . -j8 --target math",
+    "cwd": "$ZED_WORKTREE_ROOT/build",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": true,
+    "shell": "system",
+  },
+  {
+    "label": "Run Math",
+    "command": "./examples/math",
+    "cwd": "$ZED_WORKTREE_ROOT/build",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": true,
+    "shell": "system",
+  },
+]

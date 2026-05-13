@@ -10,6 +10,8 @@ namespace ende::math {
     class Mat {
     public:
 
+        constexpr static bool RowMajor = rowMajor;
+
         constexpr inline Mat() {
             for (u32 x = 0; x < N; x++) {
                 for (u32 y = 0; y < N; y++)
@@ -353,14 +355,20 @@ namespace ende::math {
 
 }
 
-template <u32 N, typename T, u32 O>
-constexpr inline ende::math::Vec<O, T> operator*(const ende::math::Mat<N, T>& lhs, const ende::math::Vec<O, T>& rhs) {
-    return lhs.transform(rhs);
-}
+template <u32 N, typename T, bool rowMajor = true>
+constexpr inline ende::math::Vec<N, T> operator*(const ende::math::Mat<N, T, rowMajor>& lhs, const ende::math::Vec<N, T>& rhs) {
+    auto result = ende::math::Vec<N, T>(0);
 
-template <u32 N, typename T, u32 O>
-constexpr inline ende::math::Vec<O, T> operator*(const ende::math::Vec<O, T>& lhs, const ende::math::Mat<N, T>& rhs) {
-    return rhs.transform(lhs);
+    for (u32 row = 0; row < N; row++) {
+        for (u32 col = 0; col < N; col++) {
+            if constexpr (rowMajor) {
+                result[row] += lhs(col, row) * rhs[col];
+            } else {
+                result[row] += lhs(row, col) * rhs[col];
+            }
+        }
+    }
+    return result;
 }
 
 #endif //ENDE_MAT_H
