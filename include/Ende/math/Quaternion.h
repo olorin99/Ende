@@ -24,7 +24,7 @@ class Quaternion {
     constexpr inline Quaternion(const std::array<f32, 4> &rhs)
         : _data(rhs) {}
 
-    constexpr inline Quaternion(const float &axis, f32 angle)
+    constexpr inline Quaternion(const float3 &axis, f32 angle)
         : _data{0, 0, 0, 0} {
         const f32 sinHalfAngle = std::sin(angle / 2.f);
         const f32 cosHalfAngle = std::cos(angle / 2.f);
