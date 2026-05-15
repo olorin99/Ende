@@ -2,16 +2,16 @@
 #define ENDE_INTERSECT_H
 
 #include <Ende/platform.h>
-#include <Ende/math/Vec.h>
+#include <Ende/math/Mat.h>
 
 namespace ende::math {
 
-    bool intersect(const Vec3f& sphereCenter, f32 radius, const Vec3f& plane) {
+    constexpr inline auto intersect(const float3& sphereCenter, f32 radius, const float3& plane) -> bool {
         return sphereCenter.dot(plane) < -radius;
     }
 
-    bool intersect(const Vec3f& sphereCenter, f32 radius, const Vec3f& sphereCenter1, f32 radius1) {
-        return (sphereCenter - sphereCenter1).lengthSq() < (radius + radius1) * (radius + radius1);
+    constexpr inline auto intersect(const float3& sphereCenter, f32 radius, const float3& sphereCenter1, f32 radius1) -> bool {
+        return (sphereCenter - sphereCenter1).lengthSquared() < (radius + radius1) * (radius + radius1);
     }
 
 }

@@ -5,7 +5,6 @@
 #ifndef ENDE_FRUSTUM_H
 #define ENDE_FRUSTUM_H
 
-#include <Ende/math/Vec.h>
 #include <Ende/math/Mat.h>
 
 namespace ende::math {
@@ -15,22 +14,22 @@ namespace ende::math {
 
         Frustum() = default;
 
-        Frustum(const ende::math::Mat4f& matrix);
+        Frustum(const ende::math::float4x4& matrix);
 
-        void update(const ende::math::Mat4f& matrix);
+        void update(const ende::math::float4x4& matrix);
 
 
-        bool intersect(const ende::math::Vec3f& point) const;
+        bool intersect(const ende::math::float3& point) const;
 
-        bool intersect(const ende::math::Vec3f& point, f32 radius) const;
+        bool intersect(const ende::math::float3& point, f32 radius) const;
 
-        const std::array<Vec4f, 6>& planes() const { return _planes; }
+        const std::array<float4, 6>& planes() const { return _planes; }
 
         //TODO: add AABB checking
 
     private:
 
-        std::array<Vec4f, 6> _planes = {};
+        std::array<float4, 6> _planes = {};
 
     };
 

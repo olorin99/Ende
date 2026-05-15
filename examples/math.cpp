@@ -1,4 +1,5 @@
 
+#include "Ende/math/math.h"
 #include <Ende/platform.h>
 #include <random>
 
@@ -111,11 +112,11 @@ int main() {
     printf("Raw mult\n");
     compareWithNumpy(16, outputData, numpyResultMult.data());
 
-    const auto lhs = ende::math::Mat<4, f32, false>(d1);
-    const auto rhs = ende::math::Mat<4, f32, false>(d2);
+    const auto lhs = ende::math::Matrix<f32, 4>(d1);
+    const auto rhs = ende::math::Matrix<f32, 4>(d2);
 
-    const auto vec = ende::math::Vec<4, f32>{ 0.5, 100, 12, 4 };
-    const auto vec1 = ende::math::Vec<4, f32>{ 0.7, 90, 42, -1 };
+    const auto vec = ende::math::float4{ 0.5, 100, 12, 4 };
+    const auto vec1 = ende::math::float4{ 0.7, 90, 42, -1 };
 
     const auto minVec = ende::math::min(vec, vec1);
     const auto maxVec = ende::math::max(vec, vec1);
@@ -126,14 +127,14 @@ int main() {
     const auto c = 2.0 + vec;
     const auto d = 2.0 / vec;
 
-    const auto e = ende::math::Vec<4, f32>(0.f, 1.f, 2.f, 3.f);
+    const auto e = ende::math::float4(0.f, 1.f, 2.f, 3.f);
 
-    const auto f = ende::math::identity<4, f32>();
+    const auto f = ende::math::identity<f32, 4>();
 
     const auto h = f * vec;
 
-    // const auto mult = lhs * rhs;
-    const auto mult = rhs * lhs;
+    const auto mult = lhs * rhs;
+    // const auto mult = rhs * lhs;
 
     printf("\nMultiplication\n");
     compareWithNumpy(16, &mult[0][0], numpyResultMult.data());
@@ -145,12 +146,12 @@ int main() {
 
     printf("\nTranspose\n");
     const auto transpose = lhs.transpose();
-    printMatrix(N, transpose[0]);
+    printMatrix(N, &transpose[0][0]);
     compareWithNumpy(16, &transpose[0][0], numpyResultTranspose.data());
 
     printf("\nTransform\n");
-    const auto transform = lhs.transform(vec);
-    compareWithNumpy(4, &transform[0], numpyResultTransformVec.data());
+    const auto transform = lhs * vec;
+    compareWithNumpy(4, &transform[0][0], numpyResultTransformVec.data());
 
 
     auto q1 = ende::math::Quaternion(0.14, 0.56, 0.692, 0.4);
@@ -161,6 +162,85 @@ int main() {
 
     printf("q1 * q2: %fi + %fj + %fk + %f\n", productA.x(), productA.y(), productA.z(), productA.w());
     printf("q2 * q1: %fi + %fj + %fk + %f\n", productB.x(), productB.y(), productB.z(), productB.w());
+
+
+    auto v0 = ende::math::float4x4(std::to_array({
+        std::to_array({1.f, 0.f, 0.f, 0.f}),
+        std::to_array({1.f, 0.f, 0.f, 0.f}),
+        std::to_array({1.f, 0.f, 0.f, 0.f}),
+        std::to_array({1.f, 0.f, 0.f, 0.f})
+    }));
+    // auto v1 = ende::math::v2::identity<f32, 4, 4>();
+    auto v1 = ende::math::float4x4({
+        2.f, 4.f, 5.f, 5.f,
+        66.f, 2.f, 2.f, 4.f,
+        4.f, 12.f, 23.f, 56.f,
+        6.f, 9.f, 1.f, 4.f
+    });
+    auto v2 = ende::math::float4(1.f, 0.f, 54.f, 1.f);
+
+    auto v3 = ende::math::scale<f32, 4>({1.f, 2.f, 3.f, 1.f});
+    auto v4 = ende::math::translation<f32, 4, 3>({4.f, 56.f, -2.f});
+
+    auto v5 = ende::math::perspective<f32>(ende::math::rad(45.f), 1920.f / 1080.f, 0.f, 1000.f);
+    auto v6 = ende::math::orthographic<f32>(-1, 1, -1, 1, 0, 1);
+
+    auto v7 = ende::math::Matrix<f32, 4, 2>({
+        1.f, 303.f,
+        5.f, -2.f,
+        0.54f, 4000.f,
+        10.f, 3.f
+    });
+
+    auto v8 = ende::math::float4(3.f, 100.f, 34.f, 1.f);
+
+    auto v9 = ende::math::float3(1.f, 0.f, 0.f);
+    auto v10 = ende::math::float3(0.f, 1.f, 0.f);
+
+    auto v11 = ende::math::float4(v9, 4.f);
+    auto v12 = ende::math::float4(40.f, v10);
+
+    auto v13 = ende::math::float4({10.f, 20.f}, {30.f, 50.f});
+
+    auto m2 = v0 * v1;
+    auto m3 = v1 * v2;
+
+    auto m4 = v1 * 30;
+    auto m5 = v1 / 4;
+    auto m6 = v1 + 90;
+    auto m7 = v1 - 34.f;
+
+    auto d0 = v1.determinant();
+    auto i0 = v1.inverse();
+
+    // auto d3 = v7.determinant();
+
+    auto l0 = v2.dot(v8);
+    auto l1 = v2.lengthSquared();
+    auto l2 = v2.length();
+    auto l3 = v2.unit();
+    auto l4 = v2.reflect(v8);
+    auto l5 = v2.project(v8);
+    auto l6 = v2.lerp(v8, 0.7);
+
+    auto l7 = v9.cross(v10);
+
+
+    auto p0 = v2.x();
+    auto p1 = v2.xy();
+    auto p2 = v2.xyz();
+    auto p3 = v2.ywxz();
+
+    auto r0 = v0[0];
+    auto r1 = v0[1];
+
+    auto c0 = v0.col(0);
+    auto c1 = v0.col(1);
+
+    auto f03 = r0[3];
+    auto f33 = v0[3][3];
+
+    printf("%f", f03);
 
     return 0;
 }

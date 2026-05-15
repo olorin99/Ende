@@ -6,8 +6,9 @@
 #define ANINO_QUATERNION_H
 
 #include <Ende/platform.h>
+#include <cmath>
+#include <assert.h>
 #include <Ende/math/math.h>
-#include <Ende/math/Vec.h>
 #include <Ende/math/Mat.h>
 
 namespace ende::math {
@@ -27,7 +28,7 @@ namespace ende::math {
                 : _data(rhs)
         {}
 
-        constexpr inline Quaternion(const Vec3f& axis, f32 angle)
+        constexpr inline Quaternion(const float4& axis, f32 angle)
                 : _data{0, 0, 0, 0}
         {
             const f32 sinHalfAngle = std::sin(angle / 2.f);
@@ -54,38 +55,38 @@ namespace ende::math {
         }
 
 
-        inline Quaternion(const Mat4f& rot)
+        inline Quaternion(const float4x4& rot)
                 : _data{0, 0, 0, 0}
         {
             f32 _x = 0;
             f32 _y = 0;
             f32 _z = 0;
             f32 _w = 0;
-            const auto trace = rot(0, 0) + rot(1, 1) + rot(2, 2);
+            const auto trace = rot[0][0] + rot[1][1] + rot[2][2];
             if (trace > 0) {
                 const auto s = 0.5f / std::sqrt(trace + 1.f);
                 _w = 0.25f / s;
-                _x = (rot(2, 1) - rot(1, 2)) * s;
-                _y = (rot(0, 2) - rot(2, 0)) * s;
-                _z = (rot(1, 0) - rot(0, 1)) * s;
+                _x = (rot[1][2] - rot[2][1]) * s;
+                _y = (rot[2][0] - rot[0][2]) * s;
+                _z = (rot[0][1] - rot[1][0]) * s;
             } else {
-                if (rot(0, 0) > rot(1, 1) && rot(0, 0) > rot(2, 2)) {
-                    const auto s = 2.f * std::sqrt(1.f + rot(0, 0) - rot(1, 1) - rot(2, 2));
-                    _w = (rot(2, 1) - rot(1, 2)) / s;
+                if (rot[0][0] > rot[1][1] && rot[0][0] > rot[2][2]) {
+                    const auto s = 2.f * std::sqrt(1.f + rot[0][0] - rot[1][1] - rot[2][2]);
+                    _w = (rot[1][2] - rot[2][1]) / s;
                     _x = 0.25f * s;
-                    _y = (rot(0, 1) + rot(1, 0)) / s;
-                    _z = (rot(0, 2) + rot(2, 0)) / s;
-                } else if (rot(1, 1) > rot(2, 2)) {
-                    const auto s = 2.f * std::sqrt(1.f + rot(1, 1) - rot(0, 0) - rot(2, 2));
-                    _w = (rot(0, 2) - rot(2, 0)) / s;
-                    _x = (rot(0, 1) + rot(1, 0)) / s;
+                    _y = (rot[1][0] + rot[0][1]) / s;
+                    _z = (rot[2][0] + rot[0][2]) / s;
+                } else if (rot[1][1] > rot[2][2]) {
+                    const auto s = 2.f * std::sqrt(1.f + rot[1][1] - rot[0][0] - rot[2][2]);
+                    _w = (rot[2][0] - rot[0][2]) / s;
+                    _x = (rot[1][0] + rot[0][1]) / s;
                     _y = 0.25f * s;
-                    _z = (rot(1, 2) + rot(2, 1)) / s;
+                    _z = (rot[2][1] + rot[1][2]) / s;
                 } else {
-                    const auto s = 2.f * std::sqrt(1.f + rot(2, 2) - rot(0, 0) - rot(1, 1));
-                    _w = (rot(1, 0) - rot(0, 1)) / s;
-                    _x = (rot(0, 2) + rot(2, 0)) / s;
-                    _y = (rot(1, 2) + rot(2, 1)) / s;
+                    const auto s = 2.f * std::sqrt(1.f + rot[2][2] - rot[0][0] - rot[1][1]);
+                    _w = (rot[0][1] - rot[1][0]) / s;
+                    _x = (rot[2][0] + rot[0][2]) / s;
+                    _y = (rot[2][1] + rot[1][2]) / s;
                     _z = 0.25f * s;;
                 }
             }
@@ -154,7 +155,7 @@ namespace ende::math {
 
 
 
-        inline Vec3f rotate(const Vec3f& rhs) const {
+        inline float3 rotate(const float3& rhs) const {
             auto w = *this * rhs * conjugate();
             return { w.x(), w.y(), w.z() };
         }
@@ -179,25 +180,25 @@ namespace ende::math {
             return {-x(), -y(), z(), w()};
         }
 
-        inline Mat4f toMat() const {
-            Mat4f result = identity<4, f32>();
+        inline float4x4 toMat() const {
+            float4x4 result = identity<f32, 4>();
 
-            result(0, 0) = 1.f - 2.f * (y() * y() + z() * z());
-            result(0, 1) = 2.f * (x() * y() + w() * z());
-            result(0, 2) = 2.f * (x() * z() - w() * y());
+            result[0][0] = 1.f - 2.f * (y() * y() + z() * z());
+            result[1][0] = 2.f * (x() * y() + w() * z());
+            result[2][0] = 2.f * (x() * z() - w() * y());
 
-            result(1, 0) = 2.f * (x() * y() - w() * z());
-            result(1, 1) = 1.f - 2.f * (x() * x() + z() * z());
-            result(1, 2) = 2.f * (y() * z() + w() * x());
+            result[0][1] = 2.f * (x() * y() - w() * z());
+            result[1][1] = 1.f - 2.f * (x() * x() + z() * z());
+            result[2][1] = 2.f * (y() * z() + w() * x());
 
-            result(2, 0) = 2.f * (x() * z() + w() * y());
-            result(2, 1) = 2.f * (y() * z() - w() * x());
-            result(2, 2) = 1.f - 2.f * (x() * x() + y() * y());
+            result[0][2] = 2.f * (x() * z() + w() * y());
+            result[1][2] = 2.f * (y() * z() - w() * x());
+            result[2][2] = 1.f - 2.f * (x() * x() + y() * y());
 
             return result;
         }
 
-        constexpr inline Vec3f toEuler() const {
+        constexpr inline float3 toEuler() const {
 //            return { roll(), pitch(), yaw() };
             const f32 unit = x() * x() + y() * y() + z() * z() + w() * w();
             const f32 test = x() * w() - y() * z();
@@ -283,28 +284,28 @@ namespace ende::math {
         }
 
 
-        inline Vec3f front() const {
-            return rotate(Vec3f({0, 0, 1}));
+        inline float3 front() const {
+            return rotate(float3({0, 0, 1}));
         }
 
-        inline Vec3f back() const {
-            return rotate(Vec3f({0, 0, -1}));
+        inline float3 back() const {
+            return rotate(float3({0, 0, -1}));
         }
 
-        inline Vec3f up() const {
-            return rotate(Vec3f({0, -1, 0}));
+        inline float3 up() const {
+            return rotate(float3({0, -1, 0}));
         }
 
-        inline Vec3f down() const {
-            return rotate(Vec3f({0, 1, 0}));
+        inline float3 down() const {
+            return rotate(float3({0, 1, 0}));
         }
 
-        inline Vec3f left() const {
-            return rotate(Vec3f({-1, 0, 0}));
+        inline float3 left() const {
+            return rotate(float3({-1, 0, 0}));
         }
 
-        inline Vec3f right() const {
-            return rotate(Vec3f({1, 0, 0}));
+        inline float3 right() const {
+            return rotate(float3({1, 0, 0}));
         }
 
 
@@ -336,7 +337,7 @@ namespace ende::math {
 
 
 
-        constexpr inline Quaternion operator*(const Vec3f& rhs) const {
+        constexpr inline Quaternion operator*(const float3& rhs) const {
             const f32 _w = -(x() * rhs.x()) - (y() * rhs.y()) - (z() * rhs.z());
             const f32 _x = (w() * rhs.x()) + (y() * rhs.z()) - (z() * rhs.y());
             const f32 _y = (w() * rhs.y()) + (z() * rhs.x()) - (x() * rhs.z());
