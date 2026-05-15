@@ -3,6 +3,7 @@
 
 #include <Ende/platform.h>
 #include <expected>
+#include <memory>
 #include <mutex>
 
 namespace ende::thread {
