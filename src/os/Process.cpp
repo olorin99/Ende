@@ -1,10 +1,9 @@
-#include <csignal>
 #include "Ende/os/Process.h"
+#include <csignal>
 #include <iostream>
 
 ende::os::Process::Process(const std::string &cmd)
-    : _cmd(cmd)
-{}
+    : _cmd(cmd) {}
 
 ende::os::Process::~Process() {
     wait();
@@ -18,7 +17,7 @@ ende::os::Process::Process(Process &&process) noexcept {
     std::swap(_args, process._args);
 }
 
-ende::os::Process& ende::os::Process::operator=(Process &&process) noexcept {
+ende::os::Process &ende::os::Process::operator=(Process &&process) noexcept {
     std::swap(_pipes, process._pipes);
     std::swap(_info, process._info);
     std::swap(_forked, process._forked);
@@ -27,14 +26,13 @@ ende::os::Process& ende::os::Process::operator=(Process &&process) noexcept {
     return *this;
 }
 
-
-auto ende::os::Process::arg(const std::string &arg) -> Process& {
+auto ende::os::Process::arg(const std::string &arg) -> Process & {
     _args.push_back(arg);
     return *this;
 }
 
-auto ende::os::Process::args(std::span<std::string> args) -> Process& {
-    for (auto& arg : args)
+auto ende::os::Process::args(std::span<std::string> args) -> Process & {
+    for (auto &arg : args)
         _args.push_back(arg);
     return *this;
 }
@@ -43,7 +41,7 @@ auto ende::os::Process::id() const -> i32 {
     return _info.id;
 }
 
-auto ende::os::Process::fork() -> Process& {
+auto ende::os::Process::fork() -> Process & {
     _pipes.stdin = sys::pipe().value();
     _pipes.stdout = sys::pipe().value();
     _pipes.stderr = sys::pipe().value();
@@ -68,7 +66,7 @@ auto ende::os::Process::wait() -> i32 {
     return _info.ret;
 }
 
-auto ende::os::Process::kill() -> bool{
+auto ende::os::Process::kill() -> bool {
     return sys::kill(_info, SIGKILL);
 }
 
@@ -85,6 +83,6 @@ auto ende::os::Process::stderr() const -> ende::sys::Pipe {
 }
 
 void ende::os::Process::printArgs() const {
-    for (auto& arg : _args)
+    for (auto &arg : _args)
         std::cout << arg << ' ';
 }

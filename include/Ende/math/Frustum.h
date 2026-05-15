@@ -9,30 +9,26 @@
 
 namespace ende::math {
 
-    class Frustum {
-    public:
+class Frustum {
+  public:
+    Frustum() = default;
 
-        Frustum() = default;
+    Frustum(const ende::math::float4x4 &matrix);
 
-        Frustum(const ende::math::float4x4& matrix);
+    void update(const ende::math::float4x4 &matrix);
 
-        void update(const ende::math::float4x4& matrix);
+    bool intersect(const ende::math::float3 &point) const;
 
+    bool intersect(const ende::math::float3 &point, f32 radius) const;
 
-        bool intersect(const ende::math::float3& point) const;
+    const std::array<float4, 6> &planes() const { return _planes; }
 
-        bool intersect(const ende::math::float3& point, f32 radius) const;
+    // TODO: add AABB checking
 
-        const std::array<float4, 6>& planes() const { return _planes; }
+  private:
+    std::array<float4, 6> _planes = {};
+};
 
-        //TODO: add AABB checking
+} // namespace ende::math
 
-    private:
-
-        std::array<float4, 6> _planes = {};
-
-    };
-
-}
-
-#endif //ENDE_FRUSTUM_H
+#endif // ENDE_FRUSTUM_H

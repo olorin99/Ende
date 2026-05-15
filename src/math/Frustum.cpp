@@ -52,7 +52,7 @@ void ende::math::Frustum::update(const ende::math::float4x4 &matrix) {
 }
 
 bool ende::math::Frustum::intersect(const ende::math::float3 &point) const {
-    for (auto& plane : _planes) {
+    for (auto &plane : _planes) {
         if (point.dot(plane.xyz()) + plane.w() <= 0)
             return false;
     }
@@ -60,7 +60,7 @@ bool ende::math::Frustum::intersect(const ende::math::float3 &point) const {
 }
 
 bool ende::math::Frustum::intersect(const ende::math::float3 &point, f32 radius) const {
-    for (auto& plane : _planes) {
+    for (auto &plane : _planes) {
         if (point.dot(plane.xyz()) + plane.w() < -radius)
             return false;
     }

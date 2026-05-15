@@ -1,8 +1,8 @@
 
 #include <Ende/thread/ThreadPool.h>
 
-#include <Ende/profile/profile.h>
 #include <Ende/math/random.h>
+#include <Ende/profile/profile.h>
 
 #include <chrono>
 #include <iostream>
@@ -21,7 +21,6 @@ int main() {
         });
     }
 
-
     std::cout << "workers: " << pool.workerCount() << '\n';
     std::cout << "processed: " << pool.processedJobs() << '\n';
     std::cout << "jobs: " << pool.jobCount() << '\n';
@@ -30,12 +29,13 @@ int main() {
 
     std::vector<std::future<u32>> futures = {};
     for (u32 i = 0; i < 100; i++) {
-        futures.push_back(pool.addJob([] (u32 index, u32 rand) -> u32 {
+        futures.push_back(pool.addJob([](u32 index, u32 rand) -> u32 {
             return index * rand;
-        }, i, std::rand()));
+        },
+                                      i, std::rand()));
     }
 
-    for (auto& future : futures) {
+    for (auto &future : futures) {
         future.wait();
         std::cout << "num: " << future.get() << '\n';
     }

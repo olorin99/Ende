@@ -2,9 +2,9 @@
 #define ENDE_MAT_H
 
 #include <Ende/platform.h>
+#include <cmath>
 #include <cstddef>
 #include <initializer_list>
-#include <cmath>
 #include <span>
 
 namespace ende::math {
@@ -719,12 +719,12 @@ constexpr inline auto lookAt(const Matrix<T, 3, 1> &position, const Matrix<T, 3,
 }
 
 template <typename T, typename U, u32 M, u32 N = M>
-constexpr inline auto operator*(const U& lhs, const Matrix<T, M, N>& rhs) -> Matrix<T, M, N> {
+constexpr inline auto operator*(const U &lhs, const Matrix<T, M, N> &rhs) -> Matrix<T, M, N> {
     return rhs * lhs;
 }
 
 template <typename T, typename U, u32 M, u32 N = M>
-constexpr inline auto operator/(const U& lhs, const Matrix<T, M, N>& rhs) -> Matrix<T, M, N> {
+constexpr inline auto operator/(const U &lhs, const Matrix<T, M, N> &rhs) -> Matrix<T, M, N> {
     Matrix<T, M, N> result = {};
     for (u32 m = 0; m < M; m++) {
         for (u32 n = 0; n < N; n++) {
@@ -735,17 +735,17 @@ constexpr inline auto operator/(const U& lhs, const Matrix<T, M, N>& rhs) -> Mat
 }
 
 template <typename T, typename U, u32 M, u32 N = M>
-constexpr inline auto operator+(const U& lhs, const Matrix<T, M, N>& rhs) -> Matrix<T, M, N> {
+constexpr inline auto operator+(const U &lhs, const Matrix<T, M, N> &rhs) -> Matrix<T, M, N> {
     return Matrix<T, M, N>(lhs) + rhs;
 }
 
 template <typename T, typename U, u32 M, u32 N = M>
-constexpr inline auto operator-(const U& lhs, const Matrix<T, M, N>& rhs) -> Matrix<T, M, N> {
+constexpr inline auto operator-(const U &lhs, const Matrix<T, M, N> &rhs) -> Matrix<T, M, N> {
     return Matrix<T, M, N>(lhs) - rhs;
 }
 
 template <typename T, u32 M, u32 N = M>
-constexpr inline auto min(const Matrix<T, M, N>& lhs, const Matrix<T, M, N>& rhs) -> Matrix<T, M, N> {
+constexpr inline auto min(const Matrix<T, M, N> &lhs, const Matrix<T, M, N> &rhs) -> Matrix<T, M, N> {
     Matrix<T, M, N> result = {};
     for (u32 m = 0; m < M; m++) {
         for (u32 n = 0; n < N; n++) {
@@ -756,7 +756,7 @@ constexpr inline auto min(const Matrix<T, M, N>& lhs, const Matrix<T, M, N>& rhs
 };
 
 template <typename T, u32 M, u32 N = M>
-constexpr inline auto max(const Matrix<T, M, N>& lhs, const Matrix<T, M, N>& rhs) -> Matrix<T, M, N> {
+constexpr inline auto max(const Matrix<T, M, N> &lhs, const Matrix<T, M, N> &rhs) -> Matrix<T, M, N> {
     Matrix<T, M, N> result = {};
     for (u32 m = 0; m < M; m++) {
         for (u32 n = 0; n < N; n++) {
@@ -765,7 +765,6 @@ constexpr inline auto max(const Matrix<T, M, N>& lhs, const Matrix<T, M, N>& rhs
     }
     return result;
 };
-
 
 using float2x2 = Matrix<f32, 2, 2>;
 using float3x3 = Matrix<f32, 3, 3>;

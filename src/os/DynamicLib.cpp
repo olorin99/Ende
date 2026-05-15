@@ -11,7 +11,7 @@ ende::os::DynamicLib::DynamicLib(DynamicLib &&lib) noexcept {
     std::swap(_flags, lib._flags);
 }
 
-ende::os::DynamicLib & ende::os::DynamicLib::operator=(DynamicLib &&lib) noexcept {
+ende::os::DynamicLib &ende::os::DynamicLib::operator=(DynamicLib &&lib) noexcept {
     std::swap(_address, lib._address);
     std::swap(_error, lib._error);
     std::swap(_path, lib._path);

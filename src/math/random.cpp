@@ -7,16 +7,13 @@
 #include <random>
 
 ende::math::xorshift::xorshift()
-    : _state{123456789, 362436069, 52188629, 88675123}
-{}
+    : _state{123456789, 362436069, 52188629, 88675123} {}
 
 ende::math::xorshift::xorshift(result_type r)
-    : _state{123456789, 362436069, 52188629, r}
-{}
+    : _state{123456789, 362436069, 52188629, r} {}
 
 ende::math::xorshift::xorshift(const state_type &state)
-    : _state(state)
-{}
+    : _state(state) {}
 
 ende::math::xorshift::result_type ende::math::xorshift::operator()() {
     result_type t = _state.x ^ (_state.x << 15);
@@ -44,7 +41,7 @@ void ende::math::xorshift::discard(u32 z) {
         (*this)();
 }
 
-const ende::math::xorshift::state_type & ende::math::xorshift::state() const {
+const ende::math::xorshift::state_type &ende::math::xorshift::state() const {
     return _state;
 }
 
@@ -61,7 +58,6 @@ constexpr ende::math::xorshift::result_type ende::math::xorshift::max() {
 }
 
 thread_local ende::math::xorshift seed = ende::math::xorshift(std::random_device()());
-
 
 template <>
 f32 ende::math::rand(f32 min, f32 max) {

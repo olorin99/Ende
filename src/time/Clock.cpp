@@ -1,14 +1,11 @@
 #include <Ende/time/Clock.h>
 #include <chrono>
 
-
 ende::time::Clock::Clock() noexcept
-	    : _start{}
-	{}
-	
+    : _start{} {}
+
 ende::time::Clock::Clock(const TimePoint &time)
-    : _start(time)
-{}
+    : _start(time) {}
 
 std::string ende::time::Clock::format(const char *fmt) {
     std::time_t time = static_cast<std::time_t>(seconds());

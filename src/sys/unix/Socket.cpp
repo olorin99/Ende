@@ -1,15 +1,14 @@
 #include "Ende/sys/Socket.h"
 
-#include <sys/socket.h>
 #include <arpa/inet.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <cstring>
-
+#include <fcntl.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 auto ende::sys::getAddressInfo(const std::string &node, const std::string &service) -> AddressInfo {
     struct addrinfo hints;
-    struct addrinfo* res;
+    struct addrinfo *res;
 
     std::memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
@@ -24,12 +23,10 @@ auto ende::sys::getAddressInfo(const std::string &node, const std::string &servi
 }
 
 ende::sys::Socket::Socket()
-    : _socket(-1)
-{}
+    : _socket(-1) {}
 
 ende::sys::Socket::Socket(i32 fd)
-    : _socket(fd)
-{}
+    : _socket(fd) {}
 
 ende::sys::Socket::~Socket() {
     close();
@@ -57,7 +54,7 @@ auto ende::sys::Socket::bind(const Address &address, u32 length) -> bool {
 }
 
 auto ende::sys::Socket::connect() -> bool {
-    return ::connect(_socket, _info.ai_addr, _info.ai_addrlen) ==0;
+    return ::connect(_socket, _info.ai_addr, _info.ai_addrlen) == 0;
 }
 
 auto ende::sys::Socket::listen(u32 backlog) -> bool {
@@ -86,7 +83,7 @@ auto ende::sys::Socket::handle() const -> i32 {
     return _socket;
 }
 
-auto ende::sys::Socket::address() const -> Address* {
+auto ende::sys::Socket::address() const -> Address * {
     return _info.ai_addr;
 }
 

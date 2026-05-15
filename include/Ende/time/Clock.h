@@ -6,40 +6,35 @@
 
 namespace ende::time {
 
-        class Clock {
-	    public:
+class Clock {
+  public:
+    using TimePoint = std::chrono::system_clock::time_point;
+    using Duration = std::chrono::nanoseconds;
 
-            using TimePoint = std::chrono::system_clock::time_point;
-            using Duration = std::chrono::nanoseconds;
-	
-	        Clock() noexcept;
-	
-	        Clock(const TimePoint& time);
-	
-	        std::string format(const char* fmt);
-	
-	        static Clock now();
-	
-	        Duration durationSince(const TimePoint& time) const;
-	
-	        Duration elapsed() const;
-	
-	
-	        u64 seconds() const;
-	
-	        u64 milliseconds() const;
-	
-	        u64 microseconds() const;
-	
-	        u64 nanoseconds() const;
-	
-	    private:
+    Clock() noexcept;
 
-            TimePoint _start; 
-	
-	    };
+    Clock(const TimePoint &time);
 
-}
+    std::string format(const char *fmt);
 
+    static Clock now();
 
-#endif //ENDE_CLOCK_H
+    Duration durationSince(const TimePoint &time) const;
+
+    Duration elapsed() const;
+
+    u64 seconds() const;
+
+    u64 milliseconds() const;
+
+    u64 microseconds() const;
+
+    u64 nanoseconds() const;
+
+  private:
+    TimePoint _start;
+};
+
+} // namespace ende::time
+
+#endif // ENDE_CLOCK_H

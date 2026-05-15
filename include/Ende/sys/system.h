@@ -6,8 +6,8 @@
 
 namespace ende::sys {
 
-    auto demangle(const char* name) -> std::string;
+auto demangle(const char *name) -> std::string;
 
 }
 
-#endif //ENDE_SYSTEM_H
+#endif // ENDE_SYSTEM_H

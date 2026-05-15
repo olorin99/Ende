@@ -5,12 +5,12 @@
 
 namespace ende {
 
-    auto stdin() -> fs::File&;
+auto stdin() -> fs::File &;
 
-    auto stdout() -> fs::File&;
+auto stdout() -> fs::File &;
 
-    auto stderr() -> fs::File&;
+auto stderr() -> fs::File &;
 
-}
+} // namespace ende
 
-#endif //ENDE_IO_H
+#endif // ENDE_IO_H

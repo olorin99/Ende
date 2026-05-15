@@ -3,19 +3,17 @@
 
 namespace ende {
 
-    template <typename T>
-    class Singleton {
-    protected:
+template <typename T>
+class Singleton {
+  protected:
+    explicit Singleton() = default;
 
-        explicit Singleton() = default;
+    static T &instance() {
+        static T inst;
+        return inst;
+    }
+};
 
-        static T& instance() {
-            static T inst;
-            return inst;
-        }
+} // namespace ende
 
-    };
-
-}
-
-#endif //ENDE_SINGLETON_H
+#endif // ENDE_SINGLETON_H

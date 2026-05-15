@@ -7,66 +7,59 @@
 
 namespace ende::sys {
 
-    class FileDesc {
-    public:
-
+class FileDesc {
+  public:
 #ifdef ENDE_UNIX
-        typedef i32 Handle;
+    typedef i32 Handle;
 #elif defined ENDE_WIN
-        typedef void* Handle;
+    typedef void *Handle;
 #endif
 
-        FileDesc();
+    FileDesc();
 
-        explicit FileDesc(Handle handle);
+    explicit FileDesc(Handle handle);
 
-        FileDesc(const FileDesc& fd);
+    FileDesc(const FileDesc &fd);
 
-        FileDesc(FileDesc&& fd) noexcept;
+    FileDesc(FileDesc &&fd) noexcept;
 
-        FileDesc& operator=(const FileDesc& fd);
+    FileDesc &operator=(const FileDesc &fd);
 
-        FileDesc& operator=(FileDesc&& fd) noexcept;
+    FileDesc &operator=(FileDesc &&fd) noexcept;
 
+    auto handle() const -> const Handle &;
 
-        auto handle() const -> const Handle&;
+    auto valid() const -> bool;
 
-        auto valid() const -> bool;
+    auto read(std::span<char> buffer) const -> i32;
 
+    auto read() const -> std::string;
 
-        auto read(std::span<char> buffer) const -> i32;
+    auto write(std::span<const char> buffer) const -> i32;
 
-        auto read() const -> std::string;
+    auto dup(const FileDesc &fd) const -> bool;
 
-        auto write(std::span<const char> buffer) const -> i32;
+    auto flush() const -> bool;
 
+    auto size() const -> u64;
 
-        auto dup(const FileDesc& fd) const -> bool;
+    static auto stdin() -> const FileDesc &;
 
-        auto flush() const -> bool;
+    static auto stdout() -> const FileDesc &;
 
-        auto size() const -> u64;
+    static auto stderr() -> const FileDesc &;
 
+  private:
+    friend bool close(FileDesc &fd);
 
-        static auto stdin() -> const FileDesc&;
+    Handle _handle;
+    u32 _flags;
+};
 
-        static auto stdout() -> const FileDesc&;
+FileDesc open(const std::string &path, u32 flags, u32 perms = 0666);
 
-        static auto stderr() -> const FileDesc&;
+bool close(FileDesc &fd);
 
-    private:
-        friend bool close(FileDesc& fd);
+} // namespace ende::sys
 
-        Handle _handle;
-        u32 _flags;
-
-
-    };
-
-    FileDesc open(const std::string& path, u32 flags, u32 perms = 0666);
-
-    bool close(FileDesc& fd);
-
-}
-
-#endif //ENDE_FILEDESC_H
+#endif // ENDE_FILEDESC_H

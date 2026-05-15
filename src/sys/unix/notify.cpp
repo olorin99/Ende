@@ -25,7 +25,7 @@ auto ende::sys::notify::read(const FileDesc &fd, u32 size) -> std::vector<Event>
     while (count > 0) {
         i32 i = 0;
         while (i < count) {
-            struct inotify_event* event = reinterpret_cast<struct inotify_event*>(&buffer[i]);
+            struct inotify_event *event = reinterpret_cast<struct inotify_event *>(&buffer[i]);
             Event e{};
             e.watch = event->wd;
             e.mask = static_cast<Mask>(event->mask);

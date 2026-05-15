@@ -7,13 +7,13 @@
 
 namespace ende::sys {
 
-    struct Pipe {
-        FileDesc input;
-        FileDesc output;
-    };
+struct Pipe {
+    FileDesc input;
+    FileDesc output;
+};
 
-    auto pipe() -> std::optional<Pipe>;
+auto pipe() -> std::optional<Pipe>;
 
-}
+} // namespace ende::sys
 
-#endif //ENDE_PIPE_H
+#endif // ENDE_PIPE_H

@@ -6,14 +6,14 @@
 
 namespace ende::sys::dl {
 
-    auto open(const std::string& path, i32 flags) -> void*;
+auto open(const std::string &path, i32 flags) -> void *;
 
-    auto symbol(void* handle, const std::string& name) -> void*;
+auto symbol(void *handle, const std::string &name) -> void *;
 
-    auto close(void* handle) -> bool;
+auto close(void *handle) -> bool;
 
-    auto error() -> std::string;
+auto error() -> std::string;
 
-}
+} // namespace ende::sys::dl
 
-#endif //ENDE_DL_H
+#endif // ENDE_DL_H

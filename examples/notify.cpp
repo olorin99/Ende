@@ -7,8 +7,5 @@ int main() {
 
     auto watch = ende::sys::notify::addWatch(fd, "~", ende::sys::notify::Mask::ACCESS);
 
-
-
-
     return 0;
 }

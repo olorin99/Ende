@@ -1,14 +1,13 @@
 
+#include <Ende/graph/graph.h>
 #include <cstdio>
 #include <ranges>
 #include <string>
-#include <Ende/graph/graph.h>
 
 using namespace ende::graph;
 
 struct BufferEdge : public Edge {};
 struct ImageEdge : public Edge {};
-
 
 struct RenderVertex : public Vertex<ImageEdge, BufferEdge> {
     std::string name;
@@ -16,54 +15,46 @@ struct RenderVertex : public Vertex<ImageEdge, BufferEdge> {
 
 i32 main() {
 
-    BufferEdge edge0;// = { .id = 0 };
+    BufferEdge edge0; // = { .id = 0 };
     edge0.id = 0;
-    Edge edge1 = { .id = 1 };
-    Edge edge2 = { .id = 2 };
-    Edge edge3 = { .id = 3 };
-    Edge edge4 = { .id = 4 };
+    Edge edge1 = {.id = 1};
+    Edge edge2 = {.id = 2};
+    Edge edge3 = {.id = 3};
+    Edge edge4 = {.id = 4};
 
-    Vertex<Edge, BufferEdge> vertex0 = { .id = 0 };
-    Vertex<Edge, BufferEdge> vertex1 = { .id = 1 };
-    Vertex<Edge, BufferEdge> vertex2 = { .id = 2 };
+    Vertex<Edge, BufferEdge> vertex0 = {.id = 0};
+    Vertex<Edge, BufferEdge> vertex1 = {.id = 1};
+    Vertex<Edge, BufferEdge> vertex2 = {.id = 2};
 
     vertex0.outputs = {
-        edge0, edge1, edge2
-    };
+        edge0, edge1, edge2};
 
-    vertex1.inputs = { edge0, edge1 };
-    vertex1.outputs = { edge3 };
+    vertex1.inputs = {edge0, edge1};
+    vertex1.outputs = {edge3};
 
-    vertex2.inputs = { edge2, edge3 };
-    vertex2.outputs = { edge4 };
-
+    vertex2.inputs = {edge2, edge3};
+    vertex2.outputs = {edge4};
 
     auto v0o0 = maybe_conv(i32, vertex0.output<BufferEdge>(0));
     auto v1o0 = maybe_conv(i32, vertex1.output<Edge>(0));
 
-
-    auto vertices = std::to_array({
-        vertex0, vertex1, vertex2
-    });
+    auto vertices = std::to_array({vertex0, vertex1, vertex2});
 
     const auto graphSpan = std::span<const Vertex<Edge, BufferEdge>>(vertices.data(), vertices.size());
 
     auto topological = maybe_conv(i32, topologicalSort(graphSpan, edge4, 5));
 
-    for (const auto& vertex : topological) {
+    for (const auto &vertex : topological) {
         printf("%d, ", vertex.id);
     }
     printf("\n");
 
-
-
-
     auto graph = Graph<Vertex<ImageEdge, BufferEdge>>();
     graph.reserveVertices(3);
 
-    auto& v0 = graph.addVertex();
-    auto& v1 = graph.addVertex();
-    auto& v2 = graph.addVertex();
+    auto &v0 = graph.addVertex();
+    auto &v1 = graph.addVertex();
+    auto &v2 = graph.addVertex();
 
     auto e0 = graph.addEdge<ImageEdge>(v0, v1);
     graph.addEdge<BufferEdge>(v0, v2);
@@ -81,40 +72,38 @@ i32 main() {
     // v1.outputs = { e3 };
 
     // v2.inputs = { e2, e3 };
-    v2.outputs = { e4 };
+    v2.outputs = {e4};
 
     // auto t = TRY_MAIN(topologicalSort(graph.getVertices(), e4, graph.edgeCount()));
     auto t = maybe_conv(i32, graph.sort(e4));
 
-    for (const auto& vertex : t) {
+    for (const auto &vertex : t) {
         printf("%d, ", vertex.id);
     }
     printf("\n");
-
-
 
     {
         auto g = Graph<RenderVertex>();
         g.reserveVertices(30);
 
-        auto& top = g.addVertex();
+        auto &top = g.addVertex();
         top.name = "Top";
 
-        auto geometryPass = [&] (bool meshShader) -> Graph<RenderVertex>::Vertex& {
-            auto& clearMeshletInstances = g.addVertex();
+        auto geometryPass = [&](bool meshShader) -> Graph<RenderVertex>::Vertex & {
+            auto &clearMeshletInstances = g.addVertex();
             clearMeshletInstances.name = "ClearMeshletInstances";
-            auto& cullMeshes = g.addVertex();
+            auto &cullMeshes = g.addVertex();
             cullMeshes.name = "CullMeshes";
-            auto& writeCullMeshletsCommand = g.addVertex();
+            auto &writeCullMeshletsCommand = g.addVertex();
             writeCullMeshletsCommand.name = "WriteCullMeshletsCommand";
-            auto& cullMeshlets = g.addVertex();
+            auto &cullMeshlets = g.addVertex();
             cullMeshlets.name = "CullMeshlets";
-            auto& writeDrawCommand = g.addVertex();
+            auto &writeDrawCommand = g.addVertex();
             writeDrawCommand.name = "WriteDrawCommand";
 
-            auto& drawMeshlets = g.addVertex();
+            auto &drawMeshlets = g.addVertex();
             drawMeshlets.name = "DrawMeshlets";
-            auto& writePrimitives = g.addVertex();
+            auto &writePrimitives = g.addVertex();
             writePrimitives.name = "WritePrimitives";
 
             g.addEdge(top, clearMeshletInstances);
@@ -134,15 +123,14 @@ i32 main() {
             return drawMeshlets;
         };
 
-        auto& draw0 = geometryPass(false);
+        auto &draw0 = geometryPass(false);
 
-        auto& draw1 = geometryPass(true);
+        auto &draw1 = geometryPass(true);
 
-        auto& compositePass = g.addVertex();
+        auto &compositePass = g.addVertex();
         compositePass.name = "CompositePass";
         g.addEdge(draw0, compositePass);
         g.addEdge(draw1, compositePass);
-
 
         // auto root = g.addEdge();
         // drawMeshlets.outputs = { root };
@@ -150,29 +138,27 @@ i32 main() {
         auto sortedBottomUp = maybe_conv(i32, g.sort(compositePass));
         auto sortedTopDown = maybe_conv(i32, g.sort(top, true));
 
-        for (const auto& vertex : sortedBottomUp) {
+        for (const auto &vertex : sortedBottomUp) {
             printf("%d: %s, ", vertex.id, vertex.name.c_str());
         }
         printf("\n");
-        for (const auto& vertex : sortedTopDown) {
+        for (const auto &vertex : sortedTopDown) {
             printf("%d: %s, ", vertex.id, vertex.name.c_str());
         }
         printf("\n");
 
         auto bottomUpSpan = std::span<const RenderVertex>(sortedBottomUp.data(), sortedBottomUp.size());
         auto shortestPathDistances = maybe_conv(i32, shortestPath(bottomUpSpan, g.edgeCount()));
-        for (const auto& [distance, vertex] : std::views::zip(shortestPathDistances, sortedBottomUp)) {
+        for (const auto &[distance, vertex] : std::views::zip(shortestPathDistances, sortedBottomUp)) {
             printf("(%d, %d): %s, ", vertex.id, distance, vertex.name.c_str());
         }
         printf("\n");
-
 
         auto longestPathDistances = maybe_conv(i32, longestPath(bottomUpSpan, g.edgeCount()));
-        for (const auto& [distance, vertex] : std::views::zip(longestPathDistances, sortedBottomUp)) {
+        for (const auto &[distance, vertex] : std::views::zip(longestPathDistances, sortedBottomUp)) {
             printf("(%d, %d): %s, ", vertex.id, distance, vertex.name.c_str());
         }
         printf("\n");
-
     }
 
     return 0;

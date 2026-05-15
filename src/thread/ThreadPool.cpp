@@ -2,12 +2,11 @@
 
 ende::thread::ThreadPool::ThreadPool(u8 threadCount, bool start)
     : _running(start),
-    _stop(false),
-    _currentJobId(1),
-    _jobCount(0),
-    _processed(0),
-    _jobs(std::vector<Job>())
-{
+      _stop(false),
+      _currentJobId(1),
+      _jobCount(0),
+      _processed(0),
+      _jobs(std::vector<Job>()) {
     _workers.reserve(threadCount);
     for (i32 i = 0; i < threadCount; i++) {
         _workers.push_back(std::thread([&]() {
@@ -19,7 +18,6 @@ ende::thread::ThreadPool::ThreadPool(u8 threadCount, bool start)
                     if (!_jobs.empty() && _running) {
                         job = std::move(_jobs.front());
                         _jobs.erase(_jobs.begin());
-
 
                         lock.unlock();
                         job.task(job.id);
@@ -43,7 +41,7 @@ ende::thread::ThreadPool::~ThreadPool() {
     _jobReady.notify_all();
     lock.unlock();
 
-    for (auto& worker : _workers) {
+    for (auto &worker : _workers) {
         if (worker.joinable())
             worker.join();
     }

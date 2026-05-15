@@ -8,30 +8,30 @@
 #include <Ende/platform.h>
 #include <Ende/sys/FileDesc.h>
 #include <Ende/sys/pipe.h>
-#include <vector>
 #include <expected>
+#include <vector>
 
 namespace ende::sys {
 
-    struct ProcessInfo {
-        i32 id;
-        i32 ret;
-        FileDesc process;
-        FileDesc thread;
-    };
+struct ProcessInfo {
+    i32 id;
+    i32 ret;
+    FileDesc process;
+    FileDesc thread;
+};
 
-    struct Pipes {
-        Pipe stdin;
-        Pipe stdout;
-        Pipe stderr;
-    };
+struct Pipes {
+    Pipe stdin;
+    Pipe stdout;
+    Pipe stderr;
+};
 
-    auto spawn(const std::string& cmd, const std::vector<std::string>& args, Pipes& pipes) -> std::expected<ProcessInfo, int>;
+auto spawn(const std::string &cmd, const std::vector<std::string> &args, Pipes &pipes) -> std::expected<ProcessInfo, int>;
 
-    auto wait(ProcessInfo& info, u32 flags) -> bool;
+auto wait(ProcessInfo &info, u32 flags) -> bool;
 
-    auto kill(ProcessInfo& info, i32 signal) -> bool;
+auto kill(ProcessInfo &info, i32 signal) -> bool;
 
-}
+} // namespace ende::sys
 
-#endif //ENDE_SYS_PROCESS_H
+#endif // ENDE_SYS_PROCESS_H

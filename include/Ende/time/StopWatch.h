@@ -5,27 +5,24 @@
 
 namespace ende::time {
 
-    class StopWatch {
-    public:
+class StopWatch {
+  public:
+    StopWatch() = default;
 
-        StopWatch() = default;
+    void start();
 
-        void start();
+    void stop();
 
-        void stop();
+    auto reset() -> std::chrono::high_resolution_clock::duration;
 
-        auto reset() -> std::chrono::high_resolution_clock::duration;
+    auto running() const -> bool { return _running; }
 
-        auto running() const -> bool { return _running; }
+  private:
+    bool _running = false;
+    std::chrono::time_point<std::chrono::high_resolution_clock> _started = {};
+    std::chrono::high_resolution_clock::duration _passed = {};
+};
 
-    private:
+} // namespace ende::time
 
-        bool _running = false;
-        std::chrono::time_point<std::chrono::high_resolution_clock> _started = {};
-        std::chrono::high_resolution_clock::duration _passed = {};
-
-    };
-
-}
-
-#endif //ENDE_STOPWATCH_H
+#endif // ENDE_STOPWATCH_H
