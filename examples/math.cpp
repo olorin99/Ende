@@ -260,6 +260,8 @@ int main() {
     auto f03 = r0[3];
     auto f33 = v0[3][3];
 
+    auto aaaa = v1.data();
+
     printf("%f", f03);
 
     return 0;
