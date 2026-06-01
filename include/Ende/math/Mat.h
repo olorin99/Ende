@@ -615,6 +615,8 @@ class Matrix {
     SWIZZLE4(w, x, z, y);
     SWIZZLE4(w, x, y, z);
 
+    auto data() const -> std::span<T, SIZE> { return _data; }
+
   private:
     std::array<T, SIZE> _data = {};
 };
