@@ -1,8 +1,12 @@
 
-#include <Ende/graph/graph.h>
 #include <cstdio>
 #include <ranges>
 #include <string>
+
+#include <Ende/maybe.h>
+
+import ende.util;
+import ende.graph;
 
 using namespace ende::graph;
 

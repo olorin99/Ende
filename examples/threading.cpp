@@ -1,12 +1,15 @@
 
-#include <Ende/thread/ThreadPool.h>
-
-#include <Ende/math/random.h>
-#include <Ende/profile/profile.h>
+#include <Ende/profile.h>
 
 #include <chrono>
 #include <iostream>
 #include <thread>
+#include <future>
+
+import ende.thread.ThreadPool;
+import ende.thread.Mutex;
+import ende.util;
+import ende.math.random;
 
 int main() {
 

@@ -1,10 +1,56 @@
-//
-// Created by cstro29 on 30/6/21.
-//
+module;
 
-#include "Ende/math/random.h"
+#include <Ende/platform.h>
 #include <limits>
 #include <random>
+
+export module ende.math.random;
+
+import ende.util;
+
+namespace ende::math {
+
+export class xorshift {
+  public:
+    typedef u32 result_type;
+
+    struct state_type {
+        result_type x, y, z, w;
+    };
+
+    xorshift();
+
+    explicit xorshift(result_type r);
+
+    explicit xorshift(const state_type &state);
+
+    result_type operator()();
+
+    void seed();
+
+    void seed(result_type r);
+
+    void seed(const state_type &state);
+
+    void discard(u32 z);
+
+    const state_type &state() const;
+
+    void state(const state_type &state);
+
+    constexpr static result_type min();
+
+    constexpr static result_type max();
+
+  private:
+    state_type _state;
+};
+
+export template <typename T>
+T rand(T min, T max);
+
+} // namespace ende::math
+
 
 ende::math::xorshift::xorshift()
     : _state{123456789, 362436069, 52188629, 88675123} {}

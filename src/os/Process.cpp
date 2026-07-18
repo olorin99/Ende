@@ -1,6 +1,64 @@
-#include "Ende/os/Process.h"
+module;
+
 #include <csignal>
 #include <iostream>
+
+#include <Ende/platform.h>
+#include <span>
+#include <vector>
+
+export module ende.os.Process;
+
+import ende.system.pipe;
+import ende.system.process;
+import ende.system.FileDesc;
+import ende.util;
+
+namespace ende::os {
+
+export class Process {
+  public:
+    Process(const std::string &cmd);
+
+    ~Process();
+
+    Process(const Process &process) = delete;
+
+    Process(Process &&process) noexcept;
+
+    Process &operator=(const Process &process) = delete;
+
+    Process &operator=(Process &&process) noexcept;
+
+    auto arg(const std::string &arg) -> Process &;
+
+    auto args(std::span<std::string> args) -> Process &;
+
+    auto id() const -> i32;
+
+    auto fork() -> Process &;
+
+    auto wait() -> i32;
+
+    auto kill() -> bool;
+
+    auto stdin() const -> sys::Pipe;
+
+    auto stdout() const -> sys::Pipe;
+
+    auto stderr() const -> sys::Pipe;
+
+    void printArgs() const;
+
+  private:
+    sys::Pipes _pipes;
+    sys::ProcessInfo _info;
+    bool _forked;
+    std::string _cmd;
+    std::vector<std::string> _args;
+};
+
+}
 
 ende::os::Process::Process(const std::string &cmd)
     : _cmd(cmd) {}

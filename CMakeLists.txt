@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 4.4.0)
 project(Ende)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 26)
 
 option(ENDE_BUILD_EXAMPLES "enable examples" ON)
 
@@ -16,13 +16,7 @@ function(filter_items items regex)
     set(${items} ${${items}} PARENT_SCOPE)
 endfunction()
 
-set(PROJECT_FILES include/Ende/platform.h src/sys/unix/system.cpp include/Ende/sys/system.h src/sys/unix/FileDesc.cpp include/Ende/sys/FileDesc.h include/Ende/profile/profile.h src/profile/ProfileManager.cpp include/Ende/profile/ProfileManager.h include/Ende/Singleton.h include/Ende/util/traits.h src/sys/unix/pipe.cpp include/Ende/sys/pipe.h src/sys/unix/process.cpp include/Ende/sys/process.h src/sys/unix/dl.cpp include/Ende/sys/dl.h src/sys/unix/Socket.cpp include/Ende/sys/Socket.h src/os/DynamicLib.cpp include/Ende/os/DynamicLib.h src/os/Process.cpp include/Ende/os/Process.h src/sys/unix/notify.cpp include/Ende/sys/notify.h src/filesystem/File.cpp include/Ende/filesystem/File.h include/Ende/math/Mat.h include/Ende/math/Quaternion.h include/Ende/math/math.h src/time/StopWatch.cpp include/Ende/time/StopWatch.h src/math/random.cpp include/Ende/math/random.h src/math/Frustum.cpp include/Ende/math/Frustum.h include/Ende/thread/Mutex.h include/Ende/math/intersect.h include/Ende/util/hash.h src/io.cpp include/Ende/io.h src/thread/ThreadPool.cpp include/Ende/thread/ThreadPool.h
-        src/filesystem/FileWatcher.cpp
-        include/Ende/filesystem/FileWatcher.h
-        include/Ende/util/colour.h
-        include/Ende/graph/graph.h
-        include/Ende/time/Clock.h
-        src/time/Clock.cpp)
+set(PROJECT_FILES include/Ende/platform.h include/Ende/maybe.h include/Ende/profile.h)
 
 if (UNIX)
     filter_items(PROJECT_FILES ".*win.*")
@@ -31,6 +25,53 @@ elseif(WIN32)
 endif()
 
 add_library(Ende ${PROJECT_FILES})
+target_sources(Ende
+PUBLIC FILE_SET CXX_MODULES FILES
+  src/ende.cpp
+
+  src/filesystem/filesystem.cpp
+  src/filesystem/File.cpp
+  src/filesystem/FileWatcher.cpp
+
+  src/graph.cpp
+
+  src/io.cpp
+
+  src/math/math.cpp
+  src/math/Frustum.cpp
+  src/math/intersect.cpp
+  src/math/Matrix.cpp
+  src/math/Quaternion.cpp
+  src/math/random.cpp
+  src/math/utils.cpp
+
+  src/os/os.cpp
+  src/os/DynamicLib.cpp
+  src/os/Process.cpp
+
+  src/profile/profile.cpp
+
+  src/sys/sys.cpp
+  src/sys/dl.cpp
+  src/sys/FileDesc.cpp
+  src/sys/notify.cpp
+  src/sys/pipe.cpp
+  src/sys/process.cpp
+  src/sys/Socket.cpp
+  src/sys/system.cpp
+
+  src/Singleton.cpp
+
+  src/thread/thread.cpp
+  src/thread/ThreadPool.cpp
+  src/thread/Mutex.cpp
+
+  src/time/time.cpp
+  src/time/Clock.cpp
+  src/time/StopWatch.cpp
+
+  src/util.cpp
+)
 
 target_include_directories(Ende
         PUBLIC
@@ -58,7 +99,7 @@ target_link_libraries(Ende PRIVATE Threads::Threads spdlog::spdlog)
 set(include_dest "include")
 set(main_lib_dest "lib/Ende")
 
-install(TARGETS Ende EXPORT Ende DESTINATION "${main_lib_dest}")
-install(DIRECTORY include/Ende DESTINATION "${include_dest}")
-install(FILES cmake/EndeConfig.cmake DESTINATION "${main_lib_dest}")
-install(EXPORT Ende DESTINATION "${main_lib_dest}")
+# install(TARGETS Ende EXPORT Ende DESTINATION "${main_lib_dest}")
+# install(DIRECTORY include/Ende DESTINATION "${include_dest}")
+# install(FILES cmake/EndeConfig.cmake DESTINATION "${main_lib_dest}")
+# install(EXPORT Ende DESTINATION "${main_lib_dest}")

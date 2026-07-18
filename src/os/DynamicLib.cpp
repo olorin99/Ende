@@ -1,4 +1,51 @@
-#include "Ende/os/DynamicLib.h"
+module;
+
+#include <Ende/platform.h>
+#include <expected>
+#include <filesystem>
+
+export module ende.os.DynamicLib;
+
+import ende.system.dl;
+import ende.util;
+
+namespace ende::os {
+
+export class DynamicLib {
+  public:
+    DynamicLib() = default;
+
+    ~DynamicLib();
+
+    DynamicLib(DynamicLib &&lib) noexcept;
+    DynamicLib &operator=(DynamicLib &&lib) noexcept;
+
+    static auto open(const std::string &path, i32 flags) -> std::expected<DynamicLib, std::string>;
+
+    auto close() -> bool;
+
+    auto error() const -> std::string_view {
+        return _error;
+    }
+
+    template <typename T>
+    T symbol(const std::string &name) {
+        void *sym = sys::dl::symbol(_address, name);
+        if (!sym) {
+            _error = sys::dl::error();
+            return nullptr;
+        }
+        return reinterpret_cast<T>(sym);
+    }
+
+  private:
+    void *_address = nullptr;
+    std::string _error = {};
+    std::filesystem::path _path = {};
+    i32 _flags = 0;
+};
+
+}
 
 ende::os::DynamicLib::~DynamicLib() {
     close();

@@ -32,4 +32,72 @@
     "allow_concurrent_runs": true,
     "shell": "system",
   },
+
+  {
+    "label": "Ende Threading Build Debug",
+    "command": "cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug .. && cmake --build . -j8 --target threading",
+    "cwd": "$ZED_WORKTREE_ROOT/build",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": true,
+    "shell": "system",
+  },
+  {
+    "label": "Run Threading",
+    "command": "./examples/threading",
+    "cwd": "$ZED_WORKTREE_ROOT/build",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": true,
+    "shell": "system",
+  },
+
+  {
+    "label": "Ende Filesystem Build Debug",
+    "command": "cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug .. && cmake --build . -j8 --target filesystem",
+    "cwd": "$ZED_WORKTREE_ROOT/build",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": true,
+    "shell": "system",
+  },
+  {
+    "label": "Run Filesystem",
+    "command": "./examples/filesystem",
+    "cwd": "$ZED_WORKTREE_ROOT/build",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": true,
+    "shell": "system",
+  },
+
+  {
+    "label": "Ende Graph Build Debug",
+    "command": "cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug .. && cmake --build . -j8 --target graph",
+    "cwd": "$ZED_WORKTREE_ROOT/build",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": true,
+    "shell": "system",
+  },
+  {
+    "label": "Run Graph",
+    "command": "./examples/graph",
+    "cwd": "$ZED_WORKTREE_ROOT/build",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": true,
+    "shell": "system",
+  },
+
+  {
+    "label": "Ende Profile Build Debug",
+    "command": "cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug .. && cmake --build . -j8 --target profile_test",
+    "cwd": "$ZED_WORKTREE_ROOT/build",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": true,
+    "shell": "system",
+  },
+  {
+    "label": "Run Profile",
+    "command": "./examples/profile_test",
+    "cwd": "$ZED_WORKTREE_ROOT/build",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": true,
+    "shell": "system",
+  },
 ]

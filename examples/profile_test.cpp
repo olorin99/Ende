@@ -1,6 +1,9 @@
 
-#include <Ende/profile/ProfileManager.h>
-#include <Ende/profile/profile.h>
+#include <Ende/platform.h>
+#include <Ende/profile.h>
+#include <chrono>
+
+import ende.util;
 
 int main() {
 

@@ -1,6 +1,41 @@
-#include "Ende/filesystem/FileWatcher.h"
-#include <Ende/sys/notify.h>
+module;
+
+#include <Ende/platform.h>
+#include <filesystem>
+#include <vector>
+#include <string>
+
 #include <sys/inotify.h>
+
+export module ende.filesystem.FileWatcher;
+
+import ende.system.notify;
+import ende.system.FileDesc;
+import ende.util;
+
+namespace ende::fs {
+
+export class FileWatcher {
+  public:
+    FileWatcher();
+
+    void addWatch(const std::filesystem::path &path, sys::notify::Mask mask = sys::notify::Mask::MODIFY);
+
+    void removeWatch(const std::filesystem::path &path);
+
+    struct Event {
+        std::filesystem::path path;
+        sys::notify::Mask mask;
+    };
+
+    auto read() -> std::vector<Event>;
+
+  private:
+    sys::FileDesc _watcher = {};
+    std::vector<std::pair<std::filesystem::path, i32>> _watches = {};
+};
+
+} // namespace ende::fs
 
 ende::fs::FileWatcher::FileWatcher() {
     _watcher = sys::notify::init(IN_NONBLOCK);

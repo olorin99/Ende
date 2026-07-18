@@ -1,10 +1,11 @@
 
-#include "Ende/math/math.h"
 #include <Ende/platform.h>
 #include <random>
 
-#include <Ende/math/Mat.h>
-#include <Ende/math/Quaternion.h>
+import ende.math.Matrix;
+import ende.math.Quaternion;
+import ende.math.utils;
+import ende.util;
 
 void genMatrix(const u32 N, f32 *data) {
     std::random_device rd;

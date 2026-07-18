@@ -1,12 +1,17 @@
-#include <Ende/profile/profile.h>
+#include <Ende/platform.h>
+#include <Ende/profile.h>
 #include <iostream>
 
-#include <Ende/sys/system.h>
 
-#include <Ende/io.h>
-
-#include <Ende/filesystem/FileWatcher.h>
+#include <filesystem>
 #include <thread>
+
+// import ende;
+import ende.io;
+// import ende.filesystem.File;
+import ende.filesystem.FileWatcher;
+import ende.util;
+import ende.system.system;
 
 using namespace std::chrono_literals;
 
@@ -20,6 +25,7 @@ int main() {
     }
 
     ende::stdout().write(path.string());
+    const auto colour = ende::util::rgb(200, 10, 5);
 
     //    char buffer[50];
     //    u32 length = ende::stdin().read(buffer);
