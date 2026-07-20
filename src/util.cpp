@@ -24,10 +24,10 @@ export using f64 = double;
 export template <typename T>
 struct is_expected : std::false_type {};
 
-export template <typename E>
+template <typename E>
 struct is_expected<std::unexpected<E>> : std::true_type {};
 
-export template <typename T, typename E>
+template <typename T, typename E>
 struct is_expected<std::expected<T, E>> : std::true_type {};
 
 export template <typename T>
@@ -218,7 +218,7 @@ namespace ende::util {
     }
 
     // for string
-    export template <>
+    template <>
     constexpr inline bool cmp(const char *lhs, const char *rhs) {
         return *lhs == *rhs && (*lhs == '\0' || *rhs == '\0' || cmp(lhs + 1, rhs + 1));
     }
@@ -281,12 +281,12 @@ export inline constexpr auto hash64(const char *const str, const u64 seed = 0xcb
 export template <typename Arg, typename... Args>
 struct any;
 
-export template <typename Arg>
+template <typename Arg>
 struct any<Arg> {
     static constexpr bool value = Arg::value;
 };
 
-export template <typename Arg1, typename Arg2, typename... Args>
+template <typename Arg1, typename Arg2, typename... Args>
 struct any<Arg1, Arg2, Args...> {
 
     static constexpr bool value = (Arg1::value || Arg2::value) ? true : any<Args...>::value;
@@ -332,7 +332,7 @@ struct has_free_serialize {
 export template <typename F, typename V = void>
 struct function_traits {};
 
-export template <typename F>
+template <typename F>
 struct function_traits<F, std::void_t<decltype(&F::operator())>> {
   private:
     typedef function_traits<decltype(&F::operator())> tr;
@@ -346,7 +346,7 @@ struct function_traits<F, std::void_t<decltype(&F::operator())>> {
     //        struct arg : tr::template arg<Index + 1> {};
 };
 
-export template <typename R, typename... Args>
+template <typename R, typename... Args>
 struct function_traits<R(Args...)> {
 
     typedef R return_type;
@@ -360,22 +360,22 @@ struct function_traits<R(Args...)> {
     //        };
 };
 
-export template <typename F>
+template <typename F>
 struct function_traits<F &> : function_traits<F> {};
 
-export template <typename F>
+template <typename F>
 struct function_traits<F &&> : function_traits<F> {};
 
-export template <typename R, typename... Args>
+template <typename R, typename... Args>
 struct function_traits<R (*)(Args...)> : function_traits<R(Args...)> {};
 
-export template <typename C, typename R, typename... Args>
+template <typename C, typename R, typename... Args>
 struct function_traits<R (C::*)(Args...)> : function_traits<R(C &, Args...)> {};
 
-export template <typename C, typename R, typename... Args>
+template <typename C, typename R, typename... Args>
 struct function_traits<R (C::*)(Args...) const> : function_traits<R(C const &, Args...)> {};
 
-export template <typename C, typename R>
+template <typename C, typename R>
 struct function_traits<R(C::*)> : function_traits<R(C &)> {};
 
 
