@@ -1,4 +1,3 @@
-
 #include <Ende/platform.h>
 #include <random>
 

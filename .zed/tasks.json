@@ -15,6 +15,14 @@
     "allow_concurrent_runs": true,
     "shell": "system",
   },
+  {
+    "label": "Ende Build Debug All",
+    "command": "cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug .. && cmake --build . -j8",
+    "cwd": "$ZED_WORKTREE_ROOT/build",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": true,
+    "shell": "system",
+  },
 
   {
     "label": "Ende Math Build Debug",

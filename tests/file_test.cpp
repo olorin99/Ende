@@ -1,5 +1,6 @@
+#include <filesystem>
 
-#include <Ende/filesystem/File.h>
+import ende;
 
 int main(int argc, char* argv[]) {
 

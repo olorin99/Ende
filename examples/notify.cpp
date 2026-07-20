@@ -1,5 +1,6 @@
-#include <Ende/sys/notify.h>
 #include <sys/inotify.h>
+
+import ende;
 
 int main() {
 
