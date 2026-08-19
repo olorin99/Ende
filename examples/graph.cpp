@@ -13,7 +13,7 @@ using namespace ende::graph;
 struct BufferEdge : public Edge {};
 struct ImageEdge : public Edge {};
 
-struct RenderVertex : public Vertex<ImageEdge, BufferEdge> {
+struct RenderVertex : public Vertex<VariantEdge<ImageEdge, BufferEdge>> {
     std::string name;
 };
 
@@ -26,9 +26,9 @@ i32 main() {
     Edge edge3 = {.id = 3};
     Edge edge4 = {.id = 4};
 
-    Vertex<Edge, BufferEdge> vertex0 = {.id = 0};
-    Vertex<Edge, BufferEdge> vertex1 = {.id = 1};
-    Vertex<Edge, BufferEdge> vertex2 = {.id = 2};
+    Vertex<Edge> vertex0 = {.id = 0};
+    Vertex<Edge> vertex1 = {.id = 1};
+    Vertex<Edge> vertex2 = {.id = 2};
 
     vertex0.outputs = {
         edge0, edge1, edge2};
@@ -39,12 +39,12 @@ i32 main() {
     vertex2.inputs = {edge2, edge3};
     vertex2.outputs = {edge4};
 
-    auto v0o0 = maybe_conv(i32, vertex0.output<BufferEdge>(0));
-    auto v1o0 = maybe_conv(i32, vertex1.output<Edge>(0));
+    auto v0o0 = maybe_conv(i32, vertex0.output(0));
+    auto v1o0 = maybe_conv(i32, vertex1.output(0));
 
     auto vertices = std::to_array({vertex0, vertex1, vertex2});
 
-    const auto graphSpan = std::span<const Vertex<Edge, BufferEdge>>(vertices.data(), vertices.size());
+    const auto graphSpan = std::span<const Vertex<Edge>>(vertices.data(), vertices.size());
 
     auto topological = maybe_conv(i32, topologicalSort(graphSpan, edge4, 5));
 
@@ -53,15 +53,15 @@ i32 main() {
     }
     printf("\n");
 
-    auto graph = Graph<Vertex<ImageEdge, BufferEdge>>();
+    auto graph = Graph<RenderVertex>();
     graph.reserveVertices(3);
 
     auto &v0 = graph.addVertex();
     auto &v1 = graph.addVertex();
     auto &v2 = graph.addVertex();
 
-    auto e0 = graph.addEdge<ImageEdge>(v0, v1);
-    graph.addEdge<BufferEdge>(v0, v2);
+    auto e0 = graph.addEdge(v0, v1);
+    graph.addEdge(v0, v2);
     graph.addEdge(v1, v2);
 
     // auto e0 = graph.addEdge();

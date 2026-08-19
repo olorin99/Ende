@@ -58,20 +58,17 @@ namespace ende {
 
         auto index(const Edge& edge) -> std::expected<ResourceIndex, JobError> {
             for (auto& input : inputs) {
-                if (std::get<ResourceIndex>(input).index == std::get<ResourceIndex>(edge).index) {
-                    return std::get<ResourceIndex>(input);
+                if (input.index == edge.index) {
+                    return input;
                 }
             }
             for (auto& output : outputs) {
-                if (std::get<ResourceIndex>(output).index == std::get<ResourceIndex>(edge).index) {
-                    return std::get<ResourceIndex>(output);
+                if (output.index == edge.index) {
+                    return output;
                 }
             }
             return std::unexpected(JobError::INVALID_RESOURCE);
         }
-
-        template <typename T>
-        auto resource(const Edge& index) -> std::expected<T*, JobError>;
 
         template <typename T>
         auto resource(const ResourceIndex& index) -> std::expected<T*, JobError>;
@@ -213,7 +210,7 @@ namespace ende {
         auto addResource(T value) -> Graph::Edge {
             auto& edge = this->addEdge();
 
-            std::get<ResourceIndex>(edge).index = _resources.size();
+            edge.index = _resources.size();
             _resources.emplace_back(value);
 
             return edge;
@@ -256,12 +253,6 @@ namespace ende {
 
     };
 
-}
-
-template <typename... Args>
-template <typename T>
-auto ende::Job<Args...>::resource(const Edge& index) -> std::expected<T*, JobError> {
-    return resource<T>(std::get<ResourceIndex>(index));
 }
 
 template <typename... Args>
