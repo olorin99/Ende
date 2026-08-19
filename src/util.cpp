@@ -5,6 +5,7 @@ module;
 #include <expected>
 #include <optional>
 #include <array>
+#include <functional>
 #define ENDE_DONT_IMPORT_PLATFORM_UTIL
 #include <Ende/platform.h>
 
@@ -329,54 +330,36 @@ struct has_free_serialize {
     static constexpr bool value = std::is_same<decltype(test<T>(0)), void>::value;
 };
 
-export template <typename F, typename V = void>
-struct function_traits {};
+export template <typename T>
+struct function_traits
+    : public function_traits<decltype(&T::operator())>
+{};
 
-template <typename F>
-struct function_traits<F, std::void_t<decltype(&F::operator())>> {
-  private:
-    typedef function_traits<decltype(&F::operator())> tr;
-
-  public:
-    typedef typename tr::return_type return_type;
-
-    constexpr static i32 arity = tr::arity - 1;
-
-    //        template <i32 Index>
-    //        struct arg : tr::template arg<Index + 1> {};
+// for pointers to member function
+export template <typename ClassType, typename ReturnType, typename... Args>
+struct function_traits<ReturnType(ClassType::*)(Args...) const> {
+    //enum { arity = sizeof...(Args) };
+    typedef std::function<ReturnType (Args...)> f_type;
 };
 
-template <typename R, typename... Args>
-struct function_traits<R(Args...)> {
-
-    typedef R return_type;
-
-    constexpr static i32 arity = sizeof...(Args);
-
-    //        template <i32 Index>
-    //        struct arg {
-    //            static_assert(Index < arity, "argument index is out of range");
-    //            typedef typename std::tuple_element<Index, std::tuple<Args...>>::type type;
-    //        };
+// for pointers to member function
+export template <typename ClassType, typename ReturnType, typename... Args>
+struct function_traits<ReturnType(ClassType::*)(Args...) > {
+    typedef std::function<ReturnType (Args...)> f_type;
 };
 
-template <typename F>
-struct function_traits<F &> : function_traits<F> {};
+// for function pointers
+export template <typename ReturnType, typename... Args>
+struct function_traits<ReturnType (*)(Args...)>  {
+    typedef std::function<ReturnType (Args...)> f_type;
+};
 
-template <typename F>
-struct function_traits<F &&> : function_traits<F> {};
+export template <typename L>
+typename function_traits<L>::f_type makeFunction(L l){
+  return (typename function_traits<L>::f_type)(l);
+}
 
-template <typename R, typename... Args>
-struct function_traits<R (*)(Args...)> : function_traits<R(Args...)> {};
 
-template <typename C, typename R, typename... Args>
-struct function_traits<R (C::*)(Args...)> : function_traits<R(C &, Args...)> {};
-
-template <typename C, typename R, typename... Args>
-struct function_traits<R (C::*)(Args...) const> : function_traits<R(C const &, Args...)> {};
-
-template <typename C, typename R>
-struct function_traits<R(C::*)> : function_traits<R(C &)> {};
 
 
 } // namespace ende::util

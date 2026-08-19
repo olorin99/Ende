@@ -17,3 +17,6 @@ target_link_libraries(math Ende)
 
 add_executable(graph graph.cpp)
 target_link_libraries(graph Ende)
+
+add_executable(jobs jobs.cpp)
+target_link_libraries(jobs Ende)

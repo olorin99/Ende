@@ -29,8 +29,8 @@ export enum class Error {
     NONE,
     IS_CYCLICAL,
     INVALID_VERTEX,
-    EDGE_TYPE_DOESNT_MATCH,
     INVALID_EDGE,
+    EDGE_TYPE_DOESNT_MATCH,
     INDEX_OUT_OF_BOUNDS,
 };
 

@@ -108,4 +108,22 @@
     "allow_concurrent_runs": true,
     "shell": "system",
   },
+
+  {
+    "label": "Ende Jobs Build Debug",
+    "command": "cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug .. && cmake --build . -j8 --target jobs",
+    "cwd": "$ZED_WORKTREE_ROOT/build",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": true,
+    "shell": "system",
+  },
+  {
+    "label": "Run Jobs",
+    "command": "./examples/jobs",
+    "cwd": "$ZED_WORKTREE_ROOT/build",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": true,
+    "shell": "system",
+  },
+
 ]

@@ -70,6 +70,8 @@ PUBLIC FILE_SET CXX_MODULES FILES
   src/time/Clock.cpp
   src/time/StopWatch.cpp
 
+  src/JobSystem.cpp
+
   src/util.cpp
 )
 
