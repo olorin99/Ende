@@ -13,8 +13,8 @@ import ende.graph;
 
 namespace ende {
 
-    export class JobSystem;
-    export class JobBuilder;
+    export template <typename... Args> class JobSystem;
+    export template <typename... Args> class JobBuilder;
 
     export enum class JobError {
         NONE,
@@ -50,10 +50,9 @@ namespace ende {
             T resource;
         };
 
-
-    export class Job : public graph::Vertex<ResourceIndex> {
+    export template <typename... Args>
+    class Job : public graph::Vertex<ResourceIndex> {
     public:
-
 
         auto name() const -> std::string_view { return _name; }
 
@@ -82,23 +81,23 @@ namespace ende {
         }
 
     private:
-        friend JobSystem;
-        friend JobBuilder;
+        friend JobSystem<Args...>;
+        friend JobBuilder<Args...>;
 
-        JobSystem* _system = nullptr;
+        JobSystem<Args...>* _system = nullptr;
 
         std::string _name = {};
         std::function<std::expected<bool, JobError>(Job&)> _callback = {};
 
     };
 
-    export class JobBuilder {
+    export template <typename... Args> class JobBuilder {
     public:
 
-        using Graph = graph::Graph<Job>;
+        using Graph = graph::Graph<Job<Args...>>;
         using Edge = Graph::Edge;
 
-        auto job() -> Job&;
+        auto job() -> Job<Args...>&;
 
 
         template <typename T, typename U, typename... Vars>
@@ -128,24 +127,24 @@ namespace ende {
         }
 
 
-        auto reads(Edge edge) -> JobBuilder& {
+        auto reads(Edge edge) -> JobBuilder<Args...>& {
             job().inputs.emplace_back(edge);
             return *this;
         }
 
-        auto writes(Edge edge) -> JobBuilder& {
+        auto writes(Edge edge) -> JobBuilder<Args...>& {
             job().outputs.emplace_back(edge);
             return *this;
         }
 
-        auto readWrites(Edge edge) -> JobBuilder& {
+        auto readWrites(Edge edge) -> JobBuilder<Args...>& {
             return reads(edge).writes(edge);
         }
 
 
 
-        template <typename... Args>
-        auto depends(const Args&... args) -> JobBuilder& {
+        template <typename... Dependencies>
+        auto depends(const Dependencies&... args) -> JobBuilder<Args...>& {
             unpack(args...);
             return *this;
         }
@@ -156,8 +155,8 @@ namespace ende {
             return executes(util::makeFunction(callback));
         }
 
-        auto executes(const std::function<void(Job&)>& callback) -> JobBuilder& {
-            job()._callback = [callback](Job& job) -> std::expected<bool, JobError> {
+        auto executes(const std::function<void(Job<Args...>&)>& callback) -> JobBuilder<Args...>& {
+            job()._callback = [callback](Job<Args...>& job) -> std::expected<bool, JobError> {
                 try {
                     callback(job);
                 } catch (...) {
@@ -168,8 +167,8 @@ namespace ende {
             return *this;
         }
 
-        auto executes(const std::function<std::expected<bool, JobError>(Job&)>& callback) -> JobBuilder& {
-            job()._callback = [callback](Job& job) -> std::expected<bool, JobError> {
+        auto executes(const std::function<std::expected<bool, JobError>(Job<Args...>&)>& callback) -> JobBuilder<Args...>& {
+            job()._callback = [callback](Job<Args...>& job) -> std::expected<bool, JobError> {
                 try {
                     return callback(job);
                 } catch (...) {
@@ -180,51 +179,39 @@ namespace ende {
             return *this;
         }
 
-        template <typename... Args>
-        auto executes(const std::function<void(Job&, Args...)>& callback) -> JobBuilder& {
-            job()._callback = [callback](Job& job) -> std::expected<bool, JobError> {
-                try {
-                    callback(job);
-                } catch (...) {
-                    return std::unexpected(JobError::INVALID_JOB);
-                }
-                return true;
-            };
-            return *this;
-        }
-
     private:
-        friend JobSystem;
+        friend JobSystem<Args...>;
 
-        JobSystem* _system = nullptr;
+        JobSystem<Args...>* _system = nullptr;
         i32 _index = -1;
 
-        JobBuilder(JobSystem* system, i32 index) : _system(system), _index(index) {}
+        JobBuilder(JobSystem<Args...>* system, i32 index) : _system(system), _index(index) {}
 
     };
 
-    class JobSystem : public graph::Graph<Job> {
+    template <typename... Args>
+    class JobSystem : public graph::Graph<Job<Args...>> {
     public:
 
-        using Graph = graph::Graph<Job>;
-        using Resource = std::variant<i32>;
+        using Graph = graph::Graph<Job<Args...>>;
+        using Resource = std::variant<Args...>;
 
-        auto addJob(const std::string& name) -> JobBuilder {
-            auto& vertex = addVertex();
+        auto addJob(const std::string& name) -> JobBuilder<Args...> {
+            auto& vertex = this->addVertex();
 
             vertex._system = this;
             vertex._name = name;
 
-            return JobBuilder(this, vertexCount() - 1);
+            return JobBuilder<Args...>(this, this->vertexCount() - 1);
         };
 
-        auto job(i32 index) -> Job& {
-            return getVertices()[index];
+        auto job(i32 index) -> Job<Args...>& {
+            return this->getVertices()[index];
         }
 
         template <typename T>
         auto addResource(T value) -> Graph::Edge {
-            auto& edge = addEdge();
+            auto& edge = this->addEdge();
 
             std::get<ResourceIndex>(edge).index = _resources.size();
             _resources.emplace_back(value);
@@ -243,7 +230,7 @@ namespace ende {
         }
 
 
-        void setRootJob(JobBuilder& builder, bool topdown = false) {
+        void setRootJob(JobBuilder<Args...>& builder, bool topdown = false) {
             _rootJob = builder._index;
             _topdown = topdown;
         }
@@ -251,7 +238,7 @@ namespace ende {
         auto dispatch() -> std::expected<bool, JobError> {
             if (_rootJob < 0) return std::unexpected(JobError::INVALID_JOB);
 
-            auto sorted = sort(job(_rootJob), _topdown);
+            auto sorted = this->sort(job(_rootJob), _topdown);
 
             for (auto& job : *sorted) {
                 maybe(job.dispatch());
@@ -261,7 +248,7 @@ namespace ende {
         }
 
     private:
-        friend JobBuilder;
+        friend JobBuilder<Args...>;
 
         std::vector<Resource> _resources = {};
         i32 _rootJob = -1;
@@ -271,17 +258,19 @@ namespace ende {
 
 }
 
-
+template <typename... Args>
 template <typename T>
-auto ende::Job::resource(const Edge& index) -> std::expected<T*, JobError> {
+auto ende::Job<Args...>::resource(const Edge& index) -> std::expected<T*, JobError> {
     return resource<T>(std::get<ResourceIndex>(index));
 }
 
+template <typename... Args>
 template <typename T>
-auto ende::Job::resource(const ResourceIndex& index) -> std::expected<T*, JobError> {
-    return _system->resource<T>(index);
+auto ende::Job<Args...>::resource(const ResourceIndex& index) -> std::expected<T*, JobError> {
+    return _system->template resource<T>(index);
 }
 
-auto ende::JobBuilder::job() -> ende::Job&  {
+template <typename... Args>
+auto ende::JobBuilder<Args...>::job() -> ende::Job<Args...>&  {
     return _system->job(_index);
 }

@@ -6,7 +6,7 @@ import ende;
 
 int main() {
 
-    auto system = ende::JobSystem();
+    auto system = ende::JobSystem<i32, std::string>();
 
     auto a = system.addResource(100);
     auto b = system.addResource(0);
@@ -15,7 +15,7 @@ int main() {
 
     auto jobA = system.addJob("A")
         .depends(ende::Read(a), ende::Write(b))
-        .executes([](ende::Job& job) {
+        .executes([](ende::Job<i32, std::string>& job) {
             std::printf("%s\n", job.name().data());
             std::printf("inputs:\n");
             for (auto& resource : job.inputs) {
@@ -29,7 +29,7 @@ int main() {
 
     system.addJob("B")
         .depends(ende::Read(b), ende::Write(c))
-        .executes([=](ende::Job& job) -> std::expected<bool, ende::JobError> {
+        .executes([=](ende::Job<i32, std::string>& job) -> std::expected<bool, ende::JobError> {
             std::printf("%s\n", job.name().data());
             std::printf("inputs:\n");
             for (auto& resource : job.inputs) {
@@ -48,7 +48,7 @@ int main() {
 
     auto jobC = system.addJob("C")
         .depends(ende::Read(c))
-        .executes([](ende::Job& job) {
+        .executes([](ende::Job<i32, std::string>& job) {
             std::printf("%s\n", job.name().data());
             std::printf("inputs:\n");
             for (auto& resource : job.inputs) {
