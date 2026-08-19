@@ -243,14 +243,15 @@ namespace ende {
         }
 
 
-        void setRootJob(JobBuilder& builder) {
+        void setRootJob(JobBuilder& builder, bool topdown = false) {
             _rootJob = builder._index;
+            _topdown = topdown;
         }
 
         auto dispatch() -> std::expected<bool, JobError> {
             if (_rootJob < 0) return std::unexpected(JobError::INVALID_JOB);
 
-            auto sorted = sort(job(_rootJob));
+            auto sorted = sort(job(_rootJob), _topdown);
 
             for (auto& job : *sorted) {
                 maybe(job.dispatch());
@@ -264,6 +265,7 @@ namespace ende {
 
         std::vector<Resource> _resources = {};
         i32 _rootJob = -1;
+        bool _topdown = false;
 
     };
 

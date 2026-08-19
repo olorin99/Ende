@@ -13,7 +13,7 @@ int main() {
     auto c = system.addResource(-100);
 
 
-    system.addJob("A")
+    auto jobA = system.addJob("A")
         .depends(ende::Read(a), ende::Write(b))
         .executes([](ende::Job& job) {
             std::printf("%s\n", job.name().data());
