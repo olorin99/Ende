@@ -129,15 +129,18 @@ namespace ende {
             return *this;
         }
 
-        auto writes(Edge edge) -> JobBuilder<Args...>& {
-            job().outputs.emplace_back(edge);
-            return *this;
-        }
+        auto writes(Edge edge) -> JobBuilder<Args...>&;
 
         auto readWrites(Edge edge) -> JobBuilder<Args...>& {
             return reads(edge).writes(edge);
         }
 
+
+        auto output(const u32 index = 0) -> std::expected<Edge, JobError> {
+            return job().output(index).transform_error([] (graph::Error error) -> JobError {
+                return static_cast<JobError>(error);
+            });
+        }
 
 
         template <typename... Dependencies>
@@ -216,6 +219,12 @@ namespace ende {
             return edge;
         }
 
+        auto aliasResource(const ResourceIndex& index) -> ResourceIndex {
+            auto& edge = this->addEdge();
+            edge.index = index.index;
+            return edge;
+        }
+
         template <typename T>
         auto resource(const ResourceIndex& index) -> std::expected<T*, JobError> {
             if (index.index > _resources.size()) return std::unexpected(JobError::INDEX_OUT_OF_BOUNDS);
@@ -264,4 +273,11 @@ auto ende::Job<Args...>::resource(const ResourceIndex& index) -> std::expected<T
 template <typename... Args>
 auto ende::JobBuilder<Args...>::job() -> ende::Job<Args...>&  {
     return _system->job(_index);
+}
+
+template <typename... Args>
+auto ende::JobBuilder<Args...>::writes(Edge edge) -> JobBuilder<Args...>& {
+    edge = _system->aliasResource(edge);
+    job().outputs.emplace_back(edge);
+    return *this;
 }
