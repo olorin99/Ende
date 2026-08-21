@@ -56,6 +56,8 @@ namespace ende {
 
         auto name() const -> std::string_view { return _name; }
 
+        auto priority() const -> i32 { return _priority; }
+
         auto index(const Edge& edge) -> std::expected<ResourceIndex, JobError> {
             for (auto& input : inputs) {
                 if (input.index == edge.index) {
@@ -85,6 +87,7 @@ namespace ende {
 
         std::string _name = {};
         std::function<std::expected<bool, JobError>(Job&)> _callback = {};
+        i32 _priority = 0;
 
     };
 
@@ -196,11 +199,12 @@ namespace ende {
         using Graph = graph::Graph<Job<Args...>>;
         using Resource = std::variant<Args...>;
 
-        auto addJob(const std::string& name) -> JobBuilder<Args...> {
+        auto addJob(const std::string& name, i32 priority = 0) -> JobBuilder<Args...> {
             auto& vertex = this->addVertex();
 
             vertex._system = this;
             vertex._name = name;
+            vertex._priority = priority;
 
             return JobBuilder<Args...>(this, this->vertexCount() - 1);
         };
