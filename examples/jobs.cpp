@@ -1,5 +1,6 @@
 #include <Ende/maybe.h>
 #include <print>
+#include <utility>
 #include <variant>
 #include <cmath>
 
@@ -79,14 +80,14 @@ int main() {
 
         const f32 solution = (std::pow(5, 2) * ((100 + 12) * std::pow(193, 2))) / 0.102341f;
 
-        auto equation = ende::JobSystem<f32>();
+        auto equation = ende::JobSystem<f32>(3);
 
         auto a = equation.addResource<f32>(5);
         auto b = equation.addResource<f32>(100);
         auto c = equation.addResource<f32>(std::pow(193, 2));
         auto d = equation.addResource<f32>(0.102341);
 
-        a = maybe_conv(i32, equation.addJob("A")
+        a = maybe_conv(i32, equation.addJob("A", 0, 0)
             .depends(ende::Write(a))
             .executes([=](ende::Job<f32>& job) -> std::expected<bool, ende::JobError> {
                 auto aa = maybe(job.resource<f32>(a));
@@ -94,7 +95,7 @@ int main() {
                 return true;
             }).output());
 
-        b = maybe_conv(i32, equation.addJob("B")
+        b = maybe_conv(i32, equation.addJob("B", 0, 1)
             .depends(ende::Write(b), ende::Read(c))
             .executes([=](ende::Job<f32>& job) -> std::expected<bool, ende::JobError> {
                 auto bb = maybe(job.resource<f32>(b));
@@ -103,7 +104,7 @@ int main() {
                 return true;
             }).output());
 
-        c = maybe_conv(i32, equation.addJob("C")
+        c = maybe_conv(i32, equation.addJob("C", 0, 2)
             .depends(ende::Read(a), ende::Read(b), ende::Write(c))
             .executes([=](ende::Job<f32>& job) -> std::expected<bool, ende::JobError> {
                auto aa = maybe(job.resource<f32>(a));
@@ -113,7 +114,7 @@ int main() {
                return true;
             }).output());
 
-        auto root = equation.addJob("D")
+        auto root = equation.addJob("D", 0, 0)
             .depends(ende::Read(c), ende::Write(d))
             .executes([=](ende::Job<f32>& job) -> std::expected<bool, ende::JobError> {
                 auto cc = maybe(job.resource<f32>(c));
@@ -124,6 +125,7 @@ int main() {
 
         equation.setRootJob(root);
         maybe_conv(i32, equation.dispatch());
+        equation.wait();
 
         auto result = maybe_conv(i32, equation.resource<f32>(d));
         std::printf("%f : %f\n", *result, solution);

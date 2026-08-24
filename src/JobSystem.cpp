@@ -4,12 +4,16 @@ module;
 #include <functional>
 #include <expected>
 #include <string>
+#include <memory>
 #include <variant>
+#include <thread>
 
 export module ende.JobSystem;
 
 import ende.util;
 import ende.graph;
+import ende.thread.Semaphore;
+import ende.thread.Queue;
 
 namespace ende {
 
@@ -24,6 +28,10 @@ namespace ende {
         RESOURCE_TYPE_DOESNT_MATCH,
         INDEX_OUT_OF_BOUNDS,
     };
+
+    auto mapGraphErrorToJobError(graph::Error error) -> JobError {
+        return static_cast<JobError>(error);
+    }
 
     export struct ResourceIndex : public graph::Edge {
         i32 index = -1;
@@ -58,6 +66,8 @@ namespace ende {
 
         auto priority() const -> i32 { return _priority; }
 
+        auto queueIndex() const -> u32 { return _queueIndex; }
+
         auto index(const Edge& edge) -> std::expected<ResourceIndex, JobError> {
             for (auto& input : inputs) {
                 if (input.index == edge.index) {
@@ -88,6 +98,35 @@ namespace ende {
         std::string _name = {};
         std::function<std::expected<bool, JobError>(Job&)> _callback = {};
         i32 _priority = 0;
+        u32 _queueIndex = 0;
+
+        std::vector<i32> _accesses = {};
+        std::vector<i32> _queueWaits = {};
+
+        void calcAccess() {
+            for (const auto& input : inputs) {
+                bool append = true;
+                for (auto& access : _accesses) {
+                    if (access == input.index) {
+                        append = false;
+                        break;
+                    }
+                }
+                if (append)
+                    _accesses.emplace_back(input.index);
+            }
+            for (const auto& output : outputs) {
+                bool append = true;
+                for (auto& access : _accesses) {
+                    if (access == output.index) {
+                        append = false;
+                        break;
+                    }
+                }
+                if (append)
+                    _accesses.emplace_back(output.index);
+            }
+        }
 
     };
 
@@ -140,9 +179,7 @@ namespace ende {
 
 
         auto output(const u32 index = 0) -> std::expected<Edge, JobError> {
-            return job().output(index).transform_error([] (graph::Error error) -> JobError {
-                return static_cast<JobError>(error);
-            });
+            return job().output(index).transform_error(mapGraphErrorToJobError);
         }
 
 
@@ -199,12 +236,19 @@ namespace ende {
         using Graph = graph::Graph<Job<Args...>>;
         using Resource = std::variant<Args...>;
 
-        auto addJob(const std::string& name, i32 priority = 0) -> JobBuilder<Args...> {
+        JobSystem(u32 queueCount = 1) {
+            for (u32 i = 0; i < queueCount; i++) {
+                _queues.emplace_back(std::make_unique<thread::Queue>());
+            }
+        }
+
+        auto addJob(const std::string& name, i32 priority = 0, u32 queueIndex = 0) -> JobBuilder<Args...> {
             auto& vertex = this->addVertex();
 
             vertex._system = this;
             vertex._name = name;
             vertex._priority = priority;
+            vertex._queueIndex = queueIndex;
 
             return JobBuilder<Args...>(this, this->vertexCount() - 1);
         };
@@ -248,21 +292,87 @@ namespace ende {
         auto dispatch() -> std::expected<bool, JobError> {
             if (_rootJob < 0) return std::unexpected(JobError::INVALID_JOB);
 
-            auto sorted = this->sort(job(_rootJob), _topdown);
+            _orderedJobs = maybe(this->sort(job(_rootJob), _topdown).transform_error(mapGraphErrorToJobError));
 
-            for (auto& job : *sorted) {
-                maybe(job.dispatch());
+            trackSync();
+
+            u32 currentQueue = 0;
+            for (auto& job : _orderedJobs) {
+                const auto queueIndex = job.queueIndex();
+                auto& queue = _queues[queueIndex];
+
+                std::vector<std::pair<thread::TimelineSemaphore*, u64>> waits = {};
+
+                for (auto& wait : job._queueWaits) {
+
+                    auto& waitingJob = _orderedJobs[wait];
+                    auto waitingQueueIndex = waitingJob.queueIndex();
+
+                    auto& waitingQueue = _queues[waitingQueueIndex];
+                    waits.emplace_back(std::make_pair(&waitingQueue->timeline(), waitingQueue->timeline().localValue()));
+                }
+
+                queue->submit({
+                    waits,
+                    {std::make_pair(&queue->timeline(), queue->timeline().increment())},
+                    [&]() -> i32 {
+                        auto error = job.dispatch();
+                        if (!error.has_value()) return static_cast<i32>(error.error());
+                        return 0;
+                    }
+                });
             }
 
             return true;
         }
 
+        void wait() {
+            for (auto& queue : _queues) {
+                queue->timeline().wait(queue->timeline().localValue());
+            }
+        }
+
     private:
         friend JobBuilder<Args...>;
+
+        std::vector<std::unique_ptr<thread::Queue>> _queues = {};
+
+        std::vector<Job<Args...>> _orderedJobs = {};
 
         std::vector<Resource> _resources = {};
         i32 _rootJob = -1;
         bool _topdown = false;
+
+        void trackSync() {
+            for (auto& job : _orderedJobs) {
+                job.calcAccess();
+            }
+
+            for (i32 jobIndex = _orderedJobs.size() - 1; jobIndex >= 0; jobIndex--) {
+                auto& job = _orderedJobs[jobIndex];
+
+                for (auto& access : job._accesses) {
+                    const auto prevIndex = getPrevAccess(jobIndex, access);
+                    if (prevIndex < 0) continue;
+                    const auto& prevJob = _orderedJobs[prevIndex];
+                    if (prevJob.queueIndex() != job.queueIndex()) {
+                        job._queueWaits.emplace_back(prevJob.queueIndex());
+                    }
+                }
+            }
+        }
+
+        auto getPrevAccess(const i32 startIndex, const i32 resourceIndex) -> i32 {
+            for (i32 jobIndex = startIndex - 1; jobIndex >= 0; jobIndex--) {
+                const auto& job = _orderedJobs[jobIndex];
+
+                for (auto& access : job._accesses) {
+                    if (access == resourceIndex)
+                        return jobIndex;
+                }
+            }
+            return -1;
+        }
 
     };
 

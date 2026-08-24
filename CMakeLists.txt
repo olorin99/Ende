@@ -65,6 +65,8 @@ PUBLIC FILE_SET CXX_MODULES FILES
   src/thread/thread.cpp
   src/thread/ThreadPool.cpp
   src/thread/Mutex.cpp
+  src/thread/Semaphore.cpp
+  src/thread/Queue.cpp
 
   src/time/time.cpp
   src/time/Clock.cpp
