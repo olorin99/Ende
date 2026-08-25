@@ -238,7 +238,7 @@ namespace ende {
 
         JobSystem(u32 queueCount = 1) {
             for (u32 i = 0; i < queueCount; i++) {
-                _queues.emplace_back(std::make_unique<thread::Queue>());
+                _queues.emplace_back(std::make_unique<thread::ThreadedQueue>());
             }
         }
 

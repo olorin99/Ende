@@ -22,7 +22,18 @@ namespace ende::thread {
     export class Queue {
     public:
 
-        Queue() {
+        virtual ~Queue() = default;
+
+        virtual void submit(const Command& command) = 0;
+
+        virtual auto timeline() -> TimelineSemaphore& = 0;
+
+    };
+
+    export class ThreadedQueue : public Queue {
+    public:
+
+        ThreadedQueue() {
             _thread = std::thread([&]() {
                 while (true) {
                     Command command;
@@ -48,7 +59,7 @@ namespace ende::thread {
             });
         }
 
-        ~Queue() {
+        ~ThreadedQueue() {
             std::unique_lock lock(_commandMutex);
             _stop = true;
             _ready.notify_all();
@@ -57,13 +68,13 @@ namespace ende::thread {
             if (_thread.joinable()) _thread.join();
         }
 
-        void submit(const Command& command) {
+        void submit(const Command& command) override {
             std::unique_lock lock(_commandMutex);
             _commands.emplace_back(command);
             _ready.notify_one();
         }
 
-        auto timeline() -> TimelineSemaphore& {
+        auto timeline() -> TimelineSemaphore& override {
             return _timeline;
         }
 
